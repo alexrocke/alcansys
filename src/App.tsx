@@ -9,6 +9,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Projetos from "./pages/Projetos";
+import Financeiro from "./pages/Financeiro";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -38,6 +39,7 @@ const App = () => (
                           <Routes>
                             <Route path="/" element={<Index />} />
                             <Route path="/projetos" element={<Projetos />} />
+                            <Route path="/financeiro" element={<Financeiro />} />
                             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                             <Route path="*" element={<NotFound />} />
                           </Routes>
