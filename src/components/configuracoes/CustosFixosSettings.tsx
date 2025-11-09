@@ -30,7 +30,7 @@ export function CustosFixosSettings() {
     },
   });
 
-  const custos = (settings?.valor as any as CustoFixo[]) || [];
+  const custos = Array.isArray(settings?.valor) ? (settings.valor as unknown as CustoFixo[]) : [];
 
   const saveMutation = useMutation({
     mutationFn: async (newCustos: CustoFixo[]) => {
