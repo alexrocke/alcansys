@@ -239,14 +239,13 @@ export function DocumentForm({ document, onSuccess, onCancel }: DocumentFormProp
         <div className="space-y-2">
           <Label htmlFor="project_id">Projeto</Label>
           <Select
-            value={selectedProject}
+            value={selectedProject || undefined}
             onValueChange={(value) => setValue('project_id', value)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecione um projeto (opcional)" />
+              <SelectValue placeholder="Nenhum projeto selecionado" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Nenhum projeto</SelectItem>
               {projects?.map((project) => (
                 <SelectItem key={project.id} value={project.id}>
                   {project.nome}
