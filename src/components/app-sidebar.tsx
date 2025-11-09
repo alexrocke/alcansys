@@ -13,6 +13,7 @@ import {
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { NotificationBell } from "@/components/NotificationBell";
 
 import {
   Sidebar,
@@ -58,16 +59,19 @@ export function AppSidebar() {
     <Sidebar className="border-r border-border">
       <SidebarContent>
         <div className="px-6 py-4">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
-              <span className="text-lg font-bold text-white">A</span>
-            </div>
-            {open && (
-              <div>
-                <h1 className="text-xl font-bold text-foreground">Alcansys</h1>
-                <p className="text-xs text-muted-foreground">Gestão Corporativa</p>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shrink-0">
+                <span className="text-lg font-bold text-white">A</span>
               </div>
-            )}
+              {open && (
+                <div className="min-w-0">
+                  <h1 className="text-xl font-bold text-foreground truncate">Alcansys</h1>
+                  <p className="text-xs text-muted-foreground truncate">Gestão Corporativa</p>
+                </div>
+              )}
+            </div>
+            <NotificationBell />
           </div>
         </div>
 
