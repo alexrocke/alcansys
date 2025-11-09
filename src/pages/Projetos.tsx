@@ -59,23 +59,23 @@ export default function Projetos() {
   });
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-4 md:p-6 lg:p-8 space-y-6 max-w-full overflow-x-hidden">
+      <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Projetos</h1>
-          <p className="text-muted-foreground">Gerencie todos os projetos da empresa</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Projetos</h1>
+          <p className="text-sm md:text-base text-muted-foreground">Gerencie todos os projetos da empresa</p>
         </div>
         <Button 
           onClick={() => setIsFormOpen(true)}
-          className="gap-2"
+          className="gap-2 w-full md:w-auto"
         >
           <Plus className="h-4 w-4" />
           Novo Projeto
         </Button>
       </div>
 
-      <div className="flex gap-4 items-center">
-        <div className="relative flex-1 max-w-sm">
+      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
+        <div className="relative w-full md:max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar projetos..."
@@ -85,7 +85,7 @@ export default function Projetos() {
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-full md:w-[200px]">
             <SelectValue placeholder="Filtrar por status" />
           </SelectTrigger>
           <SelectContent>

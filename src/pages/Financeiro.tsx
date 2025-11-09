@@ -116,22 +116,24 @@ export default function Financeiro() {
   const roi = totalReceitas > 0 ? ((totalReceitas - totalDespesas) / totalReceitas * 100) : 0;
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-4 md:p-6 lg:p-8 space-y-6 max-w-full overflow-x-hidden">
+      <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Financeiro</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Financeiro</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Gestão de receitas e despesas - {format(new Date(mesFilter + '-01'), 'MMMM yyyy', { locale: ptBR })}
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleExportPDF} className="gap-2">
+        <div className="flex gap-2 w-full md:w-auto">
+          <Button variant="outline" onClick={handleExportPDF} className="gap-2 flex-1 md:flex-initial">
             <Download className="h-4 w-4" />
-            Exportar PDF
+            <span className="hidden sm:inline">Exportar PDF</span>
+            <span className="sm:hidden">PDF</span>
           </Button>
-          <Button onClick={() => setIsFormOpen(true)} className="gap-2">
+          <Button onClick={() => setIsFormOpen(true)} className="gap-2 flex-1 md:flex-initial">
             <Plus className="h-4 w-4" />
-            Nova Transação
+            <span className="hidden sm:inline">Nova Transação</span>
+            <span className="sm:hidden">Nova</span>
           </Button>
         </div>
       </div>
@@ -145,7 +147,7 @@ export default function Financeiro() {
             <TrendingUp className="h-5 w-5 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">
+            <div className="text-2xl md:text-3xl font-bold text-foreground">
               {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalReceitas)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -162,7 +164,7 @@ export default function Financeiro() {
             <TrendingDown className="h-5 w-5 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">
+            <div className="text-2xl md:text-3xl font-bold text-foreground">
               {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalDespesas)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -179,7 +181,7 @@ export default function Financeiro() {
             <DollarSign className="h-5 w-5 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className={`text-3xl font-bold ${saldoMensal >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            <div className={`text-2xl md:text-3xl font-bold ${saldoMensal >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(saldoMensal)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -196,7 +198,7 @@ export default function Financeiro() {
             <Target className="h-5 w-5 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className={`text-3xl font-bold ${roi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            <div className={`text-2xl md:text-3xl font-bold ${roi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               {roi.toFixed(1)}%
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -206,8 +208,8 @@ export default function Financeiro() {
         </Card>
       </div>
 
-      <div className="flex gap-4 items-center">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
+        <div className="hidden md:flex items-center gap-2">
           <Filter className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">Filtros:</span>
         </div>
@@ -215,10 +217,10 @@ export default function Financeiro() {
           type="month"
           value={mesFilter}
           onChange={(e) => setMesFilter(e.target.value)}
-          className="w-[200px]"
+          className="w-full md:w-[180px]"
         />
         <Select value={areaFilter} onValueChange={setAreaFilter}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-full md:w-[180px]">
             <SelectValue placeholder="Todas as áreas" />
           </SelectTrigger>
           <SelectContent>
@@ -231,7 +233,7 @@ export default function Financeiro() {
           </SelectContent>
         </Select>
         <Select value={tipoFilter} onValueChange={setTipoFilter}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-full md:w-[180px]">
             <SelectValue placeholder="Todos os tipos" />
           </SelectTrigger>
           <SelectContent>
