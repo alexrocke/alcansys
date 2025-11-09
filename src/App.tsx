@@ -15,6 +15,7 @@ import Equipe from "./pages/Equipe";
 import Marketing from "./pages/Marketing";
 import Automacoes from "./pages/Automacoes";
 import Documentos from "./pages/Documentos";
+import Configuracoes from "./pages/Configuracoes";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -50,6 +51,7 @@ const App = () => (
                             <Route path="/marketing" element={<Marketing />} />
                             <Route path="/automacoes" element={<Automacoes />} />
                             <Route path="/documentos" element={<Documentos />} />
+                            <Route path="/configuracoes" element={<Configuracoes />} />
                             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                             <Route path="*" element={<NotFound />} />
                           </Routes>
