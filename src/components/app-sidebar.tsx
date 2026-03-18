@@ -13,6 +13,7 @@ import {
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { CompanySelector } from "@/components/CompanySelector";
 import { NotificationBell } from "@/components/NotificationBell";
 
 import {
@@ -73,6 +74,7 @@ export function AppSidebar() {
             </div>
             <NotificationBell />
           </div>
+          <CompanySelector />
         </div>
 
         <SidebarGroup>
