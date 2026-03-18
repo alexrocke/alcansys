@@ -252,7 +252,7 @@ export function ProjectTasks({ projectId, projectName }: ProjectTasksProps) {
                   )}
 
                   <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                    {task.responsavel && <span>{task.responsavel.nome}</span>}
+                    {task.responsavel_nome && <span>{task.responsavel_nome}</span>}
                     {task.data_fim && (
                       <span className={`flex items-center gap-1 ${isOverdue ? 'text-destructive font-medium' : ''}`}>
                         <CalendarClock className="h-3 w-3" />
