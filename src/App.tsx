@@ -15,6 +15,7 @@ import Clientes from "./pages/Clientes";
 import Equipe from "./pages/Equipe";
 import Marketing from "./pages/Marketing";
 import Automacoes from "./pages/Automacoes";
+import WhatsAppPage from "./pages/WhatsApp";
 import Documentos from "./pages/Documentos";
 import Configuracoes from "./pages/Configuracoes";
 import Auth from "./pages/Auth";
