@@ -76,12 +76,27 @@ export function ProjectTasks({ projectId, projectName }: ProjectTasksProps) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('project_tasks')
-        .select('*, responsavel:profiles(id, nome)')
+        .select('*')
         .eq('project_id', projectId)
         .order('ordem', { ascending: true })
         .order('created_at', { ascending: true });
       if (error) throw error;
-      return data || [];
+      
+      // Fetch responsavel names separately
+      const responsavelIds = [...new Set((data || []).map(t => t.responsavel_id).filter(Boolean))];
+      let profilesMap: Record<string, string> = {};
+      if (responsavelIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, nome')
+          .in('id', responsavelIds);
+        profilesMap = (profiles || []).reduce((acc, p) => ({ ...acc, [p.id]: p.nome }), {});
+      }
+      
+      return (data || []).map(t => ({
+        ...t,
+        responsavel_nome: t.responsavel_id ? profilesMap[t.responsavel_id] || null : null,
+      }));
     },
   });
 
