@@ -8,7 +8,8 @@ import {
   FileText, 
   UsersRound,
   Settings,
-  LogOut
+  LogOut,
+  MessageCircle
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -36,6 +37,7 @@ const mainItems = [
   { title: "Financeiro", url: "/financeiro", icon: DollarSign },
   { title: "Marketing", url: "/marketing", icon: TrendingUp },
   { title: "Automações", url: "/automacoes", icon: Zap },
+  { title: "WhatsApp", url: "/whatsapp", icon: MessageCircle },
   { title: "Clientes", url: "/clientes", icon: Users },
   { title: "Documentos", url: "/documentos", icon: FileText },
   { title: "Equipe", url: "/equipe", icon: UsersRound },
