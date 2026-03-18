@@ -410,6 +410,72 @@ export type Database = {
         }
         Relationships: []
       }
+      project_tasks: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          data_conclusao: string | null
+          data_fim: string | null
+          data_inicio: string | null
+          descricao: string | null
+          id: string
+          ordem: number
+          prioridade: Database["public"]["Enums"]["task_priority"]
+          project_id: string
+          responsavel_id: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          data_conclusao?: string | null
+          data_fim?: string | null
+          data_inicio?: string | null
+          descricao?: string | null
+          id?: string
+          ordem?: number
+          prioridade?: Database["public"]["Enums"]["task_priority"]
+          project_id: string
+          responsavel_id?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          data_conclusao?: string | null
+          data_fim?: string | null
+          data_inicio?: string | null
+          descricao?: string | null
+          id?: string
+          ordem?: number
+          prioridade?: Database["public"]["Enums"]["task_priority"]
+          project_id?: string
+          responsavel_id?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_tasks_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           area: string
@@ -574,6 +640,8 @@ export type Database = {
         | "em_andamento"
         | "concluido"
         | "cancelado"
+      task_priority: "baixa" | "media" | "alta" | "urgente"
+      task_status: "pendente" | "em_andamento" | "concluida" | "cancelada"
       user_status: "pendente" | "ativo" | "inativo"
     }
     CompositeTypes: {
@@ -721,6 +789,8 @@ export const Constants = {
         "concluido",
         "cancelado",
       ],
+      task_priority: ["baixa", "media", "alta", "urgente"],
+      task_status: ["pendente", "em_andamento", "concluida", "cancelada"],
       user_status: ["pendente", "ativo", "inativo"],
     },
   },

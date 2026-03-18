@@ -25,9 +25,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { MoreVertical, Pencil, Trash2, Loader2 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { MoreVertical, Pencil, Trash2, Loader2, ListChecks } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { ProjectTasks } from './ProjectTasks';
 
 interface ProjectListProps {
   projects: any[];
@@ -53,6 +60,7 @@ const statusLabels = {
 export function ProjectList({ projects, isLoading, onEdit, onRefetch }: ProjectListProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [tasksProject, setTasksProject] = useState<any>(null);
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -154,6 +162,10 @@ export function ProjectList({ projects, isLoading, onEdit, onRefetch }: ProjectL
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => setTasksProject(project)}>
+                        <ListChecks className="h-4 w-4 mr-2" />
+                        Tarefas
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onEdit(project)}>
                         <Pencil className="h-4 w-4 mr-2" />
                         Editar
@@ -173,6 +185,18 @@ export function ProjectList({ projects, isLoading, onEdit, onRefetch }: ProjectL
           </TableBody>
         </Table>
       </div>
+
+      {/* Tasks Dialog */}
+      <Dialog open={!!tasksProject} onOpenChange={() => setTasksProject(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Tarefas — {tasksProject?.nome}</DialogTitle>
+          </DialogHeader>
+          {tasksProject && (
+            <ProjectTasks projectId={tasksProject.id} projectName={tasksProject.nome} />
+          )}
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
