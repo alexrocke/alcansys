@@ -74,6 +74,7 @@ export function AppSidebar() {
             </div>
             <NotificationBell />
           </div>
+          <CompanySelector />
         </div>
 
         <SidebarGroup>
