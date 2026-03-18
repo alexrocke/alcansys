@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       alerts: {
         Row: {
+          company_id: string | null
           created_at: string
           id: string
           mensagem: string
@@ -24,6 +25,7 @@ export type Database = {
           tipo: Database["public"]["Enums"]["alert_type"]
         }
         Insert: {
+          company_id?: string | null
           created_at?: string
           id?: string
           mensagem: string
@@ -32,6 +34,7 @@ export type Database = {
           tipo: Database["public"]["Enums"]["alert_type"]
         }
         Update: {
+          company_id?: string | null
           created_at?: string
           id?: string
           mensagem?: string
@@ -40,6 +43,13 @@ export type Database = {
           tipo?: Database["public"]["Enums"]["alert_type"]
         }
         Relationships: [
+          {
+            foreignKeyName: "alerts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "alerts_project_id_fkey"
             columns: ["project_id"]
@@ -51,6 +61,7 @@ export type Database = {
       }
       automations: {
         Row: {
+          company_id: string | null
           created_at: string
           custo: number | null
           descricao: string | null
@@ -62,6 +73,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          company_id?: string | null
           created_at?: string
           custo?: number | null
           descricao?: string | null
@@ -73,6 +85,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          company_id?: string | null
           created_at?: string
           custo?: number | null
           descricao?: string | null
@@ -83,11 +96,20 @@ export type Database = {
           tipo?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "automations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       clients: {
         Row: {
           area: string | null
+          company_id: string | null
           created_at: string
           email: string | null
           id: string
@@ -99,6 +121,7 @@ export type Database = {
         }
         Insert: {
           area?: string | null
+          company_id?: string | null
           created_at?: string
           email?: string | null
           id?: string
@@ -110,6 +133,7 @@ export type Database = {
         }
         Update: {
           area?: string | null
+          company_id?: string | null
           created_at?: string
           email?: string | null
           id?: string
@@ -119,11 +143,53 @@ export type Database = {
           telefone?: string | null
           updated_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "clients_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      companies: {
+        Row: {
+          ativo: boolean | null
+          created_at: string
+          id: string
+          logo_url: string | null
+          nome: string
+          plano: string | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          nome: string
+          plano?: string | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          nome?: string
+          plano?: string | null
+          slug?: string
+          updated_at?: string
+        }
         Relationships: []
       }
       documents: {
         Row: {
           autor_id: string | null
+          company_id: string | null
           created_at: string
           id: string
           nome: string
@@ -134,6 +200,7 @@ export type Database = {
         }
         Insert: {
           autor_id?: string | null
+          company_id?: string | null
           created_at?: string
           id?: string
           nome: string
@@ -144,6 +211,7 @@ export type Database = {
         }
         Update: {
           autor_id?: string | null
+          company_id?: string | null
           created_at?: string
           id?: string
           nome?: string
@@ -161,6 +229,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "documents_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -172,6 +247,7 @@ export type Database = {
       finances: {
         Row: {
           area: string | null
+          company_id: string | null
           created_at: string
           data: string
           descricao: string
@@ -183,6 +259,7 @@ export type Database = {
         }
         Insert: {
           area?: string | null
+          company_id?: string | null
           created_at?: string
           data?: string
           descricao: string
@@ -194,6 +271,7 @@ export type Database = {
         }
         Update: {
           area?: string | null
+          company_id?: string | null
           created_at?: string
           data?: string
           descricao?: string
@@ -205,6 +283,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "finances_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "finances_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -215,6 +300,7 @@ export type Database = {
       }
       marketing_campaigns: {
         Row: {
+          company_id: string | null
           created_at: string
           data_fim: string | null
           data_inicio: string | null
@@ -227,6 +313,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          company_id?: string | null
           created_at?: string
           data_fim?: string | null
           data_inicio?: string | null
@@ -239,6 +326,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          company_id?: string | null
           created_at?: string
           data_fim?: string | null
           data_inicio?: string | null
@@ -250,7 +338,50 @@ export type Database = {
           status?: Database["public"]["Enums"]["campaign_status"]
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "marketing_campaigns_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      memberships: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["membership_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["membership_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["membership_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memberships_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -283,6 +414,7 @@ export type Database = {
         Row: {
           area: string
           client_id: string | null
+          company_id: string | null
           created_at: string
           data_fim: string | null
           data_inicio: string | null
@@ -297,6 +429,7 @@ export type Database = {
         Insert: {
           area: string
           client_id?: string | null
+          company_id?: string | null
           created_at?: string
           data_fim?: string | null
           data_inicio?: string | null
@@ -311,6 +444,7 @@ export type Database = {
         Update: {
           area?: string
           client_id?: string | null
+          company_id?: string | null
           created_at?: string
           data_fim?: string | null
           data_inicio?: string | null
@@ -328,6 +462,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
           {
@@ -394,9 +535,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_company_ids: { Args: { _user_id: string }; Returns: string[] }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      user_belongs_to_company: {
+        Args: { _company_id: string; _user_id: string }
+        Returns: boolean
+      }
+      user_has_company_role: {
+        Args: {
+          _company_id: string
+          _role: Database["public"]["Enums"]["membership_role"]
           _user_id: string
         }
         Returns: boolean
@@ -414,6 +568,7 @@ export type Database = {
       campaign_status: "ativa" | "pausada" | "concluida"
       document_type: "contrato" | "proposta" | "relatorio" | "outros"
       finance_type: "receita" | "despesa"
+      membership_role: "owner" | "admin" | "manager" | "member" | "viewer"
       project_status:
         | "planejamento"
         | "em_andamento"
@@ -559,6 +714,7 @@ export const Constants = {
       campaign_status: ["ativa", "pausada", "concluida"],
       document_type: ["contrato", "proposta", "relatorio", "outros"],
       finance_type: ["receita", "despesa"],
+      membership_role: ["owner", "admin", "manager", "member", "viewer"],
       project_status: [
         "planejamento",
         "em_andamento",
