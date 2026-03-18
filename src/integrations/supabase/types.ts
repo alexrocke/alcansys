@@ -106,6 +106,50 @@ export type Database = {
           },
         ]
       }
+      channels: {
+        Row: {
+          ativo: boolean
+          company_id: string
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          status: Database["public"]["Enums"]["channel_status"]
+          tipo: Database["public"]["Enums"]["channel_type"]
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          company_id: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          status?: Database["public"]["Enums"]["channel_status"]
+          tipo?: Database["public"]["Enums"]["channel_type"]
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          company_id?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          status?: Database["public"]["Enums"]["channel_status"]
+          tipo?: Database["public"]["Enums"]["channel_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "channels_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           area: string | null
@@ -596,6 +640,78 @@ export type Database = {
           },
         ]
       }
+      whatsapp_instances: {
+        Row: {
+          api_token: string | null
+          channel_id: string
+          company_id: string
+          created_at: string
+          error_message: string | null
+          id: string
+          instance_name: string
+          last_sync: string | null
+          messages_received: number
+          messages_sent: number
+          metadata: Json | null
+          phone_number: string | null
+          qr_code: string | null
+          status: Database["public"]["Enums"]["channel_status"]
+          updated_at: string
+          webhook_url: string | null
+        }
+        Insert: {
+          api_token?: string | null
+          channel_id: string
+          company_id: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          instance_name: string
+          last_sync?: string | null
+          messages_received?: number
+          messages_sent?: number
+          metadata?: Json | null
+          phone_number?: string | null
+          qr_code?: string | null
+          status?: Database["public"]["Enums"]["channel_status"]
+          updated_at?: string
+          webhook_url?: string | null
+        }
+        Update: {
+          api_token?: string | null
+          channel_id?: string
+          company_id?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          instance_name?: string
+          last_sync?: string | null
+          messages_received?: number
+          messages_sent?: number
+          metadata?: Json | null
+          phone_number?: string | null
+          qr_code?: string | null
+          status?: Database["public"]["Enums"]["channel_status"]
+          updated_at?: string
+          webhook_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_instances_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_instances_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -632,6 +748,13 @@ export type Database = {
       app_role: "admin" | "gestor" | "colaborador" | "financeiro" | "marketing"
       automation_status: "ativa" | "inativa"
       campaign_status: "ativa" | "pausada" | "concluida"
+      channel_status:
+        | "connected"
+        | "disconnected"
+        | "connecting"
+        | "error"
+        | "pending"
+      channel_type: "whatsapp" | "telegram" | "email" | "sms" | "webchat"
       document_type: "contrato" | "proposta" | "relatorio" | "outros"
       finance_type: "receita" | "despesa"
       membership_role: "owner" | "admin" | "manager" | "member" | "viewer"
@@ -780,6 +903,14 @@ export const Constants = {
       app_role: ["admin", "gestor", "colaborador", "financeiro", "marketing"],
       automation_status: ["ativa", "inativa"],
       campaign_status: ["ativa", "pausada", "concluida"],
+      channel_status: [
+        "connected",
+        "disconnected",
+        "connecting",
+        "error",
+        "pending",
+      ],
+      channel_type: ["whatsapp", "telegram", "email", "sms", "webchat"],
       document_type: ["contrato", "proposta", "relatorio", "outros"],
       finance_type: ["receita", "despesa"],
       membership_role: ["owner", "admin", "manager", "member", "viewer"],
