@@ -14,6 +14,7 @@ import { Loader2 } from 'lucide-react';
 
 const financeSchema = z.object({
   tipo: z.enum(['receita', 'despesa']),
+  natureza: z.enum(['fixo', 'variavel']),
   descricao: z.string().min(1, 'Descrição é obrigatória').max(500),
   valor: z.string().min(1, 'Valor é obrigatório'),
   area: z.string().optional().nullable(),
@@ -41,6 +42,7 @@ export function FinanceForm({ finance, onSuccess, onCancel }: FinanceFormProps) 
     resolver: zodResolver(financeSchema),
     defaultValues: {
       tipo: finance?.tipo || 'receita',
+      natureza: finance?.natureza || 'variavel',
       descricao: finance?.descricao || '',
       valor: finance?.valor?.toString() || '',
       area: finance?.area || null,
@@ -79,6 +81,7 @@ export function FinanceForm({ finance, onSuccess, onCancel }: FinanceFormProps) 
     try {
       const financeData = {
         tipo: data.tipo,
+        natureza: data.natureza,
         descricao: data.descricao,
         valor: parseFloat(data.valor),
         area: data.area || null,
@@ -125,7 +128,7 @@ export function FinanceForm({ finance, onSuccess, onCancel }: FinanceFormProps) 
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label htmlFor="tipo">Tipo *</Label>
           <Select
@@ -138,6 +141,22 @@ export function FinanceForm({ finance, onSuccess, onCancel }: FinanceFormProps) 
             <SelectContent>
               <SelectItem value="receita">Receita</SelectItem>
               <SelectItem value="despesa">Despesa</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="natureza">Natureza *</Label>
+          <Select
+            value={watch('natureza')}
+            onValueChange={(value) => setValue('natureza', value as any)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="fixo">Fixo</SelectItem>
+              <SelectItem value="variavel">Variável</SelectItem>
             </SelectContent>
           </Select>
         </div>

@@ -1,43 +1,26 @@
 import { useState } from 'react';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { MoreVertical, Pencil, Trash2, Loader2, ListChecks } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { MoreVertical, Pencil, Trash2, Loader2, ListChecks, Package } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { ProjectTasks } from './ProjectTasks';
+import { ConvertToProductForm } from './ConvertToProductForm';
 
 interface ProjectListProps {
   projects: any[];
+  projectCosts?: Record<string, number>;
   isLoading: boolean;
   onEdit: (project: any) => void;
   onRefetch: () => void;
@@ -57,10 +40,11 @@ const statusLabels = {
   cancelado: 'Cancelado',
 };
 
-export function ProjectList({ projects, isLoading, onEdit, onRefetch }: ProjectListProps) {
+export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefetch }: ProjectListProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [tasksProject, setTasksProject] = useState<any>(null);
+  const [convertProject, setConvertProject] = useState<any>(null);
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -134,6 +118,7 @@ export function ProjectList({ projects, isLoading, onEdit, onRefetch }: ProjectL
               <TableHead>Status</TableHead>
               <TableHead>Gestor</TableHead>
               <TableHead>Orçamento</TableHead>
+              <TableHead>Custo Real</TableHead>
               <TableHead>Início</TableHead>
               <TableHead>Fim</TableHead>
               <TableHead className="w-12"></TableHead>
@@ -152,6 +137,18 @@ export function ProjectList({ projects, isLoading, onEdit, onRefetch }: ProjectL
                 </TableCell>
                 <TableCell>{project.gestor?.nome || '-'}</TableCell>
                 <TableCell>{formatCurrency(project.orcamento)}</TableCell>
+                <TableCell>
+                  {(() => {
+                    const cost = projectCosts?.[project.id] || 0;
+                    const budget = project.orcamento || 0;
+                    const overBudget = budget > 0 && cost > budget;
+                    return (
+                      <span className={overBudget ? 'text-red-500 font-semibold' : 'text-green-500 font-semibold'}>
+                        {cost > 0 ? formatCurrency(cost) : '-'}
+                      </span>
+                    );
+                  })()}
+                </TableCell>
                 <TableCell>{formatDate(project.data_inicio)}</TableCell>
                 <TableCell>{formatDate(project.data_fim)}</TableCell>
                 <TableCell>
@@ -170,6 +167,12 @@ export function ProjectList({ projects, isLoading, onEdit, onRefetch }: ProjectL
                         <Pencil className="h-4 w-4 mr-2" />
                         Editar
                       </DropdownMenuItem>
+                      {project.status === 'concluido' && (
+                        <DropdownMenuItem onClick={() => setConvertProject(project)}>
+                          <Package className="h-4 w-4 mr-2" />
+                          Converter em Produto
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem
                         onClick={() => setDeleteId(project.id)}
                         className="text-destructive"
@@ -219,6 +222,22 @@ export function ProjectList({ projects, isLoading, onEdit, onRefetch }: ProjectL
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Convert to Product Dialog */}
+      <Dialog open={!!convertProject} onOpenChange={() => setConvertProject(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Converter em Produto</DialogTitle>
+          </DialogHeader>
+          {convertProject && (
+            <ConvertToProductForm
+              project={convertProject}
+              onSuccess={() => { setConvertProject(null); onRefetch(); }}
+              onCancel={() => setConvertProject(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

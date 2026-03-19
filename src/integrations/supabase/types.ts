@@ -534,6 +534,7 @@ export type Database = {
           data: string
           descricao: string
           id: string
+          natureza: Database["public"]["Enums"]["finance_nature"]
           project_id: string | null
           tipo: Database["public"]["Enums"]["finance_type"]
           updated_at: string
@@ -546,6 +547,7 @@ export type Database = {
           data?: string
           descricao: string
           id?: string
+          natureza?: Database["public"]["Enums"]["finance_nature"]
           project_id?: string | null
           tipo: Database["public"]["Enums"]["finance_type"]
           updated_at?: string
@@ -558,6 +560,7 @@ export type Database = {
           data?: string
           descricao?: string
           id?: string
+          natureza?: Database["public"]["Enums"]["finance_nature"]
           project_id?: string | null
           tipo?: Database["public"]["Enums"]["finance_type"]
           updated_at?: string
@@ -835,6 +838,60 @@ export type Database = {
             columns: ["sender_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          ativo: boolean
+          categoria: string | null
+          company_id: string | null
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          preco: number | null
+          project_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          categoria?: string | null
+          company_id?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          preco?: number | null
+          project_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          categoria?: string | null
+          company_id?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          preco?: number | null
+          project_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -1323,6 +1380,7 @@ export type Database = {
         | "resolvida"
         | "arquivada"
       document_type: "contrato" | "proposta" | "relatorio" | "outros"
+      finance_nature: "fixo" | "variavel"
       finance_type: "receita" | "despesa"
       invoice_status: "pendente" | "pago" | "vencido" | "cancelado"
       lead_origin:
@@ -1515,6 +1573,7 @@ export const Constants = {
         "arquivada",
       ],
       document_type: ["contrato", "proposta", "relatorio", "outros"],
+      finance_nature: ["fixo", "variavel"],
       finance_type: ["receita", "despesa"],
       invoice_status: ["pendente", "pago", "vencido", "cancelado"],
       lead_origin: [

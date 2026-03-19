@@ -22,12 +22,13 @@ export default function Financeiro() {
   const [editingFinance, setEditingFinance] = useState<any>(null);
   const [areaFilter, setAreaFilter] = useState<string>('all');
   const [tipoFilter, setTipoFilter] = useState<string>('all');
+  const [naturezaFilter, setNaturezaFilter] = useState<string>('all');
   const [mesFilter, setMesFilter] = useState<string>(format(new Date(), 'yyyy-MM'));
   const { currentCompany } = useCompany();
   const companyId = currentCompany?.id;
 
   const { data: finances, isLoading, refetch } = useQuery({
-    queryKey: ['finances', companyId, areaFilter, tipoFilter, mesFilter],
+    queryKey: ['finances', companyId, areaFilter, tipoFilter, naturezaFilter, mesFilter],
     queryFn: async () => {
       if (!companyId) return [];
       let query = supabase
@@ -42,6 +43,10 @@ export default function Financeiro() {
 
       if (tipoFilter !== 'all') {
         query = query.eq('tipo', tipoFilter as 'receita' | 'despesa');
+      }
+
+      if (naturezaFilter !== 'all') {
+        query = query.eq('natureza', naturezaFilter as 'fixo' | 'variavel');
       }
 
       const startDate = startOfMonth(new Date(mesFilter + '-01'));
@@ -246,6 +251,16 @@ export default function Financeiro() {
             <SelectItem value="all">Todos os tipos</SelectItem>
             <SelectItem value="receita">Receitas</SelectItem>
             <SelectItem value="despesa">Despesas</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={naturezaFilter} onValueChange={setNaturezaFilter}>
+          <SelectTrigger className="w-full md:w-[180px]">
+            <SelectValue placeholder="Todas as naturezas" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Fixo e Variável</SelectItem>
+            <SelectItem value="fixo">Fixo</SelectItem>
+            <SelectItem value="variavel">Variável</SelectItem>
           </SelectContent>
         </Select>
       </div>
