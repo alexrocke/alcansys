@@ -45,6 +45,10 @@ export default function Financeiro() {
         query = query.eq('tipo', tipoFilter as 'receita' | 'despesa');
       }
 
+      if (naturezaFilter !== 'all') {
+        query = query.eq('natureza', naturezaFilter);
+      }
+
       const startDate = startOfMonth(new Date(mesFilter + '-01'));
       const endDate = endOfMonth(startDate);
       query = query.gte('data', format(startDate, 'yyyy-MM-dd')).lte('data', format(endDate, 'yyyy-MM-dd'));
