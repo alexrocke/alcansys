@@ -135,6 +135,15 @@ export function FinanceList({ finances, isLoading, onEdit, onRefetch }: FinanceL
                     </Badge>
                   )}
                 </TableCell>
+                <TableCell>
+                  <Badge variant="outline" className={
+                    finance.natureza === 'fixo'
+                      ? 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                      : 'bg-orange-500/10 text-orange-500 border-orange-500/20'
+                  }>
+                    {finance.natureza === 'fixo' ? 'Fixo' : 'Variável'}
+                  </Badge>
+                </TableCell>
                 <TableCell className="max-w-xs truncate">
                   {finance.descricao}
                 </TableCell>

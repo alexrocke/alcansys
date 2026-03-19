@@ -128,7 +128,7 @@ export function FinanceForm({ finance, onSuccess, onCancel }: FinanceFormProps) 
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label htmlFor="tipo">Tipo *</Label>
           <Select
@@ -141,6 +141,22 @@ export function FinanceForm({ finance, onSuccess, onCancel }: FinanceFormProps) 
             <SelectContent>
               <SelectItem value="receita">Receita</SelectItem>
               <SelectItem value="despesa">Despesa</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="natureza">Natureza *</Label>
+          <Select
+            value={watch('natureza')}
+            onValueChange={(value) => setValue('natureza', value as any)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="fixo">Fixo</SelectItem>
+              <SelectItem value="variavel">Variável</SelectItem>
             </SelectContent>
           </Select>
         </div>

@@ -253,6 +253,16 @@ export default function Financeiro() {
             <SelectItem value="despesa">Despesas</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={naturezaFilter} onValueChange={setNaturezaFilter}>
+          <SelectTrigger className="w-full md:w-[180px]">
+            <SelectValue placeholder="Todas as naturezas" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Fixo e Variável</SelectItem>
+            <SelectItem value="fixo">Fixo</SelectItem>
+            <SelectItem value="variavel">Variável</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <FinanceCharts finances={finances || []} />
