@@ -341,6 +341,7 @@ function TaskForm({ projectId, companyId, task, onSuccess, onCancel }: TaskFormP
     try {
       const taskData: any = {
         project_id: projectId,
+        company_id: companyId || null,
         titulo: titulo.trim(),
         descricao: descricao.trim() || null,
         status,
