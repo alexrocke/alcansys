@@ -28,6 +28,7 @@ interface AutomationFormProps {
 }
 
 export function AutomationForm({ automation, onSuccess, onCancel }: AutomationFormProps) {
+  const { currentCompany } = useCompany();
   const {
     register,
     handleSubmit,
