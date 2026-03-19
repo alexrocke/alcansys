@@ -53,6 +53,7 @@ function InternalLayout() {
               <Route path="/leads" element={<Leads />} />
               <Route path="/conversas" element={<Conversas />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
+              <Route path="/portal/*" element={<Navigate to="/" replace />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
