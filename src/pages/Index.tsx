@@ -50,15 +50,18 @@ const Index = () => {
 
   // Fetch clients
   const { data: clients } = useQuery({
-    queryKey: ["dashboard-clients"],
+    queryKey: ["dashboard-clients", companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from("clients")
         .select("*")
+        .eq("company_id", companyId)
         .eq("status", "ativo");
       if (error) throw error;
       return data || [];
     },
+    enabled: !!companyId,
   });
 
   // Fetch marketing campaigns
