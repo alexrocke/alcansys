@@ -43,7 +43,7 @@ interface MenuItem {
   allowedRoles: AppRole[];
 }
 
-const allRoles: AppRole[] = ['admin', 'gestor', 'colaborador', 'financeiro', 'marketing'];
+const allRoles: AppRole[] = ['admin', 'gestor', 'colaborador', 'financeiro', 'marketing', 'vendedor'];
 
 const mainItems: MenuItem[] = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard, allowedRoles: allRoles },
