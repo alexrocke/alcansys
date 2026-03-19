@@ -20,6 +20,7 @@ import { ConvertToProductForm } from './ConvertToProductForm';
 
 interface ProjectListProps {
   projects: any[];
+  projectCosts?: Record<string, number>;
   isLoading: boolean;
   onEdit: (project: any) => void;
   onRefetch: () => void;
