@@ -156,6 +156,7 @@ export type Database = {
           config: Json | null
           created_at: string
           id: string
+          prompt: string | null
           status: Database["public"]["Enums"]["client_automation_status"]
           template_id: string
           updated_at: string
@@ -166,6 +167,7 @@ export type Database = {
           config?: Json | null
           created_at?: string
           id?: string
+          prompt?: string | null
           status?: Database["public"]["Enums"]["client_automation_status"]
           template_id: string
           updated_at?: string
@@ -176,6 +178,7 @@ export type Database = {
           config?: Json | null
           created_at?: string
           id?: string
+          prompt?: string | null
           status?: Database["public"]["Enums"]["client_automation_status"]
           template_id?: string
           updated_at?: string
@@ -1228,6 +1231,7 @@ export type Database = {
           id: string
           nome: string
           preco: number | null
+          prompt_template: string | null
           updated_at: string
         }
         Insert: {
@@ -1241,6 +1245,7 @@ export type Database = {
           id?: string
           nome: string
           preco?: number | null
+          prompt_template?: string | null
           updated_at?: string
         }
         Update: {
@@ -1254,6 +1259,7 @@ export type Database = {
           id?: string
           nome?: string
           preco?: number | null
+          prompt_template?: string | null
           updated_at?: string
         }
         Relationships: []
