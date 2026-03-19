@@ -66,15 +66,18 @@ const Index = () => {
 
   // Fetch marketing campaigns
   const { data: campaigns } = useQuery({
-    queryKey: ["dashboard-campaigns"],
+    queryKey: ["dashboard-campaigns", companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from("marketing_campaigns")
         .select("*")
+        .eq("company_id", companyId)
         .eq("status", "ativa");
       if (error) throw error;
       return data || [];
     },
+    enabled: !!companyId,
   });
 
   // Fetch automations
