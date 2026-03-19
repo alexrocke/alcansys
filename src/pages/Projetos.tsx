@@ -7,8 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Plus, Search } from 'lucide-react';
 import { ProjectForm } from '@/components/projetos/ProjectForm';
 import { ProjectList } from '@/components/projetos/ProjectList';
+import { ProductList } from '@/components/projetos/ProductList';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Projetos() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -35,6 +37,31 @@ export default function Projetos() {
 
       if (error) throw error;
       return data;
+    },
+    enabled: !!companyId,
+  });
+
+  // Query project costs from finances
+  const { data: projectCosts } = useQuery({
+    queryKey: ['project-costs', companyId],
+    queryFn: async () => {
+      if (!companyId) return {};
+      const { data, error } = await supabase
+        .from('finances')
+        .select('project_id, valor')
+        .eq('company_id', companyId)
+        .eq('tipo', 'despesa')
+        .not('project_id', 'is', null);
+
+      if (error) throw error;
+
+      const costs: Record<string, number> = {};
+      data?.forEach((f) => {
+        if (f.project_id) {
+          costs[f.project_id] = (costs[f.project_id] || 0) + Number(f.valor);
+        }
+      });
+      return costs;
     },
     enabled: !!companyId,
   });
@@ -81,36 +108,50 @@ export default function Projetos() {
         </Button>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
-        <div className="relative w-full md:max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar projetos..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full md:w-[200px]">
-            <SelectValue placeholder="Filtrar por status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os status</SelectItem>
-            <SelectItem value="planejamento">Planejamento</SelectItem>
-            <SelectItem value="em_andamento">Em Andamento</SelectItem>
-            <SelectItem value="concluido">Concluído</SelectItem>
-            <SelectItem value="cancelado">Cancelado</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <Tabs defaultValue="projetos" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="projetos">Projetos</TabsTrigger>
+          <TabsTrigger value="produtos">Produtos</TabsTrigger>
+        </TabsList>
 
-      <ProjectList
-        projects={filteredProjects || []}
-        isLoading={isLoading}
-        onEdit={handleEdit}
-        onRefetch={refetch}
-      />
+        <TabsContent value="projetos" className="space-y-4">
+          <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
+            <div className="relative w-full md:max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar projetos..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full md:w-[200px]">
+                <SelectValue placeholder="Filtrar por status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="planejamento">Planejamento</SelectItem>
+                <SelectItem value="em_andamento">Em Andamento</SelectItem>
+                <SelectItem value="concluido">Concluído</SelectItem>
+                <SelectItem value="cancelado">Cancelado</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <ProjectList
+            projects={filteredProjects || []}
+            projectCosts={projectCosts || {}}
+            isLoading={isLoading}
+            onEdit={handleEdit}
+            onRefetch={refetch}
+          />
+        </TabsContent>
+
+        <TabsContent value="produtos">
+          <ProductList />
+        </TabsContent>
+      </Tabs>
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">

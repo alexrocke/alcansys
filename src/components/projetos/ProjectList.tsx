@@ -222,6 +222,22 @@ export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefet
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Convert to Product Dialog */}
+      <Dialog open={!!convertProject} onOpenChange={() => setConvertProject(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Converter em Produto</DialogTitle>
+          </DialogHeader>
+          {convertProject && (
+            <ConvertToProductForm
+              project={convertProject}
+              onSuccess={() => { setConvertProject(null); onRefetch(); }}
+              onCancel={() => setConvertProject(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
