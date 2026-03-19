@@ -33,6 +33,7 @@ interface ProjectFormProps {
 }
 
 export function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) {
+  const { currentCompany } = useCompany();
   const {
     register,
     handleSubmit,
