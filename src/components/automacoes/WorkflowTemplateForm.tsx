@@ -39,6 +39,7 @@ export function WorkflowTemplateForm({ template, onSuccess, onCancel }: Props) {
       descricao: template?.descricao || '',
       categoria: template?.categoria || 'atendimento',
       preco: template?.preco?.toString() || '',
+      prompt_template: template?.prompt_template || '',
       ativo: template?.ativo ?? true,
     },
   });
