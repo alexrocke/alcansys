@@ -53,6 +53,7 @@ function InternalLayout() {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/projetos" element={<Projetos />} />
+              <Route path="/tarefas" element={<Tarefas />} />
               <Route path="/financeiro" element={<Financeiro />} />
               <Route path="/clientes" element={<Clientes />} />
               <Route path="/equipe" element={<Equipe />} />
