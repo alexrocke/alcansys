@@ -16,15 +16,18 @@ const Index = () => {
 
   // Fetch projects
   const { data: projects } = useQuery({
-    queryKey: ["dashboard-projects"],
+    queryKey: ["dashboard-projects", companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from("projects")
         .select("*")
+        .eq("company_id", companyId)
         .in("status", ["em_andamento", "planejamento"]);
       if (error) throw error;
       return data || [];
     },
+    enabled: !!companyId,
   });
 
   // Fetch finances for current month
