@@ -46,7 +46,7 @@ export default function Financeiro() {
       }
 
       if (naturezaFilter !== 'all') {
-        query = query.eq('natureza', naturezaFilter);
+        query = query.eq('natureza', naturezaFilter as 'fixo' | 'variavel');
       }
 
       const startDate = startOfMonth(new Date(mesFilter + '-01'));
