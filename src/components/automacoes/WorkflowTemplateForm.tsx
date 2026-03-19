@@ -16,6 +16,7 @@ const schema = z.object({
   descricao: z.string().max(500).optional().or(z.literal('')),
   categoria: z.enum(['atendimento', 'vendas', 'marketing', 'suporte']),
   preco: z.string().optional().or(z.literal('')),
+  prompt_template: z.string().optional().or(z.literal('')),
   ativo: z.boolean(),
 });
 
