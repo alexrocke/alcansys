@@ -62,6 +62,7 @@ export function WorkflowTemplateForm({ template, onSuccess, onCancel }: Props) {
         descricao: data.descricao || null,
         categoria: data.categoria,
         preco: data.preco ? parseFloat(data.preco) : 0,
+        prompt_template: data.prompt_template || null,
         ativo: data.ativo,
         features: features,
       };
