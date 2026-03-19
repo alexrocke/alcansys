@@ -2,10 +2,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { AuthProvider } from "@/hooks/useAuth";
+import { PortalSidebar } from "@/components/portal/PortalSidebar";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { CompanyProvider } from "@/hooks/useCompany";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -22,8 +23,79 @@ import Leads from "./pages/Leads";
 import Conversas from "./pages/Conversas";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import PortalServicos from "./pages/portal/PortalServicos";
+import PortalAutomacoes from "./pages/portal/PortalAutomacoes";
+import PortalFaturas from "./pages/portal/PortalFaturas";
+import PortalSistemas from "./pages/portal/PortalSistemas";
 
 const queryClient = new QueryClient();
+
+function InternalLayout() {
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col">
+          <header className="h-14 border-b border-border bg-background flex items-center px-4">
+            <SidebarTrigger />
+          </header>
+          <main className="flex-1 overflow-auto">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/projetos" element={<Projetos />} />
+              <Route path="/financeiro" element={<Financeiro />} />
+              <Route path="/clientes" element={<Clientes />} />
+              <Route path="/equipe" element={<Equipe />} />
+              <Route path="/marketing" element={<Marketing />} />
+              <Route path="/automacoes" element={<Automacoes />} />
+              <Route path="/whatsapp" element={<WhatsAppPage />} />
+              <Route path="/documentos" element={<Documentos />} />
+              <Route path="/leads" element={<Leads />} />
+              <Route path="/conversas" element={<Conversas />} />
+              <Route path="/configuracoes" element={<Configuracoes />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+}
+
+function PortalLayout() {
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <PortalSidebar />
+        <div className="flex-1 flex flex-col">
+          <header className="h-14 border-b border-border bg-background flex items-center px-4">
+            <SidebarTrigger />
+          </header>
+          <main className="flex-1 overflow-auto">
+            <Routes>
+              <Route path="/portal/servicos" element={<PortalServicos />} />
+              <Route path="/portal/automacoes" element={<PortalAutomacoes />} />
+              <Route path="/portal/faturas" element={<PortalFaturas />} />
+              <Route path="/portal/sistemas" element={<PortalSistemas />} />
+              <Route path="*" element={<Navigate to="/portal/servicos" replace />} />
+            </Routes>
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+}
+
+function AppRoutes() {
+  const { userRole } = useAuth();
+  const isClientPortal = !userRole; // No app_role = client user
+
+  return (
+    <CompanyProvider>
+      {isClientPortal ? <PortalLayout /> : <InternalLayout />}
+    </CompanyProvider>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -38,36 +110,7 @@ const App = () => (
               path="/*"
               element={
                 <ProtectedRoute>
-                  <CompanyProvider>
-                    <SidebarProvider>
-                      <div className="flex min-h-screen w-full">
-                        <AppSidebar />
-                        <div className="flex-1 flex flex-col">
-                          <header className="h-14 border-b border-border bg-background flex items-center px-4">
-                            <SidebarTrigger />
-                          </header>
-                          <main className="flex-1 overflow-auto">
-                            <Routes>
-                              <Route path="/" element={<Index />} />
-                              <Route path="/projetos" element={<Projetos />} />
-                              <Route path="/financeiro" element={<Financeiro />} />
-                              <Route path="/clientes" element={<Clientes />} />
-                              <Route path="/equipe" element={<Equipe />} />
-                              <Route path="/marketing" element={<Marketing />} />
-                              <Route path="/automacoes" element={<Automacoes />} />
-                              <Route path="/whatsapp" element={<WhatsAppPage />} />
-                              <Route path="/documentos" element={<Documentos />} />
-                              <Route path="/leads" element={<Leads />} />
-                              <Route path="/conversas" element={<Conversas />} />
-                              <Route path="/configuracoes" element={<Configuracoes />} />
-                              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                              <Route path="*" element={<NotFound />} />
-                            </Routes>
-                          </main>
-                        </div>
-                      </div>
-                    </SidebarProvider>
-                  </CompanyProvider>
+                  <AppRoutes />
                 </ProtectedRoute>
               }
             />

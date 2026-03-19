@@ -33,34 +33,49 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 
-const mainItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "Projetos", url: "/projetos", icon: FolderKanban },
-  { title: "Financeiro", url: "/financeiro", icon: DollarSign },
-  { title: "Leads & CRM", url: "/leads", icon: Contact },
-  { title: "Conversas", url: "/conversas", icon: MessagesSquare },
-  { title: "Marketing", url: "/marketing", icon: TrendingUp },
-  { title: "Automações", url: "/automacoes", icon: Zap },
-  { title: "WhatsApp", url: "/whatsapp", icon: MessageCircle },
-  { title: "Clientes", url: "/clientes", icon: Users },
-  { title: "Documentos", url: "/documentos", icon: FileText },
-  { title: "Equipe", url: "/equipe", icon: UsersRound },
+type AppRole = 'admin' | 'gestor' | 'colaborador' | 'financeiro' | 'marketing';
+
+interface MenuItem {
+  title: string;
+  url: string;
+  icon: React.ComponentType<{ className?: string }>;
+  allowedRoles: AppRole[];
+}
+
+const allRoles: AppRole[] = ['admin', 'gestor', 'colaborador', 'financeiro', 'marketing'];
+
+const mainItems: MenuItem[] = [
+  { title: "Dashboard", url: "/", icon: LayoutDashboard, allowedRoles: allRoles },
+  { title: "Projetos", url: "/projetos", icon: FolderKanban, allowedRoles: ['admin', 'gestor', 'colaborador'] },
+  { title: "Financeiro", url: "/financeiro", icon: DollarSign, allowedRoles: ['admin', 'financeiro'] },
+  { title: "Leads & CRM", url: "/leads", icon: Contact, allowedRoles: ['admin', 'gestor', 'marketing'] },
+  { title: "Conversas", url: "/conversas", icon: MessagesSquare, allowedRoles: ['admin', 'gestor', 'marketing'] },
+  { title: "Marketing", url: "/marketing", icon: TrendingUp, allowedRoles: ['admin', 'marketing'] },
+  { title: "Automações", url: "/automacoes", icon: Zap, allowedRoles: ['admin', 'marketing'] },
+  { title: "WhatsApp", url: "/whatsapp", icon: MessageCircle, allowedRoles: ['admin'] },
+  { title: "Clientes", url: "/clientes", icon: Users, allowedRoles: ['admin', 'gestor', 'financeiro'] },
+  { title: "Documentos", url: "/documentos", icon: FileText, allowedRoles: ['admin', 'gestor', 'colaborador', 'financeiro'] },
+  { title: "Equipe", url: "/equipe", icon: UsersRound, allowedRoles: ['admin', 'gestor'] },
 ];
 
-const settingsItems = [
-  { title: "Configurações", url: "/configuracoes", icon: Settings },
+const settingsItems: MenuItem[] = [
+  { title: "Configurações", url: "/configuracoes", icon: Settings, allowedRoles: ['admin'] },
 ];
 
 export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
-  const { signOut } = useAuth();
+  const { signOut, userRole } = useAuth();
   const currentPath = location.pathname;
+  const role = (userRole as AppRole) || 'colaborador';
 
   const isActive = (path: string) => {
     if (path === "/") return currentPath === "/";
     return currentPath.startsWith(path);
   };
+
+  const visibleMain = mainItems.filter((item) => item.allowedRoles.includes(role));
+  const visibleSettings = settingsItems.filter((item) => item.allowedRoles.includes(role));
 
   return (
     <Sidebar className="border-r border-border">
@@ -87,7 +102,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainItems.map((item) => (
+              {visibleMain.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink 
@@ -106,27 +121,29 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Sistema</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {settingsItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink 
-                      to={item.url}
-                      className="flex items-center gap-3"
-                      activeClassName="bg-primary/10 text-primary font-semibold"
-                    >
-                      <item.icon className="h-5 w-5" />
-                      {open && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {visibleSettings.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Sistema</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {visibleSettings.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                      <NavLink 
+                        to={item.url}
+                        className="flex items-center gap-3"
+                        activeClassName="bg-primary/10 text-primary font-semibold"
+                      >
+                        <item.icon className="h-5 w-5" />
+                        {open && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="p-4">
