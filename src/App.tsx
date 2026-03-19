@@ -57,6 +57,8 @@ const App = () => (
                               <Route path="/automacoes" element={<Automacoes />} />
                               <Route path="/whatsapp" element={<WhatsAppPage />} />
                               <Route path="/documentos" element={<Documentos />} />
+                              <Route path="/leads" element={<Leads />} />
+                              <Route path="/conversas" element={<Conversas />} />
                               <Route path="/configuracoes" element={<Configuracoes />} />
                               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                               <Route path="*" element={<NotFound />} />
