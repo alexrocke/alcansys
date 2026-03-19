@@ -1,7 +1,8 @@
 import { 
   LayoutDashboard, 
   FolderKanban, 
-  DollarSign, 
+  DollarSign,
+  ListChecks,
   TrendingUp, 
   Zap, 
   Users, 
