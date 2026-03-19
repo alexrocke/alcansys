@@ -47,7 +47,7 @@ export function ClientAutomationManager() {
   const { data: templates } = useQuery({
     queryKey: ['workflow-templates-active'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('workflow_templates').select('id, nome').eq('ativo', true).order('nome');
+      const { data, error } = await supabase.from('workflow_templates').select('id, nome, prompt_template').eq('ativo', true).order('nome');
       if (error) throw error;
       return data;
     },
