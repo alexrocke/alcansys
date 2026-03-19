@@ -64,9 +64,10 @@ const priorityLabels: Record<string, string> = {
 interface ProjectTasksProps {
   projectId: string;
   projectName: string;
+  companyId?: string;
 }
 
-export function ProjectTasks({ projectId, projectName }: ProjectTasksProps) {
+export function ProjectTasks({ projectId, projectName, companyId }: ProjectTasksProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
   const queryClient = useQueryClient();
@@ -289,6 +290,7 @@ export function ProjectTasks({ projectId, projectName }: ProjectTasksProps) {
           </DialogHeader>
           <TaskForm
             projectId={projectId}
+            companyId={companyId}
             task={editingTask}
             onSuccess={handleSuccess}
             onCancel={handleCloseForm}
@@ -302,12 +304,13 @@ export function ProjectTasks({ projectId, projectName }: ProjectTasksProps) {
 // ---- Task Form ----
 interface TaskFormProps {
   projectId: string;
+  companyId?: string;
   task?: any;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-function TaskForm({ projectId, task, onSuccess, onCancel }: TaskFormProps) {
+function TaskForm({ projectId, companyId, task, onSuccess, onCancel }: TaskFormProps) {
   const [titulo, setTitulo] = useState(task?.titulo || '');
   const [descricao, setDescricao] = useState(task?.descricao || '');
   const [status, setStatus] = useState(task?.status || 'pendente');
@@ -338,6 +341,7 @@ function TaskForm({ projectId, task, onSuccess, onCancel }: TaskFormProps) {
     try {
       const taskData: any = {
         project_id: projectId,
+        company_id: companyId || null,
         titulo: titulo.trim(),
         descricao: descricao.trim() || null,
         status,

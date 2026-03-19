@@ -196,7 +196,7 @@ export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefet
             <DialogTitle>Tarefas — {tasksProject?.nome}</DialogTitle>
           </DialogHeader>
           {tasksProject && (
-            <ProjectTasks projectId={tasksProject.id} projectName={tasksProject.nome} />
+            <ProjectTasks projectId={tasksProject.id} projectName={tasksProject.nome} companyId={tasksProject.company_id} />
           )}
         </DialogContent>
       </Dialog>
