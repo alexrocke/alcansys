@@ -30,6 +30,7 @@ interface FinanceFormProps {
 }
 
 export function FinanceForm({ finance, onSuccess, onCancel }: FinanceFormProps) {
+  const { currentCompany } = useCompany();
   const {
     register,
     handleSubmit,
