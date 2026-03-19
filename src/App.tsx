@@ -136,10 +136,11 @@ function AppRoutes() {
   }
 
   const isClientPortal = !userRole;
+  const isVendedor = userRole === 'vendedor';
 
   return (
     <CompanyProvider>
-      {isClientPortal ? <PortalLayout /> : <InternalLayout />}
+      {isClientPortal ? <PortalLayout /> : isVendedor ? <VendedorLayout /> : <InternalLayout />}
     </CompanyProvider>
   );
 }
