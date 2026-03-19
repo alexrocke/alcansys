@@ -61,21 +61,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const fetchUserData = async (userId: string) => {
+    setRoleLoading(true);
     try {
       const [profileResult, roleResult] = await Promise.all([
-        supabase.from('profiles').select('status').eq('id', userId).single(),
-        supabase.from('user_roles').select('role').eq('user_id', userId).single()
+        supabase.from('profiles').select('status').eq('id', userId).maybeSingle(),
+        supabase.from('user_roles').select('role').eq('user_id', userId).maybeSingle()
       ]);
 
-      if (profileResult.data) {
-        setUserStatus(profileResult.data.status);
-      }
-      
-      if (roleResult.data) {
-        setUserRole(roleResult.data.role);
-      }
+      setUserStatus(profileResult.data?.status ?? null);
+      setUserRole(roleResult.data?.role ?? null);
     } catch (error) {
       console.error('Error fetching user data:', error);
+    } finally {
+      setRoleLoading(false);
     }
   };
 
