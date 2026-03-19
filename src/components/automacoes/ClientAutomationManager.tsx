@@ -58,6 +58,7 @@ export function ClientAutomationManager() {
     const { error } = await supabase.from('client_automations').insert([{
       company_id: selectedCompany,
       template_id: selectedTemplate,
+      prompt: clientPrompt || null,
       status: 'configurando',
     }]);
     if (error) {
