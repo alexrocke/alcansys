@@ -2,6 +2,7 @@ import { LayoutDashboard, Contact, DollarSign, Users, LogOut } from "lucide-reac
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import logoIcon from "@/assets/logo-icon.png";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar, SidebarFooter,
