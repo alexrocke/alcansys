@@ -50,6 +50,7 @@ export function LeadForm({ lead, companyId, onSuccess, onCancel }: LeadFormProps
       responsavel_id: lead?.responsavel_id || '',
       notas: lead?.notas || '',
       tags: lead?.tags?.join(', ') || '',
+      salesperson_id: lead?.salesperson_id || '',
     },
   });
 
