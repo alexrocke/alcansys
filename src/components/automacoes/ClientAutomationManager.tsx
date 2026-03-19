@@ -69,6 +69,7 @@ export function ClientAutomationManager() {
       setIsAssigning(false);
       setSelectedCompany('');
       setSelectedTemplate('');
+      setClientPrompt('');
     }
   };
 
