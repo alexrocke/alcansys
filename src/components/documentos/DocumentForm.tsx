@@ -30,6 +30,7 @@ interface DocumentFormProps {
 
 export function DocumentForm({ document, onSuccess, onCancel }: DocumentFormProps) {
   const { user } = useAuth();
+  const { currentCompany } = useCompany();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
