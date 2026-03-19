@@ -64,9 +64,10 @@ const priorityLabels: Record<string, string> = {
 interface ProjectTasksProps {
   projectId: string;
   projectName: string;
+  companyId?: string;
 }
 
-export function ProjectTasks({ projectId, projectName }: ProjectTasksProps) {
+export function ProjectTasks({ projectId, projectName, companyId }: ProjectTasksProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
   const queryClient = useQueryClient();
