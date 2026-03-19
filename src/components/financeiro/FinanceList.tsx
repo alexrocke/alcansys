@@ -108,6 +108,7 @@ export function FinanceList({ finances, isLoading, onEdit, onRefetch }: FinanceL
             <TableRow className="bg-muted/50">
               <TableHead>Data</TableHead>
               <TableHead>Tipo</TableHead>
+              <TableHead>Natureza</TableHead>
               <TableHead>Descrição</TableHead>
               <TableHead>Área</TableHead>
               <TableHead>Projeto</TableHead>
