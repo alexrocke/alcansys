@@ -99,6 +99,31 @@ function PortalLayout() {
   );
 }
 
+function VendedorLayout() {
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <VendedorSidebar />
+        <div className="flex-1 flex flex-col">
+          <header className="h-14 border-b border-border bg-background flex items-center justify-between px-4">
+            <SidebarTrigger />
+            <ThemeToggle />
+          </header>
+          <main className="flex-1 overflow-auto">
+            <Routes>
+              <Route path="/vendedor" element={<VendedorDashboard />} />
+              <Route path="/vendedor/leads" element={<VendedorLeads />} />
+              <Route path="/vendedor/comissoes" element={<VendedorComissoes />} />
+              <Route path="/vendedor/clientes" element={<VendedorClientes />} />
+              <Route path="*" element={<Navigate to="/vendedor" replace />} />
+            </Routes>
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+}
+
 function AppRoutes() {
   const { userRole, roleLoading } = useAuth();
 
