@@ -1,46 +1,61 @@
 
 
-## Plan: Popular Catálogo de Workflow Templates + Campo de Prompt
+## Plan: Campo Fixo/Variável em Transações + Preview de Custos e Produtos em Projetos
 
-### O que será feito
+### Resumo
 
-Inserir **8 templates de workflow pré-configurados** diretamente na tabela `workflow_templates` via SQL insert, e adicionar um **campo "Prompt da IA"** ao formulário de template para que cada empresa possa ter seu prompt personalizado quando o workflow for atribuído.
+Duas mudanças principais:
+1. **Financeiro**: Adicionar campo "Natureza" (fixo/variável) nas transações
+2. **Projetos**: Adicionar preview financeiro (custos acumulados) e conceito de "Produto" — quando projeto fica concluído, pode ser convertido em produto
 
-### Templates a criar
+---
 
-| Nome | Categoria | Preço | Features |
-|------|-----------|-------|----------|
-| Agente SDR | vendas | R$ 297/mês | Qualificação automática de leads, Agendamento de reuniões, Follow-up inteligente, Integração com CRM |
-| Atendimento com IA 24h | atendimento | R$ 397/mês | Respostas automáticas 24/7, Entendimento de linguagem natural, Handoff para humano, Histórico de conversas |
-| Follow-up Automático | vendas | R$ 197/mês | Sequências de follow-up personalizadas, Gatilhos por tempo e evento, Templates de mensagem, Relatórios de conversão |
-| Pesquisa de Satisfação (NPS) | suporte | R$ 147/mês | Envio automático pós-atendimento, Escala NPS configurável, Dashboard de resultados, Alertas de detratores |
-| Recuperação de Carrinho | marketing | R$ 247/mês | Detecção de abandono, Sequência de recuperação, Cupons automáticos, Métricas de recuperação |
-| Agendamento Inteligente | atendimento | R$ 197/mês | Calendário integrado, Confirmação automática, Lembretes antes do horário, Reagendamento por WhatsApp |
-| Cobrança Automática | vendas | R$ 197/mês | Lembretes de vencimento, Envio de boleto/PIX, Escalonamento de cobrança, Relatório de inadimplência |
-| Onboarding de Clientes | suporte | R$ 247/mês | Boas-vindas automatizadas, Tutoriais em sequência, Checklist de ativação, Acompanhamento de progresso |
+### Parte 1: Campo Fixo/Variável nas Transações
 
-### Mudanças no banco
+**Migration**: Adicionar coluna `natureza` (tipo enum `finance_nature`: `fixo`, `variavel`) à tabela `finances`, default `variavel`.
 
-1. **Adicionar coluna `prompt_template`** (text, nullable) à tabela `workflow_templates` — campo para o prompt padrão da IA do template
-2. **Adicionar coluna `prompt`** (text, nullable) à tabela `client_automations` — prompt personalizado por empresa/cliente
-3. **INSERT** dos 8 templates acima com features e prompt_template padrão
+**FinanceForm.tsx**: Adicionar Select "Natureza" com opções "Fixo" e "Variável" ao lado do campo Tipo.
 
-### Mudanças no código
+**FinanceList.tsx**: Mostrar badge "Fixo" ou "Variável" na listagem.
 
-**`WorkflowTemplateForm.tsx`**: Adicionar campo `Textarea` para "Prompt da IA" (`prompt_template`) no formulário de criação/edição de templates.
+**Financeiro.tsx**: Adicionar filtro por natureza (fixo/variável/todos).
 
-**`ClientAutomationManager.tsx`**: No dialog de atribuição, adicionar campo `Textarea` para "Prompt personalizado" (`prompt`). Ao atribuir, copiar o `prompt_template` do template como valor inicial do prompt do cliente, permitindo edição.
+---
 
-**`PortalAutomacoes.tsx`**: Mostrar indicação de que o prompt está configurado. O cliente não edita o prompt (apenas admin).
+### Parte 2: Preview Financeiro nos Projetos
 
-### Fluxo funcional
+**ProjectList.tsx**: Adicionar coluna "Custo Real" que soma todas as transações (`finances`) vinculadas ao `project_id`. Mostrar comparação orçamento vs custo real com cor (verde se abaixo, vermelho se acima).
 
-1. Admin vê os 8 templates no catálogo (já criados)
-2. Admin atribui template a uma empresa, personaliza o prompt para aquele cliente
-3. Cliente vê o workflow no portal, gera QR Code via UAZAP para conectar WhatsApp
-4. Sistema usa o prompt configurado para a IA daquele cliente
+**Projetos.tsx**: Na query de projetos, fazer join com `finances` para calcular o total de despesas por projeto.
+
+---
+
+### Parte 3: Produtos (Projetos Concluídos)
+
+**Migration**: Criar tabela `products`:
+- `id`, `nome`, `descricao`, `preco`, `project_id` (FK projects, nullable), `company_id`, `categoria`, `ativo`, `created_at`, `updated_at`
+- RLS: admin pode gerenciar, authenticated pode visualizar ativos
+
+**ProjectList.tsx**: Quando projeto tem status `concluido`, mostrar botão "Converter em Produto" no dropdown. Abre dialog para definir nome, preço e descrição do produto.
+
+**Nova aba/seção em Projetos.tsx**: Adicionar tab "Produtos" mostrando lista de produtos criados a partir de projetos concluídos. Cards com nome, preço, projeto de origem, status ativo/inativo.
+
+---
 
 ### Arquivos
-- **Migration SQL**: adicionar colunas + insert dos 8 templates
-- **Editar**: `WorkflowTemplateForm.tsx`, `ClientAutomationManager.tsx`
+
+**Migration SQL**: 
+- Enum `finance_nature` + coluna `natureza` em `finances`
+- Tabela `products` + RLS
+
+**Editar**:
+- `FinanceForm.tsx` — campo natureza
+- `FinanceList.tsx` — badge natureza
+- `Financeiro.tsx` — filtro natureza
+- `ProjectList.tsx` — preview custo real + botão converter produto
+- `Projetos.tsx` — tab produtos + query custos
+
+**Criar**:
+- `src/components/projetos/ProductList.tsx` — listagem de produtos
+- `src/components/projetos/ConvertToProductForm.tsx` — form de conversão
 
