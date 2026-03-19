@@ -23,6 +23,7 @@ import Documentos from "./pages/Documentos";
 import Configuracoes from "./pages/Configuracoes";
 import Leads from "./pages/Leads";
 import Conversas from "./pages/Conversas";
+import Tarefas from "./pages/Tarefas";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import PortalServicos from "./pages/portal/PortalServicos";
