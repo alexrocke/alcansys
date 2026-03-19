@@ -29,6 +29,12 @@ import PortalServicos from "./pages/portal/PortalServicos";
 import PortalAutomacoes from "./pages/portal/PortalAutomacoes";
 import PortalFaturas from "./pages/portal/PortalFaturas";
 import PortalSistemas from "./pages/portal/PortalSistemas";
+import Vendedores from "./pages/Vendedores";
+import { VendedorSidebar } from "@/components/vendedor-portal/VendedorSidebar";
+import VendedorDashboard from "./pages/vendedor-portal/VendedorDashboard";
+import VendedorLeads from "./pages/vendedor-portal/VendedorLeads";
+import VendedorComissoes from "./pages/vendedor-portal/VendedorComissoes";
+import VendedorClientes from "./pages/vendedor-portal/VendedorClientes";
 
 const queryClient = new QueryClient();
 
