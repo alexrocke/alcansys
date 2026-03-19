@@ -137,6 +137,18 @@ export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefet
                 </TableCell>
                 <TableCell>{project.gestor?.nome || '-'}</TableCell>
                 <TableCell>{formatCurrency(project.orcamento)}</TableCell>
+                <TableCell>
+                  {(() => {
+                    const cost = projectCosts?.[project.id] || 0;
+                    const budget = project.orcamento || 0;
+                    const overBudget = budget > 0 && cost > budget;
+                    return (
+                      <span className={overBudget ? 'text-red-500 font-semibold' : 'text-green-500 font-semibold'}>
+                        {cost > 0 ? formatCurrency(cost) : '-'}
+                      </span>
+                    );
+                  })()}
+                </TableCell>
                 <TableCell>{formatDate(project.data_inicio)}</TableCell>
                 <TableCell>{formatDate(project.data_fim)}</TableCell>
                 <TableCell>
