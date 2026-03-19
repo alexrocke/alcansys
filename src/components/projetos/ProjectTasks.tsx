@@ -303,12 +303,13 @@ export function ProjectTasks({ projectId, projectName, companyId }: ProjectTasks
 // ---- Task Form ----
 interface TaskFormProps {
   projectId: string;
+  companyId?: string;
   task?: any;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-function TaskForm({ projectId, task, onSuccess, onCancel }: TaskFormProps) {
+function TaskForm({ projectId, companyId, task, onSuccess, onCancel }: TaskFormProps) {
   const [titulo, setTitulo] = useState(task?.titulo || '');
   const [descricao, setDescricao] = useState(task?.descricao || '');
   const [status, setStatus] = useState(task?.status || 'pendente');
