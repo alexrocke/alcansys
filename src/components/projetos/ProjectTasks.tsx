@@ -290,6 +290,7 @@ export function ProjectTasks({ projectId, projectName, companyId }: ProjectTasks
           </DialogHeader>
           <TaskForm
             projectId={projectId}
+            companyId={companyId}
             task={editingTask}
             onSuccess={handleSuccess}
             onCancel={handleCloseForm}
