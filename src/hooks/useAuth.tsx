@@ -22,6 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [roleLoading, setRoleLoading] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userStatus, setUserStatus] = useState<string | null>(null);
   const navigate = useNavigate();
