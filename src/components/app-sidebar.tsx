@@ -56,6 +56,7 @@ const mainItems: MenuItem[] = [
   { title: "WhatsApp", url: "/whatsapp", icon: MessageCircle, allowedRoles: ['admin'] },
   { title: "Clientes", url: "/clientes", icon: Users, allowedRoles: ['admin', 'gestor', 'financeiro'] },
   { title: "Documentos", url: "/documentos", icon: FileText, allowedRoles: ['admin', 'gestor', 'colaborador', 'financeiro'] },
+  { title: "Vendedores", url: "/vendedores", icon: BadgeDollarSign, allowedRoles: ['admin', 'gestor'] },
   { title: "Equipe", url: "/equipe", icon: UsersRound, allowedRoles: ['admin', 'gestor'] },
 ];
 
