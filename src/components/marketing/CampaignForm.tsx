@@ -30,6 +30,7 @@ interface CampaignFormProps {
 }
 
 export function CampaignForm({ campaign, onSuccess, onCancel }: CampaignFormProps) {
+  const { currentCompany } = useCompany();
   const {
     register,
     handleSubmit,
