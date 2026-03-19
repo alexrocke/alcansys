@@ -42,6 +42,7 @@ export function FinanceForm({ finance, onSuccess, onCancel }: FinanceFormProps) 
     resolver: zodResolver(financeSchema),
     defaultValues: {
       tipo: finance?.tipo || 'receita',
+      natureza: finance?.natureza || 'variavel',
       descricao: finance?.descricao || '',
       valor: finance?.valor?.toString() || '',
       area: finance?.area || null,
