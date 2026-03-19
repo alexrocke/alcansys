@@ -58,6 +58,7 @@ export function AutomationForm({ automation, onSuccess, onCancel }: AutomationFo
         status: data.status,
         custo: data.custo ? parseFloat(data.custo) : null,
         retorno: data.retorno ? parseFloat(data.retorno) : null,
+        company_id: currentCompany?.id || null,
       };
 
       if (automation) {

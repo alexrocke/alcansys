@@ -62,6 +62,7 @@ export function CampaignForm({ campaign, onSuccess, onCancel }: CampaignFormProp
         roi: data.roi ? parseFloat(data.roi) : null,
         data_inicio: data.data_inicio || null,
         data_fim: data.data_fim || null,
+        company_id: currentCompany?.id || null,
       };
 
       if (campaign) {

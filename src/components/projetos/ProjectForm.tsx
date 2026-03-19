@@ -107,6 +107,7 @@ export function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) 
         data_inicio: data.data_inicio || null,
         data_fim: data.data_fim || null,
         descricao: data.descricao || null,
+        company_id: currentCompany?.id || null,
       };
 
       if (project?.id) {

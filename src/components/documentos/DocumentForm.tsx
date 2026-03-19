@@ -126,6 +126,7 @@ export function DocumentForm({ document, onSuccess, onCancel }: DocumentFormProp
         project_id: data.project_id || null,
         tags: tagsArray.length > 0 ? tagsArray : null,
         autor_id: user?.id,
+        company_id: currentCompany?.id || null,
       };
 
       if (document) {

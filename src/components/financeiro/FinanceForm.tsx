@@ -84,6 +84,7 @@ export function FinanceForm({ finance, onSuccess, onCancel }: FinanceFormProps) 
         area: data.area || null,
         project_id: data.project_id || null,
         data: data.data,
+        company_id: currentCompany?.id || null,
       };
 
       if (finance?.id) {

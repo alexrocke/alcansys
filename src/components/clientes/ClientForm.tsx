@@ -72,6 +72,7 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
         area: data.area,
         plano: data.plano || null,
         status: data.status,
+        company_id: currentCompany?.id || null,
       };
 
       if (client) {
