@@ -29,6 +29,12 @@ import PortalServicos from "./pages/portal/PortalServicos";
 import PortalAutomacoes from "./pages/portal/PortalAutomacoes";
 import PortalFaturas from "./pages/portal/PortalFaturas";
 import PortalSistemas from "./pages/portal/PortalSistemas";
+import Vendedores from "./pages/Vendedores";
+import { VendedorSidebar } from "@/components/vendedor-portal/VendedorSidebar";
+import VendedorDashboard from "./pages/vendedor-portal/VendedorDashboard";
+import VendedorLeads from "./pages/vendedor-portal/VendedorLeads";
+import VendedorComissoes from "./pages/vendedor-portal/VendedorComissoes";
+import VendedorClientes from "./pages/vendedor-portal/VendedorClientes";
 
 const queryClient = new QueryClient();
 
@@ -56,7 +62,9 @@ function InternalLayout() {
               <Route path="/leads" element={<Leads />} />
               <Route path="/conversas" element={<Conversas />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
+              <Route path="/vendedores" element={<Vendedores />} />
               <Route path="/portal/*" element={<Navigate to="/" replace />} />
+              <Route path="/vendedor/*" element={<Navigate to="/" replace />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
@@ -91,6 +99,31 @@ function PortalLayout() {
   );
 }
 
+function VendedorLayout() {
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <VendedorSidebar />
+        <div className="flex-1 flex flex-col">
+          <header className="h-14 border-b border-border bg-background flex items-center justify-between px-4">
+            <SidebarTrigger />
+            <ThemeToggle />
+          </header>
+          <main className="flex-1 overflow-auto">
+            <Routes>
+              <Route path="/vendedor" element={<VendedorDashboard />} />
+              <Route path="/vendedor/leads" element={<VendedorLeads />} />
+              <Route path="/vendedor/comissoes" element={<VendedorComissoes />} />
+              <Route path="/vendedor/clientes" element={<VendedorClientes />} />
+              <Route path="*" element={<Navigate to="/vendedor" replace />} />
+            </Routes>
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+}
+
 function AppRoutes() {
   const { userRole, roleLoading } = useAuth();
 
@@ -103,10 +136,11 @@ function AppRoutes() {
   }
 
   const isClientPortal = !userRole;
+  const isVendedor = userRole === 'vendedor';
 
   return (
     <CompanyProvider>
-      {isClientPortal ? <PortalLayout /> : <InternalLayout />}
+      {isClientPortal ? <PortalLayout /> : isVendedor ? <VendedorLayout /> : <InternalLayout />}
     </CompanyProvider>
   );
 }

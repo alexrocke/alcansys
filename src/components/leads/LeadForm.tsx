@@ -23,6 +23,7 @@ const leadSchema = z.object({
   responsavel_id: z.string().optional().or(z.literal('')),
   notas: z.string().optional().or(z.literal('')),
   tags: z.string().optional().or(z.literal('')),
+  salesperson_id: z.string().optional().or(z.literal('')),
 });
 
 type LeadFormData = z.infer<typeof leadSchema>;
@@ -49,6 +50,7 @@ export function LeadForm({ lead, companyId, onSuccess, onCancel }: LeadFormProps
       responsavel_id: lead?.responsavel_id || '',
       notas: lead?.notas || '',
       tags: lead?.tags?.join(', ') || '',
+      salesperson_id: lead?.salesperson_id || '',
     },
   });
 
@@ -56,6 +58,15 @@ export function LeadForm({ lead, companyId, onSuccess, onCancel }: LeadFormProps
     queryKey: ['profiles-select'],
     queryFn: async () => {
       const { data, error } = await supabase.from('profiles').select('id, nome').eq('status', 'ativo').order('nome');
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: salespeople } = useQuery({
+    queryKey: ['salespeople-select', companyId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('salespeople').select('id, nome').eq('company_id', companyId).eq('status', 'ativo').order('nome');
       if (error) throw error;
       return data;
     },
@@ -77,6 +88,7 @@ export function LeadForm({ lead, companyId, onSuccess, onCancel }: LeadFormProps
         notas: data.notas || null,
         tags: tagsArray,
         company_id: companyId,
+        salesperson_id: data.salesperson_id || null,
         data_conversao: data.status === 'ganho' ? new Date().toISOString().split('T')[0] : lead?.data_conversao || null,
       };
 
@@ -165,6 +177,16 @@ export function LeadForm({ lead, companyId, onSuccess, onCancel }: LeadFormProps
         <div className="space-y-2 col-span-2">
           <Label>Tags</Label>
           <Input {...register('tags')} placeholder="Ex: urgente, premium (separadas por vírgula)" />
+        </div>
+        <div className="space-y-2">
+          <Label>Vendedor</Label>
+          <Select value={watch('salesperson_id') || 'none'} onValueChange={(v) => setValue('salesperson_id', v === 'none' ? '' : v)}>
+            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Sem vendedor</SelectItem>
+              {salespeople?.map((s) => <SelectItem key={s.id} value={s.id}>{s.nome}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
         <div className="space-y-2 col-span-2">
           <Label>Notas</Label>

@@ -293,6 +293,73 @@ export type Database = {
           },
         ]
       }
+      commissions: {
+        Row: {
+          company_id: string
+          created_at: string
+          data_pagamento: string | null
+          data_venda: string
+          descricao: string
+          id: string
+          lead_id: string | null
+          percentual: number
+          salesperson_id: string
+          status: Database["public"]["Enums"]["commission_status"]
+          valor_comissao: number
+          valor_venda: number
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          data_pagamento?: string | null
+          data_venda?: string
+          descricao: string
+          id?: string
+          lead_id?: string | null
+          percentual?: number
+          salesperson_id: string
+          status?: Database["public"]["Enums"]["commission_status"]
+          valor_comissao?: number
+          valor_venda?: number
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          data_pagamento?: string | null
+          data_venda?: string
+          descricao?: string
+          id?: string
+          lead_id?: string | null
+          percentual?: number
+          salesperson_id?: string
+          status?: Database["public"]["Enums"]["commission_status"]
+          valor_comissao?: number
+          valor_venda?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commissions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commissions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commissions_salesperson_id_fkey"
+            columns: ["salesperson_id"]
+            isOneToOne: false
+            referencedRelation: "salespeople"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       companies: {
         Row: {
           ativo: boolean | null
@@ -637,6 +704,7 @@ export type Database = {
           notas: string | null
           origem: Database["public"]["Enums"]["lead_origin"]
           responsavel_id: string | null
+          salesperson_id: string | null
           status: Database["public"]["Enums"]["lead_status"]
           tags: string[] | null
           telefone: string | null
@@ -655,6 +723,7 @@ export type Database = {
           notas?: string | null
           origem?: Database["public"]["Enums"]["lead_origin"]
           responsavel_id?: string | null
+          salesperson_id?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           tags?: string[] | null
           telefone?: string | null
@@ -673,6 +742,7 @@ export type Database = {
           notas?: string | null
           origem?: Database["public"]["Enums"]["lead_origin"]
           responsavel_id?: string | null
+          salesperson_id?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           tags?: string[] | null
           telefone?: string | null
@@ -692,6 +762,13 @@ export type Database = {
             columns: ["responsavel_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_salesperson_id_fkey"
+            columns: ["salesperson_id"]
+            isOneToOne: false
+            referencedRelation: "salespeople"
             referencedColumns: ["id"]
           },
         ]
@@ -1110,6 +1187,63 @@ export type Database = {
           },
         ]
       }
+      salespeople: {
+        Row: {
+          company_id: string
+          created_at: string
+          email: string | null
+          id: string
+          meta_mensal: number | null
+          nome: string
+          percentual_comissao: number | null
+          status: string
+          telefone: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          meta_mensal?: number | null
+          nome: string
+          percentual_comissao?: number | null
+          status?: string
+          telefone?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          meta_mensal?: number | null
+          nome?: string
+          percentual_comissao?: number | null
+          status?: string
+          telefone?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salespeople_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "salespeople_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       services: {
         Row: {
           ativo: boolean
@@ -1354,7 +1488,13 @@ export type Database = {
         | "orcamento_excedido"
         | "receita_baixa"
         | "critico"
-      app_role: "admin" | "gestor" | "colaborador" | "financeiro" | "marketing"
+      app_role:
+        | "admin"
+        | "gestor"
+        | "colaborador"
+        | "financeiro"
+        | "marketing"
+        | "vendedor"
       attendant_type: "ia" | "humano"
       automation_status: "ativa" | "inativa"
       campaign_status: "ativa" | "pausada" | "concluida"
@@ -1373,6 +1513,7 @@ export type Database = {
         | "automacao"
         | "chatbot"
         | "outro"
+      commission_status: "pendente" | "aprovada" | "paga"
       conversation_status:
         | "aberta"
         | "em_atendimento"
@@ -1544,7 +1685,14 @@ export const Constants = {
         "receita_baixa",
         "critico",
       ],
-      app_role: ["admin", "gestor", "colaborador", "financeiro", "marketing"],
+      app_role: [
+        "admin",
+        "gestor",
+        "colaborador",
+        "financeiro",
+        "marketing",
+        "vendedor",
+      ],
       attendant_type: ["ia", "humano"],
       automation_status: ["ativa", "inativa"],
       campaign_status: ["ativa", "pausada", "concluida"],
@@ -1565,6 +1713,7 @@ export const Constants = {
         "chatbot",
         "outro",
       ],
+      commission_status: ["pendente", "aprovada", "paga"],
       conversation_status: [
         "aberta",
         "em_atendimento",

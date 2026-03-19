@@ -11,7 +11,8 @@ import {
   LogOut,
   MessageCircle,
   Contact,
-  MessagesSquare
+  MessagesSquare,
+  BadgeDollarSign
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -33,7 +34,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 
-type AppRole = 'admin' | 'gestor' | 'colaborador' | 'financeiro' | 'marketing';
+type AppRole = 'admin' | 'gestor' | 'colaborador' | 'financeiro' | 'marketing' | 'vendedor';
 
 interface MenuItem {
   title: string;
@@ -42,7 +43,7 @@ interface MenuItem {
   allowedRoles: AppRole[];
 }
 
-const allRoles: AppRole[] = ['admin', 'gestor', 'colaborador', 'financeiro', 'marketing'];
+const allRoles: AppRole[] = ['admin', 'gestor', 'colaborador', 'financeiro', 'marketing', 'vendedor'];
 
 const mainItems: MenuItem[] = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard, allowedRoles: allRoles },
@@ -55,6 +56,7 @@ const mainItems: MenuItem[] = [
   { title: "WhatsApp", url: "/whatsapp", icon: MessageCircle, allowedRoles: ['admin'] },
   { title: "Clientes", url: "/clientes", icon: Users, allowedRoles: ['admin', 'gestor', 'financeiro'] },
   { title: "Documentos", url: "/documentos", icon: FileText, allowedRoles: ['admin', 'gestor', 'colaborador', 'financeiro'] },
+  { title: "Vendedores", url: "/vendedores", icon: BadgeDollarSign, allowedRoles: ['admin', 'gestor'] },
   { title: "Equipe", url: "/equipe", icon: UsersRound, allowedRoles: ['admin', 'gestor'] },
 ];
 
