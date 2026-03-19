@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 import { Plus, Wifi, WifiOff, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Textarea } from '@/components/ui/textarea';
 
 const statusColors: Record<string, string> = {
   ativa: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
