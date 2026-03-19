@@ -28,6 +28,7 @@ interface ClientFormProps {
 }
 
 export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
+  const { currentCompany } = useCompany();
   const {
     register,
     handleSubmit,
