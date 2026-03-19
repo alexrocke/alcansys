@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 
-type AppRole = 'admin' | 'gestor' | 'colaborador' | 'financeiro' | 'marketing';
+type AppRole = 'admin' | 'gestor' | 'colaborador' | 'financeiro' | 'marketing' | 'vendedor';
 
 interface MenuItem {
   title: string;
