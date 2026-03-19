@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
+import { useCompany } from '@/hooks/useCompany';
 import { Loader2 } from 'lucide-react';
 
 const financeSchema = z.object({
