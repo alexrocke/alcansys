@@ -87,8 +87,17 @@ function PortalLayout() {
 }
 
 function AppRoutes() {
-  const { userRole } = useAuth();
-  const isClientPortal = !userRole; // No app_role = client user
+  const { userRole, roleLoading } = useAuth();
+
+  if (roleLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+      </div>
+    );
+  }
+
+  const isClientPortal = !userRole;
 
   return (
     <CompanyProvider>
