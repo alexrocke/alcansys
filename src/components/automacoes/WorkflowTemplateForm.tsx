@@ -115,6 +115,12 @@ export function WorkflowTemplateForm({ template, onSuccess, onCancel }: Props) {
         </div>
       </div>
 
+      <div className="space-y-2 md:col-span-2">
+        <Label>Prompt da IA</Label>
+        <Textarea {...register('prompt_template')} placeholder="Instruções para a IA quando este workflow estiver ativo para um cliente..." rows={5} />
+        <p className="text-xs text-muted-foreground">Este prompt será usado como base para personalizar a IA de cada cliente.</p>
+      </div>
+
       {/* Features */}
       <div className="space-y-2">
         <Label>Funcionalidades</Label>
