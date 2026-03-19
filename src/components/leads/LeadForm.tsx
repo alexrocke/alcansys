@@ -178,6 +178,16 @@ export function LeadForm({ lead, companyId, onSuccess, onCancel }: LeadFormProps
           <Label>Tags</Label>
           <Input {...register('tags')} placeholder="Ex: urgente, premium (separadas por vírgula)" />
         </div>
+        <div className="space-y-2">
+          <Label>Vendedor</Label>
+          <Select value={watch('salesperson_id') || 'none'} onValueChange={(v) => setValue('salesperson_id', v === 'none' ? '' : v)}>
+            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Sem vendedor</SelectItem>
+              {salespeople?.map((s) => <SelectItem key={s.id} value={s.id}>{s.nome}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
         <div className="space-y-2 col-span-2">
           <Label>Notas</Label>
           <Textarea {...register('notas')} placeholder="Observações sobre o lead..." rows={3} />
