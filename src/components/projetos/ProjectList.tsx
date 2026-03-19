@@ -167,6 +167,12 @@ export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefet
                         <Pencil className="h-4 w-4 mr-2" />
                         Editar
                       </DropdownMenuItem>
+                      {project.status === 'concluido' && (
+                        <DropdownMenuItem onClick={() => setConvertProject(project)}>
+                          <Package className="h-4 w-4 mr-2" />
+                          Converter em Produto
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem
                         onClick={() => setDeleteId(project.id)}
                         className="text-destructive"
