@@ -17,17 +17,23 @@ export default function Automacoes() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
+  const { currentCompany } = useCompany();
+  const companyId = currentCompany?.id;
+
   const { data: automations, isLoading, refetch } = useQuery({
-    queryKey: ['automations'],
+    queryKey: ['automations', companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from('automations')
         .select('*')
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data;
     },
+    enabled: !!companyId,
   });
 
   const handleEdit = (automation: any) => {

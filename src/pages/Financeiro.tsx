@@ -23,13 +23,17 @@ export default function Financeiro() {
   const [areaFilter, setAreaFilter] = useState<string>('all');
   const [tipoFilter, setTipoFilter] = useState<string>('all');
   const [mesFilter, setMesFilter] = useState<string>(format(new Date(), 'yyyy-MM'));
+  const { currentCompany } = useCompany();
+  const companyId = currentCompany?.id;
 
   const { data: finances, isLoading, refetch } = useQuery({
-    queryKey: ['finances', areaFilter, tipoFilter, mesFilter],
+    queryKey: ['finances', companyId, areaFilter, tipoFilter, mesFilter],
     queryFn: async () => {
+      if (!companyId) return [];
       let query = supabase
         .from('finances')
         .select('*, project:projects(nome)')
+        .eq('company_id', companyId)
         .order('data', { ascending: false });
 
       if (areaFilter !== 'all') {
@@ -48,6 +52,7 @@ export default function Financeiro() {
       if (error) throw error;
       return data;
     },
+    enabled: !!companyId,
   });
 
   const { data: settings } = useQuery({

@@ -18,9 +18,13 @@ export default function Documentos() {
   const [tipoFilter, setTipoFilter] = useState<string>('all');
   const [projectFilter, setProjectFilter] = useState<string>('all');
 
+  const { currentCompany } = useCompany();
+  const companyId = currentCompany?.id;
+
   const { data: documents, isLoading, refetch } = useQuery({
-    queryKey: ['documents'],
+    queryKey: ['documents', companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from('documents')
         .select(`
@@ -28,24 +32,29 @@ export default function Documentos() {
           project:projects(id, nome),
           autor:profiles(id, nome)
         `)
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data;
     },
+    enabled: !!companyId,
   });
 
   const { data: projects } = useQuery({
-    queryKey: ['projects-list'],
+    queryKey: ['projects-list', companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from('projects')
         .select('id, nome')
+        .eq('company_id', companyId)
         .order('nome');
 
       if (error) throw error;
       return data;
     },
+    enabled: !!companyId,
   });
 
   const handleEdit = (document: any) => {
