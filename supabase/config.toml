@@ -1,1 +1,4 @@
 project_id = "eyhkefwbqntdhocxjxes"
+
+[functions.uazap-proxy]
+verify_jwt = false
