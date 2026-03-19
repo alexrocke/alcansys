@@ -178,7 +178,11 @@ export function ClientAutomationManager() {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Template de Workflow</label>
-              <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+              <Select value={selectedTemplate} onValueChange={(v) => {
+                setSelectedTemplate(v);
+                const tmpl = templates?.find((t) => t.id === v);
+                if (tmpl?.prompt_template) setClientPrompt(tmpl.prompt_template);
+              }}>
                 <SelectTrigger><SelectValue placeholder="Selecione o template" /></SelectTrigger>
                 <SelectContent>
                   {templates?.map((t) => (
