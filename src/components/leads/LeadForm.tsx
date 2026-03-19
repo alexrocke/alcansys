@@ -88,6 +88,7 @@ export function LeadForm({ lead, companyId, onSuccess, onCancel }: LeadFormProps
         notas: data.notas || null,
         tags: tagsArray,
         company_id: companyId,
+        salesperson_id: data.salesperson_id || null,
         data_conversao: data.status === 'ganho' ? new Date().toISOString().split('T')[0] : lead?.data_conversao || null,
       };
 
