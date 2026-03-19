@@ -150,6 +150,61 @@ export type Database = {
           },
         ]
       }
+      client_automations: {
+        Row: {
+          company_id: string
+          config: Json | null
+          created_at: string
+          id: string
+          status: Database["public"]["Enums"]["client_automation_status"]
+          template_id: string
+          updated_at: string
+          whatsapp_instance_id: string | null
+        }
+        Insert: {
+          company_id: string
+          config?: Json | null
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["client_automation_status"]
+          template_id: string
+          updated_at?: string
+          whatsapp_instance_id?: string | null
+        }
+        Update: {
+          company_id?: string
+          config?: Json | null
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["client_automation_status"]
+          template_id?: string
+          updated_at?: string
+          whatsapp_instance_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_automations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_automations_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_automations_whatsapp_instance_id_fkey"
+            columns: ["whatsapp_instance_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_instances"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_systems: {
         Row: {
           company_id: string
@@ -1102,6 +1157,7 @@ export type Database = {
           phone_number: string | null
           qr_code: string | null
           status: Database["public"]["Enums"]["channel_status"]
+          uazap_instance_id: string | null
           updated_at: string
           webhook_url: string | null
         }
@@ -1120,6 +1176,7 @@ export type Database = {
           phone_number?: string | null
           qr_code?: string | null
           status?: Database["public"]["Enums"]["channel_status"]
+          uazap_instance_id?: string | null
           updated_at?: string
           webhook_url?: string | null
         }
@@ -1138,6 +1195,7 @@ export type Database = {
           phone_number?: string | null
           qr_code?: string | null
           status?: Database["public"]["Enums"]["channel_status"]
+          uazap_instance_id?: string | null
           updated_at?: string
           webhook_url?: string | null
         }
@@ -1157,6 +1215,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      workflow_templates: {
+        Row: {
+          ativo: boolean
+          categoria: Database["public"]["Enums"]["workflow_category"]
+          config_schema: Json | null
+          created_at: string
+          descricao: string | null
+          features: Json | null
+          icone: string | null
+          id: string
+          nome: string
+          preco: number | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          categoria?: Database["public"]["Enums"]["workflow_category"]
+          config_schema?: Json | null
+          created_at?: string
+          descricao?: string | null
+          features?: Json | null
+          icone?: string | null
+          id?: string
+          nome: string
+          preco?: number | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          categoria?: Database["public"]["Enums"]["workflow_category"]
+          config_schema?: Json | null
+          created_at?: string
+          descricao?: string | null
+          features?: Json | null
+          icone?: string | null
+          id?: string
+          nome?: string
+          preco?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -1202,6 +1302,7 @@ export type Database = {
         | "error"
         | "pending"
       channel_type: "whatsapp" | "telegram" | "email" | "sms" | "webchat"
+      client_automation_status: "ativa" | "inativa" | "configurando"
       client_system_status: "ativo" | "inativo" | "em_desenvolvimento"
       client_system_type:
         | "landing_page"
@@ -1244,6 +1345,7 @@ export type Database = {
       task_priority: "baixa" | "media" | "alta" | "urgente"
       task_status: "pendente" | "em_andamento" | "concluida" | "cancelada"
       user_status: "pendente" | "ativo" | "inativo"
+      workflow_category: "atendimento" | "vendas" | "marketing" | "suporte"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1390,6 +1492,7 @@ export const Constants = {
         "pending",
       ],
       channel_type: ["whatsapp", "telegram", "email", "sms", "webchat"],
+      client_automation_status: ["ativa", "inativa", "configurando"],
       client_system_status: ["ativo", "inativo", "em_desenvolvimento"],
       client_system_type: [
         "landing_page",
@@ -1437,6 +1540,7 @@ export const Constants = {
       task_priority: ["baixa", "media", "alta", "urgente"],
       task_status: ["pendente", "em_andamento", "concluida", "cancelada"],
       user_status: ["pendente", "ativo", "inativo"],
+      workflow_category: ["atendimento", "vendas", "marketing", "suporte"],
     },
   },
 } as const
