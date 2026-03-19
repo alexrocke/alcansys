@@ -22,6 +22,7 @@ export default function Financeiro() {
   const [editingFinance, setEditingFinance] = useState<any>(null);
   const [areaFilter, setAreaFilter] = useState<string>('all');
   const [tipoFilter, setTipoFilter] = useState<string>('all');
+  const [naturezaFilter, setNaturezaFilter] = useState<string>('all');
   const [mesFilter, setMesFilter] = useState<string>(format(new Date(), 'yyyy-MM'));
   const { currentCompany } = useCompany();
   const companyId = currentCompany?.id;
