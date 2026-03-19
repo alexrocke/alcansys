@@ -28,7 +28,7 @@ export default function Financeiro() {
   const companyId = currentCompany?.id;
 
   const { data: finances, isLoading, refetch } = useQuery({
-    queryKey: ['finances', companyId, areaFilter, tipoFilter, mesFilter],
+    queryKey: ['finances', companyId, areaFilter, tipoFilter, naturezaFilter, mesFilter],
     queryFn: async () => {
       if (!companyId) return [];
       let query = supabase
