@@ -150,6 +150,44 @@ export type Database = {
           },
         ]
       }
+      client_systems: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          nome: string
+          status: Database["public"]["Enums"]["client_system_status"]
+          tipo: Database["public"]["Enums"]["client_system_type"]
+          url: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          nome: string
+          status?: Database["public"]["Enums"]["client_system_status"]
+          tipo?: Database["public"]["Enums"]["client_system_type"]
+          url?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          nome?: string
+          status?: Database["public"]["Enums"]["client_system_status"]
+          tipo?: Database["public"]["Enums"]["client_system_type"]
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_systems_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           area: string | null
@@ -480,6 +518,47 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          company_id: string
+          created_at: string
+          data_pagamento: string | null
+          data_vencimento: string
+          descricao: string
+          id: string
+          status: Database["public"]["Enums"]["invoice_status"]
+          valor: number
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          data_pagamento?: string | null
+          data_vencimento: string
+          descricao: string
+          id?: string
+          status?: Database["public"]["Enums"]["invoice_status"]
+          valor: number
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          data_pagamento?: string | null
+          data_vencimento?: string
+          descricao?: string
+          id?: string
+          status?: Database["public"]["Enums"]["invoice_status"]
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
@@ -865,6 +944,98 @@ export type Database = {
           },
         ]
       }
+      quote_requests: {
+        Row: {
+          company_id: string
+          created_at: string
+          email: string | null
+          id: string
+          mensagem: string | null
+          nome_contato: string
+          service_id: string | null
+          status: Database["public"]["Enums"]["quote_status"]
+          telefone: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          mensagem?: string | null
+          nome_contato: string
+          service_id?: string | null
+          status?: Database["public"]["Enums"]["quote_status"]
+          telefone?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          mensagem?: string | null
+          nome_contato?: string
+          service_id?: string | null
+          status?: Database["public"]["Enums"]["quote_status"]
+          telefone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_requests_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_requests_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          ativo: boolean
+          categoria: string | null
+          company_id: string | null
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          preco_base: number | null
+        }
+        Insert: {
+          ativo?: boolean
+          categoria?: string | null
+          company_id?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          preco_base?: number | null
+        }
+        Update: {
+          ativo?: boolean
+          categoria?: string | null
+          company_id?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          preco_base?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       settings: {
         Row: {
           chave: string
@@ -1031,6 +1202,13 @@ export type Database = {
         | "error"
         | "pending"
       channel_type: "whatsapp" | "telegram" | "email" | "sms" | "webchat"
+      client_system_status: "ativo" | "inativo" | "em_desenvolvimento"
+      client_system_type:
+        | "landing_page"
+        | "sistema"
+        | "automacao"
+        | "chatbot"
+        | "outro"
       conversation_status:
         | "aberta"
         | "em_atendimento"
@@ -1039,6 +1217,7 @@ export type Database = {
         | "arquivada"
       document_type: "contrato" | "proposta" | "relatorio" | "outros"
       finance_type: "receita" | "despesa"
+      invoice_status: "pendente" | "pago" | "vencido" | "cancelado"
       lead_origin:
         | "site"
         | "whatsapp"
@@ -1061,6 +1240,7 @@ export type Database = {
         | "em_andamento"
         | "concluido"
         | "cancelado"
+      quote_status: "pendente" | "em_analise" | "respondido" | "fechado"
       task_priority: "baixa" | "media" | "alta" | "urgente"
       task_status: "pendente" | "em_andamento" | "concluida" | "cancelada"
       user_status: "pendente" | "ativo" | "inativo"
@@ -1210,6 +1390,14 @@ export const Constants = {
         "pending",
       ],
       channel_type: ["whatsapp", "telegram", "email", "sms", "webchat"],
+      client_system_status: ["ativo", "inativo", "em_desenvolvimento"],
+      client_system_type: [
+        "landing_page",
+        "sistema",
+        "automacao",
+        "chatbot",
+        "outro",
+      ],
       conversation_status: [
         "aberta",
         "em_atendimento",
@@ -1219,6 +1407,7 @@ export const Constants = {
       ],
       document_type: ["contrato", "proposta", "relatorio", "outros"],
       finance_type: ["receita", "despesa"],
+      invoice_status: ["pendente", "pago", "vencido", "cancelado"],
       lead_origin: [
         "site",
         "whatsapp",
@@ -1244,6 +1433,7 @@ export const Constants = {
         "concluido",
         "cancelado",
       ],
+      quote_status: ["pendente", "em_analise", "respondido", "fechado"],
       task_priority: ["baixa", "media", "alta", "urgente"],
       task_status: ["pendente", "em_andamento", "concluida", "cancelada"],
       user_status: ["pendente", "ativo", "inativo"],
