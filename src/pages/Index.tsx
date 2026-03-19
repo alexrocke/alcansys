@@ -82,14 +82,17 @@ const Index = () => {
 
   // Fetch automations
   const { data: automations } = useQuery({
-    queryKey: ["dashboard-automations"],
+    queryKey: ["dashboard-automations", companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from("automations")
-        .select("*");
+        .select("*")
+        .eq("company_id", companyId);
       if (error) throw error;
       return data || [];
     },
+    enabled: !!companyId,
   });
 
   // Calculate metrics
