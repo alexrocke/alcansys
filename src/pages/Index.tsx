@@ -32,17 +32,20 @@ const Index = () => {
 
   // Fetch finances for current month
   const { data: finances } = useQuery({
-    queryKey: ["dashboard-finances", format(monthStart, "yyyy-MM-dd")],
+    queryKey: ["dashboard-finances", companyId, format(monthStart, "yyyy-MM-dd")],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from("finances")
         .select("*")
+        .eq("company_id", companyId)
         .gte("data", format(monthStart, "yyyy-MM-dd"))
         .lte("data", format(monthEnd, "yyyy-MM-dd"))
         .order("data", { ascending: true });
       if (error) throw error;
       return data || [];
     },
+    enabled: !!companyId,
   });
 
   // Fetch clients
