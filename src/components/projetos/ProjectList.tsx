@@ -118,6 +118,7 @@ export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefet
               <TableHead>Status</TableHead>
               <TableHead>Gestor</TableHead>
               <TableHead>Orçamento</TableHead>
+              <TableHead>Custo Real</TableHead>
               <TableHead>Início</TableHead>
               <TableHead>Fim</TableHead>
               <TableHead className="w-12"></TableHead>
