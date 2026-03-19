@@ -23,6 +23,7 @@ const leadSchema = z.object({
   responsavel_id: z.string().optional().or(z.literal('')),
   notas: z.string().optional().or(z.literal('')),
   tags: z.string().optional().or(z.literal('')),
+  salesperson_id: z.string().optional().or(z.literal('')),
 });
 
 type LeadFormData = z.infer<typeof leadSchema>;
