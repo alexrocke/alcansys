@@ -63,6 +63,15 @@ export function LeadForm({ lead, companyId, onSuccess, onCancel }: LeadFormProps
     },
   });
 
+  const { data: salespeople } = useQuery({
+    queryKey: ['salespeople-select', companyId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('salespeople').select('id, nome').eq('company_id', companyId).eq('status', 'ativo').order('nome');
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const onSubmit = async (data: LeadFormData) => {
     try {
       const tagsArray = data.tags ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : [];
