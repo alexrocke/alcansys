@@ -38,8 +38,9 @@ function InternalLayout() {
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="h-14 border-b border-border bg-background flex items-center px-4">
+          <header className="h-14 border-b border-border bg-background flex items-center justify-between px-4">
             <SidebarTrigger />
+            <ThemeToggle />
           </header>
           <main className="flex-1 overflow-auto">
             <Routes>
