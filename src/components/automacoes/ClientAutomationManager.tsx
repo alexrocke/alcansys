@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { toast } from '@/hooks/use-toast';
 import { Plus, Wifi, WifiOff, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { Textarea } from '@/components/ui/textarea';
 
 const statusColors: Record<string, string> = {
   ativa: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
@@ -20,6 +21,7 @@ export function ClientAutomationManager() {
   const [isAssigning, setIsAssigning] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [clientPrompt, setClientPrompt] = useState('');
 
   const { data: clientAutomations, isLoading } = useQuery({
     queryKey: ['client-automations'],
@@ -45,7 +47,7 @@ export function ClientAutomationManager() {
   const { data: templates } = useQuery({
     queryKey: ['workflow-templates-active'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('workflow_templates').select('id, nome').eq('ativo', true).order('nome');
+      const { data, error } = await supabase.from('workflow_templates').select('id, nome, prompt_template').eq('ativo', true).order('nome');
       if (error) throw error;
       return data;
     },
@@ -56,6 +58,7 @@ export function ClientAutomationManager() {
     const { error } = await supabase.from('client_automations').insert([{
       company_id: selectedCompany,
       template_id: selectedTemplate,
+      prompt: clientPrompt || null,
       status: 'configurando',
     }]);
     if (error) {
@@ -66,6 +69,7 @@ export function ClientAutomationManager() {
       setIsAssigning(false);
       setSelectedCompany('');
       setSelectedTemplate('');
+      setClientPrompt('');
     }
   };
 
@@ -174,7 +178,11 @@ export function ClientAutomationManager() {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Template de Workflow</label>
-              <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+              <Select value={selectedTemplate} onValueChange={(v) => {
+                setSelectedTemplate(v);
+                const tmpl = templates?.find((t) => t.id === v);
+                if (tmpl?.prompt_template) setClientPrompt(tmpl.prompt_template);
+              }}>
                 <SelectTrigger><SelectValue placeholder="Selecione o template" /></SelectTrigger>
                 <SelectContent>
                   {templates?.map((t) => (
@@ -182,6 +190,16 @@ export function ClientAutomationManager() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Prompt da IA (personalizado para este cliente)</label>
+              <Textarea
+                value={clientPrompt}
+                onChange={(e) => setClientPrompt(e.target.value)}
+                placeholder="Personalize o prompt da IA para este cliente..."
+                rows={5}
+              />
+              <p className="text-xs text-muted-foreground">O prompt do template será carregado automaticamente ao selecionar. Edite para personalizar.</p>
             </div>
             <div className="flex justify-end gap-3">
               <Button variant="outline" onClick={() => setIsAssigning(false)}>Cancelar</Button>

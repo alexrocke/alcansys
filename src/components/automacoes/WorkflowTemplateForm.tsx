@@ -16,6 +16,7 @@ const schema = z.object({
   descricao: z.string().max(500).optional().or(z.literal('')),
   categoria: z.enum(['atendimento', 'vendas', 'marketing', 'suporte']),
   preco: z.string().optional().or(z.literal('')),
+  prompt_template: z.string().optional().or(z.literal('')),
   ativo: z.boolean(),
 });
 
@@ -38,6 +39,7 @@ export function WorkflowTemplateForm({ template, onSuccess, onCancel }: Props) {
       descricao: template?.descricao || '',
       categoria: template?.categoria || 'atendimento',
       preco: template?.preco?.toString() || '',
+      prompt_template: template?.prompt_template || '',
       ativo: template?.ativo ?? true,
     },
   });
@@ -60,6 +62,7 @@ export function WorkflowTemplateForm({ template, onSuccess, onCancel }: Props) {
         descricao: data.descricao || null,
         categoria: data.categoria,
         preco: data.preco ? parseFloat(data.preco) : 0,
+        prompt_template: data.prompt_template || null,
         ativo: data.ativo,
         features: features,
       };
@@ -110,6 +113,12 @@ export function WorkflowTemplateForm({ template, onSuccess, onCancel }: Props) {
           <Label>Preço Mensal (R$)</Label>
           <Input type="number" step="0.01" {...register('preco')} placeholder="0.00" />
         </div>
+      </div>
+
+      <div className="space-y-2 md:col-span-2">
+        <Label>Prompt da IA</Label>
+        <Textarea {...register('prompt_template')} placeholder="Instruções para a IA quando este workflow estiver ativo para um cliente..." rows={5} />
+        <p className="text-xs text-muted-foreground">Este prompt será usado como base para personalizar a IA de cada cliente.</p>
       </div>
 
       {/* Features */}
