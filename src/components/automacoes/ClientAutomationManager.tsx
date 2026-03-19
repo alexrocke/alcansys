@@ -21,6 +21,7 @@ export function ClientAutomationManager() {
   const [isAssigning, setIsAssigning] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [clientPrompt, setClientPrompt] = useState('');
 
   const { data: clientAutomations, isLoading } = useQuery({
     queryKey: ['client-automations'],
