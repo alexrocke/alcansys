@@ -15,6 +15,7 @@ import {
   BadgeDollarSign
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
+import logoIcon from "@/assets/logo-icon.png";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { CompanySelector } from "@/components/CompanySelector";
