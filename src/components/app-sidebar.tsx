@@ -1,7 +1,8 @@
 import { 
   LayoutDashboard, 
   FolderKanban, 
-  DollarSign, 
+  DollarSign,
+  ListChecks,
   TrendingUp, 
   Zap, 
   Users, 
@@ -49,6 +50,7 @@ const allRoles: AppRole[] = ['admin', 'gestor', 'colaborador', 'financeiro', 'ma
 const mainItems: MenuItem[] = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard, allowedRoles: allRoles },
   { title: "Projetos", url: "/projetos", icon: FolderKanban, allowedRoles: ['admin', 'gestor', 'colaborador'] },
+  { title: "Tarefas", url: "/tarefas", icon: ListChecks, allowedRoles: allRoles },
   { title: "Financeiro", url: "/financeiro", icon: DollarSign, allowedRoles: ['admin', 'financeiro'] },
   { title: "Leads & CRM", url: "/leads", icon: Contact, allowedRoles: ['admin', 'gestor', 'marketing'] },
   { title: "Conversas", url: "/conversas", icon: MessagesSquare, allowedRoles: ['admin', 'gestor', 'marketing'] },

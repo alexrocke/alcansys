@@ -23,6 +23,7 @@ import Documentos from "./pages/Documentos";
 import Configuracoes from "./pages/Configuracoes";
 import Leads from "./pages/Leads";
 import Conversas from "./pages/Conversas";
+import Tarefas from "./pages/Tarefas";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import PortalServicos from "./pages/portal/PortalServicos";
@@ -52,6 +53,7 @@ function InternalLayout() {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/projetos" element={<Projetos />} />
+              <Route path="/tarefas" element={<Tarefas />} />
               <Route path="/financeiro" element={<Financeiro />} />
               <Route path="/clientes" element={<Clientes />} />
               <Route path="/equipe" element={<Equipe />} />
