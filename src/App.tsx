@@ -18,6 +18,8 @@ import Automacoes from "./pages/Automacoes";
 import WhatsAppPage from "./pages/WhatsApp";
 import Documentos from "./pages/Documentos";
 import Configuracoes from "./pages/Configuracoes";
+import Leads from "./pages/Leads";
+import Conversas from "./pages/Conversas";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
