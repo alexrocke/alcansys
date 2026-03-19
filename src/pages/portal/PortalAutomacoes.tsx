@@ -1,23 +1,31 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/hooks/useCompany';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Zap, MessageCircle, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
+import { Zap, MessageCircle, ArrowDownLeft, ArrowUpRight, Headphones, TrendingUp, Megaphone, LifeBuoy } from 'lucide-react';
+import { UazapInstanceSetup } from '@/components/automacoes/UazapInstanceSetup';
+
+const categoryIcons: Record<string, React.ElementType> = {
+  atendimento: Headphones,
+  vendas: TrendingUp,
+  marketing: Megaphone,
+  suporte: LifeBuoy,
+};
 
 export default function PortalAutomacoes() {
   const { currentCompany } = useCompany();
+  const queryClient = useQueryClient();
 
   const { data: automations, isLoading } = useQuery({
-    queryKey: ['portal-automations', currentCompany?.id],
+    queryKey: ['portal-client-automations', currentCompany?.id],
     queryFn: async () => {
       if (!currentCompany) return [];
       const { data, error } = await supabase
-        .from('automations')
-        .select('*')
+        .from('client_automations')
+        .select('*, workflow_templates:template_id(*), whatsapp_instances:whatsapp_instance_id(status, phone_number, messages_sent, messages_received)')
         .eq('company_id', currentCompany.id)
-        .eq('status', 'ativa')
-        .order('nome');
+        .order('created_at');
       if (error) throw error;
       return data;
     },
@@ -46,7 +54,7 @@ export default function PortalAutomacoes() {
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Automações</h1>
-        <p className="text-muted-foreground">Acompanhe suas automações ativas e métricas de mensagens.</p>
+        <p className="text-muted-foreground">Seus workflows ativos e conexões WhatsApp.</p>
       </div>
 
       {/* Stats */}
@@ -74,7 +82,7 @@ export default function PortalAutomacoes() {
         </Card>
       </div>
 
-      {/* Automations List */}
+      {/* Automations */}
       {isLoading ? (
         <div className="flex justify-center py-12">
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
@@ -83,35 +91,74 @@ export default function PortalAutomacoes() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <Zap className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">Nenhuma automação ativa no momento.</p>
+            <p className="text-muted-foreground">Nenhuma automação atribuída no momento.</p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {automations.map((auto) => (
-            <Card key={auto.id}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-primary" />
-                    {auto.nome}
-                  </CardTitle>
-                  <Badge className="bg-green-100 text-green-800">Ativa</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {auto.descricao && <p className="text-sm text-muted-foreground">{auto.descricao}</p>}
-                <div className="flex gap-4 text-sm">
-                  <span className="text-muted-foreground">Tipo: <strong>{auto.tipo}</strong></span>
-                  {auto.retorno && (
-                    <span className="text-muted-foreground">
-                      Retorno: <strong className="text-green-600">R$ {Number(auto.retorno).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
-                    </span>
+          {automations.map((auto: any) => {
+            const template = auto.workflow_templates;
+            const Icon = categoryIcons[template?.categoria] || Zap;
+            const features = (template?.features as string[]) || [];
+            const whatsappConnected = auto.whatsapp_instances?.status === 'connected';
+
+            return (
+              <Card key={auto.id} className="border-2 rounded-2xl">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <div className="p-1.5 rounded-lg bg-primary/10">
+                        <Icon className="h-5 w-5 text-primary" />
+                      </div>
+                      {template?.nome || 'Workflow'}
+                    </CardTitle>
+                    <Badge className={auto.status === 'ativa' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-muted text-muted-foreground'}>
+                      {auto.status === 'ativa' ? 'Ativa' : auto.status === 'configurando' ? 'Configurando' : 'Inativa'}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {template?.descricao && (
+                    <p className="text-sm text-muted-foreground">{template.descricao}</p>
                   )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+
+                  {features.length > 0 && (
+                    <ul className="space-y-1">
+                      {features.map((f: string, i: number) => (
+                        <li key={i} className="text-xs text-muted-foreground flex items-center gap-1.5">
+                          <Zap className="h-3 w-3 text-primary" /> {f}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {/* WhatsApp instance stats */}
+                  {whatsappConnected && auto.whatsapp_instances && (
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t">
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Enviadas</p>
+                        <p className="font-bold">{auto.whatsapp_instances.messages_sent || 0}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Recebidas</p>
+                        <p className="font-bold">{auto.whatsapp_instances.messages_received || 0}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* UAZAP Setup if not connected */}
+                  {!whatsappConnected && currentCompany && (
+                    <UazapInstanceSetup
+                      companyId={currentCompany.id}
+                      automationId={auto.id}
+                      instanceId={auto.whatsapp_instance_id}
+                      onConnected={() => queryClient.invalidateQueries({ queryKey: ['portal-client-automations'] })}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

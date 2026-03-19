@@ -80,8 +80,8 @@ export function ClientAutomationManager() {
     }
   };
 
-  const handleStatusChange = async (id: string, status: string) => {
-    const { error } = await supabase.from('client_automations').update({ status }).eq('id', id);
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    const { error } = await supabase.from('client_automations').update({ status: newStatus as 'ativa' | 'inativa' | 'configurando' }).eq('id', id);
     if (error) {
       toast({ title: 'Erro', description: error.message, variant: 'destructive' });
     } else {
