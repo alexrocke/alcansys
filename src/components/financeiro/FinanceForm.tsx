@@ -14,6 +14,7 @@ import { Loader2 } from 'lucide-react';
 
 const financeSchema = z.object({
   tipo: z.enum(['receita', 'despesa']),
+  natureza: z.enum(['fixo', 'variavel']),
   descricao: z.string().min(1, 'Descrição é obrigatória').max(500),
   valor: z.string().min(1, 'Valor é obrigatório'),
   area: z.string().optional().nullable(),
