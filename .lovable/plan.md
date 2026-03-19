@@ -1,61 +1,87 @@
 
 
-## Plan: Campo Fixo/Variável em Transações + Preview de Custos e Produtos em Projetos
+## Plan: Módulo de Vendedores + Portal do Vendedor + Comissões
 
 ### Resumo
 
-Duas mudanças principais:
-1. **Financeiro**: Adicionar campo "Natureza" (fixo/variável) nas transações
-2. **Projetos**: Adicionar preview financeiro (custos acumulados) e conceito de "Produto" — quando projeto fica concluído, pode ser convertido em produto
+Criar um sistema completo de gestão de vendedores com:
+1. **Página admin "Vendedores"** — cadastro, metas, e controle de comissões
+2. **Portal do Vendedor** — interface separada para vendedores verem seus leads, clientes e comissões
+3. **Sistema de comissões** — vinculado a leads ganhos e transações
 
 ---
 
-### Parte 1: Campo Fixo/Variável nas Transações
+### Parte 1: Banco de Dados
 
-**Migration**: Adicionar coluna `natureza` (tipo enum `finance_nature`: `fixo`, `variavel`) à tabela `finances`, default `variavel`.
+**Nova role `vendedor`** no enum `app_role`.
 
-**FinanceForm.tsx**: Adicionar Select "Natureza" com opções "Fixo" e "Variável" ao lado do campo Tipo.
+**Nova tabela `salespeople`**:
+- `id`, `user_id` (FK profiles), `company_id`, `nome`, `email`, `telefone`, `meta_mensal` (numeric), `percentual_comissao` (numeric, default 10), `status` (ativo/inativo), `created_at`, `updated_at`
+- RLS: admins gerenciam, vendedores veem o próprio registro
 
-**FinanceList.tsx**: Mostrar badge "Fixo" ou "Variável" na listagem.
+**Nova tabela `commissions`**:
+- `id`, `salesperson_id` (FK salespeople), `lead_id` (FK leads, nullable), `company_id`, `descricao`, `valor_venda`, `percentual`, `valor_comissao`, `status` (pendente/aprovada/paga), `data_venda`, `data_pagamento`, `created_at`
+- RLS: admins gerenciam tudo, vendedores veem as próprias
 
-**Financeiro.tsx**: Adicionar filtro por natureza (fixo/variável/todos).
-
----
-
-### Parte 2: Preview Financeiro nos Projetos
-
-**ProjectList.tsx**: Adicionar coluna "Custo Real" que soma todas as transações (`finances`) vinculadas ao `project_id`. Mostrar comparação orçamento vs custo real com cor (verde se abaixo, vermelho se acima).
-
-**Projetos.tsx**: Na query de projetos, fazer join com `finances` para calcular o total de despesas por projeto.
+**Alterar tabela `leads`**: adicionar coluna `salesperson_id` (uuid, nullable) para vincular lead ao vendedor.
 
 ---
 
-### Parte 3: Produtos (Projetos Concluídos)
+### Parte 2: Página Admin "Vendedores" (`/vendedores`)
 
-**Migration**: Criar tabela `products`:
-- `id`, `nome`, `descricao`, `preco`, `project_id` (FK projects, nullable), `company_id`, `categoria`, `ativo`, `created_at`, `updated_at`
-- RLS: admin pode gerenciar, authenticated pode visualizar ativos
+Cards de resumo: Total de vendedores, Vendas do mês, Comissões pendentes, Comissões pagas.
 
-**ProjectList.tsx**: Quando projeto tem status `concluido`, mostrar botão "Converter em Produto" no dropdown. Abre dialog para definir nome, preço e descrição do produto.
+**Abas**:
+- **Vendedores**: Lista com nome, meta, vendas no mês, comissão acumulada. CRUD completo.
+- **Comissões**: Lista de todas as comissões com filtro por vendedor, status (pendente/aprovada/paga), período. Ações: aprovar, marcar como paga.
 
-**Nova aba/seção em Projetos.tsx**: Adicionar tab "Produtos" mostrando lista de produtos criados a partir de projetos concluídos. Cards com nome, preço, projeto de origem, status ativo/inativo.
+**Form de vendedor**: Nome, email, telefone, meta mensal, percentual de comissão, vincular a um user_id (opcional — para dar acesso ao portal).
+
+---
+
+### Parte 3: Portal do Vendedor
+
+Usuários com role `vendedor` (sem outras roles admin/gestor) são direcionados a um **layout separado** (`VendedorLayout`) com sidebar própria.
+
+**Páginas do portal**:
+- **Dashboard**: Resumo de vendas, meta vs realizado, comissões do mês
+- **Meus Leads**: Leads atribuídos ao vendedor, com ações de atualizar status
+- **Minhas Comissões**: Histórico de comissões com status de pagamento
+- **Meus Clientes**: Clientes vinculados aos leads ganhos
+
+**Roteamento**: No `AppRoutes`, se `userRole === 'vendedor'`, renderiza `VendedorLayout` em vez de `InternalLayout` ou `PortalLayout`.
+
+---
+
+### Parte 4: Integração com Leads
+
+No `LeadForm`, adicionar campo "Vendedor" (select de salespeople da empresa). Quando lead muda para status `ganho`, criar automaticamente um registro em `commissions` com o percentual do vendedor.
 
 ---
 
 ### Arquivos
 
 **Migration SQL**: 
-- Enum `finance_nature` + coluna `natureza` em `finances`
-- Tabela `products` + RLS
-
-**Editar**:
-- `FinanceForm.tsx` — campo natureza
-- `FinanceList.tsx` — badge natureza
-- `Financeiro.tsx` — filtro natureza
-- `ProjectList.tsx` — preview custo real + botão converter produto
-- `Projetos.tsx` — tab produtos + query custos
+- Adicionar `vendedor` ao enum `app_role`
+- Criar tabelas `salespeople` e `commissions` com RLS
+- Adicionar `salesperson_id` à tabela `leads`
 
 **Criar**:
-- `src/components/projetos/ProductList.tsx` — listagem de produtos
-- `src/components/projetos/ConvertToProductForm.tsx` — form de conversão
+- `src/pages/Vendedores.tsx` — página admin com abas
+- `src/components/vendedores/SalespersonForm.tsx` — form CRUD
+- `src/components/vendedores/SalespersonList.tsx` — listagem
+- `src/components/vendedores/CommissionList.tsx` — listagem de comissões
+- `src/pages/vendedor-portal/VendedorDashboard.tsx` — dashboard do vendedor
+- `src/pages/vendedor-portal/VendedorLeads.tsx` — leads do vendedor
+- `src/pages/vendedor-portal/VendedorComissoes.tsx` — comissões do vendedor
+- `src/pages/vendedor-portal/VendedorClientes.tsx` — clientes do vendedor
+- `src/components/vendedor-portal/VendedorSidebar.tsx` — sidebar do portal
+- `src/components/vendedor-portal/VendedorLayout.tsx` — layout wrapper
+
+**Editar**:
+- `src/App.tsx` — adicionar rota `/vendedores` + `VendedorLayout` quando role é vendedor
+- `src/components/app-sidebar.tsx` — adicionar item "Vendedores" (admin/gestor)
+- `src/components/leads/LeadForm.tsx` — adicionar campo vendedor
+- `src/pages/Leads.tsx` — mostrar coluna vendedor
+- `src/hooks/useAuth.tsx` — lógica de roteamento para vendedor
 
