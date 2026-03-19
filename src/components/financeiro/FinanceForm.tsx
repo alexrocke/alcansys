@@ -81,6 +81,7 @@ export function FinanceForm({ finance, onSuccess, onCancel }: FinanceFormProps) 
     try {
       const financeData = {
         tipo: data.tipo,
+        natureza: data.natureza,
         descricao: data.descricao,
         valor: parseFloat(data.valor),
         area: data.area || null,
