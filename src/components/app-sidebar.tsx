@@ -1,5 +1,4 @@
 import { 
-
   LayoutDashboard, 
   FolderKanban, 
   DollarSign, 
@@ -12,7 +11,8 @@ import {
   LogOut,
   MessageCircle,
   Contact,
-  MessagesSquare
+  MessagesSquare,
+  BadgeDollarSign
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
