@@ -187,6 +187,16 @@ export function ClientAutomationManager() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Prompt da IA (personalizado para este cliente)</label>
+              <Textarea
+                value={clientPrompt}
+                onChange={(e) => setClientPrompt(e.target.value)}
+                placeholder="Personalize o prompt da IA para este cliente..."
+                rows={5}
+              />
+              <p className="text-xs text-muted-foreground">O prompt do template será carregado automaticamente ao selecionar. Edite para personalizar.</p>
+            </div>
             <div className="flex justify-end gap-3">
               <Button variant="outline" onClick={() => setIsAssigning(false)}>Cancelar</Button>
               <Button onClick={handleAssign} disabled={!selectedCompany || !selectedTemplate}>Atribuir</Button>
