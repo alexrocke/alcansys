@@ -40,10 +40,11 @@ const statusLabels = {
   cancelado: 'Cancelado',
 };
 
-export function ProjectList({ projects, isLoading, onEdit, onRefetch }: ProjectListProps) {
+export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefetch }: ProjectListProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [tasksProject, setTasksProject] = useState<any>(null);
+  const [convertProject, setConvertProject] = useState<any>(null);
 
   const handleDelete = async () => {
     if (!deleteId) return;
