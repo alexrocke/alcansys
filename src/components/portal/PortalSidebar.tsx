@@ -2,6 +2,7 @@ import { ShoppingBag, Zap, Receipt, Monitor, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import logoIcon from "@/assets/logo-icon.png";
 import {
   Sidebar,
   SidebarContent,
@@ -36,9 +37,7 @@ export function PortalSidebar() {
       <SidebarContent>
         <div className="px-6 py-4">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shrink-0">
-              <span className="text-lg font-bold text-primary-foreground">A</span>
-            </div>
+            <img src={logoIcon} alt="Alcansys" className="w-10 h-10 shrink-0 object-contain" />
             {open && (
               <div className="min-w-0">
                 <h1 className="text-xl font-bold text-foreground truncate">Alcansys</h1>
