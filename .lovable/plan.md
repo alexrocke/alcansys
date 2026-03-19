@@ -1,32 +1,38 @@
 
 
-## Plan: Página Dedicada de Tarefas com Controle de Acesso
+## Problema Identificado
 
-### Resumo
+As tarefas criadas dentro de um projeto (via `ProjectTasks.tsx`) **não incluem o `company_id`** no insert. A página Tarefas filtra por `company_id`, então essas tarefas nunca aparecem.
 
-Criar uma página `/tarefas` que lista todas as tarefas (`project_tasks`) com visibilidade baseada em role:
-- **Admin/Gestor**: veem todas as tarefas da empresa
-- **Outros usuários**: veem apenas tarefas atribuídas a eles (`responsavel_id = auth.uid()`)
+## Solução
 
-### Parte 1: Página de Tarefas
+### 1. Corrigir `ProjectTasks.tsx` — adicionar `company_id` ao criar/editar tarefas
 
-**Criar `src/pages/Tarefas.tsx`**:
-- Query `project_tasks` com join em `projects` (nome do projeto) e `profiles` (nome do responsável)
-- Se `userRole` é `admin` ou `gestor`: busca todas as tarefas da empresa (filtro por `company_id`)
-- Caso contrário: filtra por `responsavel_id = user.id`
-- Filtros: status (pendente/em andamento/concluída), prioridade, projeto
-- Cada tarefa mostra: título, projeto vinculado, responsável, prioridade, prazo, status
-- Click abre dialog para editar (reutiliza lógica do TaskForm existente)
-- Botão "Nova Tarefa" com seleção de projeto
+O componente precisa receber o `companyId` como prop e incluí-lo no objeto `taskData` no insert e update.
 
-### Parte 2: Roteamento e Sidebar
+**Editar `src/components/projetos/ProjectTasks.tsx`**:
+- Adicionar `companyId` à interface de props
+- Incluir `company_id: companyId` no `taskData` do `handleSubmit`
 
-**Editar `src/App.tsx`**: Adicionar rota `/tarefas` no `InternalLayout`.
+### 2. Passar `companyId` de onde `ProjectTasks` é usado
 
-**Editar `src/components/app-sidebar.tsx`**: Adicionar item "Tarefas" (ícone `ListChecks`) visível para todas as roles, posicionado após "Projetos".
+**Editar `src/pages/Projetos.tsx`** (ou onde ProjectTasks é renderizado): passar `companyId={currentCompany?.id}` como prop.
+
+### 3. Corrigir tarefas existentes sem `company_id`
+
+**Migration SQL**: Atualizar tarefas existentes que têm `company_id = NULL` preenchendo com o `company_id` do projeto vinculado:
+
+```sql
+UPDATE project_tasks 
+SET company_id = projects.company_id 
+FROM projects 
+WHERE project_tasks.project_id = projects.id 
+  AND project_tasks.company_id IS NULL;
+```
 
 ### Arquivos
 
-- **Criar**: `src/pages/Tarefas.tsx`
-- **Editar**: `src/App.tsx` (rota), `src/components/app-sidebar.tsx` (menu item)
+- **Editar**: `src/components/projetos/ProjectTasks.tsx` — adicionar `companyId` prop e incluir no insert/update
+- **Editar**: arquivo que renderiza `<ProjectTasks>` — passar `companyId`
+- **Migration**: corrigir registros existentes sem `company_id`
 
