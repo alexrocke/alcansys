@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
+import { useCompany } from '@/hooks/useCompany';
 import { Loader2 } from 'lucide-react';
 
 const projectSchema = z.object({
@@ -32,6 +33,7 @@ interface ProjectFormProps {
 }
 
 export function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) {
+  const { currentCompany } = useCompany();
   const {
     register,
     handleSubmit,
@@ -105,6 +107,7 @@ export function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) 
         data_inicio: data.data_inicio || null,
         data_fim: data.data_fim || null,
         descricao: data.descricao || null,
+        company_id: currentCompany?.id || null,
       };
 
       if (project?.id) {

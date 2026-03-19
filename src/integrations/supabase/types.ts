@@ -230,6 +230,148 @@ export type Database = {
         }
         Relationships: []
       }
+      contacts: {
+        Row: {
+          autor_id: string | null
+          company_id: string
+          created_at: string
+          descricao: string
+          id: string
+          lead_id: string
+          tipo: string
+        }
+        Insert: {
+          autor_id?: string | null
+          company_id: string
+          created_at?: string
+          descricao: string
+          id?: string
+          lead_id: string
+          tipo?: string
+        }
+        Update: {
+          autor_id?: string | null
+          company_id?: string
+          created_at?: string
+          descricao?: string
+          id?: string
+          lead_id?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contacts_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contacts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contacts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          atendente_id: string | null
+          atendente_tipo: Database["public"]["Enums"]["attendant_type"]
+          channel_id: string | null
+          company_id: string
+          contato_nome: string
+          contato_telefone: string | null
+          created_at: string
+          id: string
+          instance_id: string | null
+          lead_id: string | null
+          mensagens_count: number
+          status: Database["public"]["Enums"]["conversation_status"]
+          ultima_mensagem: string | null
+          ultima_mensagem_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          atendente_id?: string | null
+          atendente_tipo?: Database["public"]["Enums"]["attendant_type"]
+          channel_id?: string | null
+          company_id: string
+          contato_nome: string
+          contato_telefone?: string | null
+          created_at?: string
+          id?: string
+          instance_id?: string | null
+          lead_id?: string | null
+          mensagens_count?: number
+          status?: Database["public"]["Enums"]["conversation_status"]
+          ultima_mensagem?: string | null
+          ultima_mensagem_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          atendente_id?: string | null
+          atendente_tipo?: Database["public"]["Enums"]["attendant_type"]
+          channel_id?: string | null
+          company_id?: string
+          contato_nome?: string
+          contato_telefone?: string | null
+          created_at?: string
+          id?: string
+          instance_id?: string | null
+          lead_id?: string | null
+          mensagens_count?: number
+          status?: Database["public"]["Enums"]["conversation_status"]
+          ultima_mensagem?: string | null
+          ultima_mensagem_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_atendente_id_fkey"
+            columns: ["atendente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_instance_id_fkey"
+            columns: ["instance_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           autor_id: string | null
@@ -342,6 +484,78 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          cargo: string | null
+          company_id: string
+          created_at: string
+          data_conversao: string | null
+          email: string | null
+          empresa: string | null
+          id: string
+          nome: string
+          notas: string | null
+          origem: Database["public"]["Enums"]["lead_origin"]
+          responsavel_id: string | null
+          status: Database["public"]["Enums"]["lead_status"]
+          tags: string[] | null
+          telefone: string | null
+          updated_at: string
+          valor_estimado: number | null
+        }
+        Insert: {
+          cargo?: string | null
+          company_id: string
+          created_at?: string
+          data_conversao?: string | null
+          email?: string | null
+          empresa?: string | null
+          id?: string
+          nome: string
+          notas?: string | null
+          origem?: Database["public"]["Enums"]["lead_origin"]
+          responsavel_id?: string | null
+          status?: Database["public"]["Enums"]["lead_status"]
+          tags?: string[] | null
+          telefone?: string | null
+          updated_at?: string
+          valor_estimado?: number | null
+        }
+        Update: {
+          cargo?: string | null
+          company_id?: string
+          created_at?: string
+          data_conversao?: string | null
+          email?: string | null
+          empresa?: string | null
+          id?: string
+          nome?: string
+          notas?: string | null
+          origem?: Database["public"]["Enums"]["lead_origin"]
+          responsavel_id?: string | null
+          status?: Database["public"]["Enums"]["lead_status"]
+          tags?: string[] | null
+          telefone?: string | null
+          updated_at?: string
+          valor_estimado?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketing_campaigns: {
         Row: {
           company_id: string | null
@@ -423,6 +637,67 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          company_id: string
+          content: string
+          conversation_id: string
+          created_at: string
+          direction: Database["public"]["Enums"]["message_direction"]
+          id: string
+          metadata: Json | null
+          read: boolean
+          sender_id: string | null
+          sender_type: Database["public"]["Enums"]["attendant_type"] | null
+        }
+        Insert: {
+          company_id: string
+          content: string
+          conversation_id: string
+          created_at?: string
+          direction: Database["public"]["Enums"]["message_direction"]
+          id?: string
+          metadata?: Json | null
+          read?: boolean
+          sender_id?: string | null
+          sender_type?: Database["public"]["Enums"]["attendant_type"] | null
+        }
+        Update: {
+          company_id?: string
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          direction?: Database["public"]["Enums"]["message_direction"]
+          id?: string
+          metadata?: Json | null
+          read?: boolean
+          sender_id?: string | null
+          sender_type?: Database["public"]["Enums"]["attendant_type"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -746,6 +1021,7 @@ export type Database = {
         | "receita_baixa"
         | "critico"
       app_role: "admin" | "gestor" | "colaborador" | "financeiro" | "marketing"
+      attendant_type: "ia" | "humano"
       automation_status: "ativa" | "inativa"
       campaign_status: "ativa" | "pausada" | "concluida"
       channel_status:
@@ -755,9 +1031,31 @@ export type Database = {
         | "error"
         | "pending"
       channel_type: "whatsapp" | "telegram" | "email" | "sms" | "webchat"
+      conversation_status:
+        | "aberta"
+        | "em_atendimento"
+        | "aguardando"
+        | "resolvida"
+        | "arquivada"
       document_type: "contrato" | "proposta" | "relatorio" | "outros"
       finance_type: "receita" | "despesa"
+      lead_origin:
+        | "site"
+        | "whatsapp"
+        | "indicacao"
+        | "campanha"
+        | "organico"
+        | "outro"
+      lead_status:
+        | "novo"
+        | "contatado"
+        | "qualificado"
+        | "proposta"
+        | "negociacao"
+        | "ganho"
+        | "perdido"
       membership_role: "owner" | "admin" | "manager" | "member" | "viewer"
+      message_direction: "incoming" | "outgoing"
       project_status:
         | "planejamento"
         | "em_andamento"
@@ -901,6 +1199,7 @@ export const Constants = {
         "critico",
       ],
       app_role: ["admin", "gestor", "colaborador", "financeiro", "marketing"],
+      attendant_type: ["ia", "humano"],
       automation_status: ["ativa", "inativa"],
       campaign_status: ["ativa", "pausada", "concluida"],
       channel_status: [
@@ -911,9 +1210,34 @@ export const Constants = {
         "pending",
       ],
       channel_type: ["whatsapp", "telegram", "email", "sms", "webchat"],
+      conversation_status: [
+        "aberta",
+        "em_atendimento",
+        "aguardando",
+        "resolvida",
+        "arquivada",
+      ],
       document_type: ["contrato", "proposta", "relatorio", "outros"],
       finance_type: ["receita", "despesa"],
+      lead_origin: [
+        "site",
+        "whatsapp",
+        "indicacao",
+        "campanha",
+        "organico",
+        "outro",
+      ],
+      lead_status: [
+        "novo",
+        "contatado",
+        "qualificado",
+        "proposta",
+        "negociacao",
+        "ganho",
+        "perdido",
+      ],
       membership_role: ["owner", "admin", "manager", "member", "viewer"],
+      message_direction: ["incoming", "outgoing"],
       project_status: [
         "planejamento",
         "em_andamento",

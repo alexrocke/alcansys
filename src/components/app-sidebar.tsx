@@ -9,7 +9,9 @@ import {
   UsersRound,
   Settings,
   LogOut,
-  MessageCircle
+  MessageCircle,
+  Contact,
+  MessagesSquare
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -35,6 +37,8 @@ const mainItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Projetos", url: "/projetos", icon: FolderKanban },
   { title: "Financeiro", url: "/financeiro", icon: DollarSign },
+  { title: "Leads & CRM", url: "/leads", icon: Contact },
+  { title: "Conversas", url: "/conversas", icon: MessagesSquare },
   { title: "Marketing", url: "/marketing", icon: TrendingUp },
   { title: "Automações", url: "/automacoes", icon: Zap },
   { title: "WhatsApp", url: "/whatsapp", icon: MessageCircle },

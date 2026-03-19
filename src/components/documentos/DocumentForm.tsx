@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useCompany } from '@/hooks/useCompany';
 import { useQuery } from '@tanstack/react-query';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useState } from 'react';
@@ -29,6 +30,7 @@ interface DocumentFormProps {
 
 export function DocumentForm({ document, onSuccess, onCancel }: DocumentFormProps) {
   const { user } = useAuth();
+  const { currentCompany } = useCompany();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -124,6 +126,7 @@ export function DocumentForm({ document, onSuccess, onCancel }: DocumentFormProp
         project_id: data.project_id || null,
         tags: tagsArray.length > 0 ? tagsArray : null,
         autor_id: user?.id,
+        company_id: currentCompany?.id || null,
       };
 
       if (document) {

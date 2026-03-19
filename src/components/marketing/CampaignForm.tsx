@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useCompany } from '@/hooks/useCompany';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
 
@@ -29,6 +30,7 @@ interface CampaignFormProps {
 }
 
 export function CampaignForm({ campaign, onSuccess, onCancel }: CampaignFormProps) {
+  const { currentCompany } = useCompany();
   const {
     register,
     handleSubmit,
@@ -60,6 +62,7 @@ export function CampaignForm({ campaign, onSuccess, onCancel }: CampaignFormProp
         roi: data.roi ? parseFloat(data.roi) : null,
         data_inicio: data.data_inicio || null,
         data_fim: data.data_fim || null,
+        company_id: currentCompany?.id || null,
       };
 
       if (campaign) {

@@ -5,76 +5,94 @@ import { supabase } from "@/integrations/supabase/client";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { LineChart, Line, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { useCompany } from "@/hooks/useCompany";
 
 const Index = () => {
+  const { currentCompany } = useCompany();
+  const companyId = currentCompany?.id;
   const currentDate = new Date();
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
 
   // Fetch projects
   const { data: projects } = useQuery({
-    queryKey: ["dashboard-projects"],
+    queryKey: ["dashboard-projects", companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from("projects")
         .select("*")
+        .eq("company_id", companyId)
         .in("status", ["em_andamento", "planejamento"]);
       if (error) throw error;
       return data || [];
     },
+    enabled: !!companyId,
   });
 
   // Fetch finances for current month
   const { data: finances } = useQuery({
-    queryKey: ["dashboard-finances", format(monthStart, "yyyy-MM-dd")],
+    queryKey: ["dashboard-finances", companyId, format(monthStart, "yyyy-MM-dd")],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from("finances")
         .select("*")
+        .eq("company_id", companyId)
         .gte("data", format(monthStart, "yyyy-MM-dd"))
         .lte("data", format(monthEnd, "yyyy-MM-dd"))
         .order("data", { ascending: true });
       if (error) throw error;
       return data || [];
     },
+    enabled: !!companyId,
   });
 
   // Fetch clients
   const { data: clients } = useQuery({
-    queryKey: ["dashboard-clients"],
+    queryKey: ["dashboard-clients", companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from("clients")
         .select("*")
+        .eq("company_id", companyId)
         .eq("status", "ativo");
       if (error) throw error;
       return data || [];
     },
+    enabled: !!companyId,
   });
 
   // Fetch marketing campaigns
   const { data: campaigns } = useQuery({
-    queryKey: ["dashboard-campaigns"],
+    queryKey: ["dashboard-campaigns", companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from("marketing_campaigns")
         .select("*")
+        .eq("company_id", companyId)
         .eq("status", "ativa");
       if (error) throw error;
       return data || [];
     },
+    enabled: !!companyId,
   });
 
   // Fetch automations
   const { data: automations } = useQuery({
-    queryKey: ["dashboard-automations"],
+    queryKey: ["dashboard-automations", companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from("automations")
-        .select("*");
+        .select("*")
+        .eq("company_id", companyId);
       if (error) throw error;
       return data || [];
     },
+    enabled: !!companyId,
   });
 
   // Calculate metrics

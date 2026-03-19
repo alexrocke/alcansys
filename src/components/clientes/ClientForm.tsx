@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useCompany } from '@/hooks/useCompany';
 import { useQuery } from '@tanstack/react-query';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -27,6 +28,7 @@ interface ClientFormProps {
 }
 
 export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
+  const { currentCompany } = useCompany();
   const {
     register,
     handleSubmit,
@@ -70,6 +72,7 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
         area: data.area,
         plano: data.plano || null,
         status: data.status,
+        company_id: currentCompany?.id || null,
       };
 
       if (client) {

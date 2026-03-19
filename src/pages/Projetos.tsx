@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useCompany } from '@/hooks/useCompany';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search } from 'lucide-react';
@@ -15,9 +16,13 @@ export default function Projetos() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
+  const { currentCompany } = useCompany();
+  const companyId = currentCompany?.id;
+
   const { data: projects, isLoading, refetch } = useQuery({
-    queryKey: ['projects'],
+    queryKey: ['projects', companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from('projects')
         .select(`
@@ -25,11 +30,13 @@ export default function Projetos() {
           client:clients(id, nome),
           gestor:profiles(id, nome)
         `)
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data;
     },
+    enabled: !!companyId,
   });
 
   const handleEdit = (project: any) => {

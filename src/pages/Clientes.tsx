@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useCompany } from '@/hooks/useCompany';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Users, TrendingUp, UserCheck, AlertCircle } from 'lucide-react';
@@ -17,17 +18,23 @@ export default function Clientes() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [areaFilter, setAreaFilter] = useState<string>('all');
 
+  const { currentCompany } = useCompany();
+  const companyId = currentCompany?.id;
+
   const { data: clients, isLoading, refetch } = useQuery({
-    queryKey: ['clients'],
+    queryKey: ['clients', companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from('clients')
         .select('*')
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data;
     },
+    enabled: !!companyId,
   });
 
   const { data: settings } = useQuery({

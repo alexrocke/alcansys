@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
+import { useCompany } from '@/hooks/useCompany';
 import { Loader2 } from 'lucide-react';
 
 const financeSchema = z.object({
@@ -29,6 +30,7 @@ interface FinanceFormProps {
 }
 
 export function FinanceForm({ finance, onSuccess, onCancel }: FinanceFormProps) {
+  const { currentCompany } = useCompany();
   const {
     register,
     handleSubmit,
@@ -82,6 +84,7 @@ export function FinanceForm({ finance, onSuccess, onCancel }: FinanceFormProps) 
         area: data.area || null,
         project_id: data.project_id || null,
         data: data.data,
+        company_id: currentCompany?.id || null,
       };
 
       if (finance?.id) {

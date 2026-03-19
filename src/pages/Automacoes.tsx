@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useCompany } from '@/hooks/useCompany';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Zap, Play, Pause, DollarSign } from 'lucide-react';
@@ -16,17 +17,23 @@ export default function Automacoes() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
+  const { currentCompany } = useCompany();
+  const companyId = currentCompany?.id;
+
   const { data: automations, isLoading, refetch } = useQuery({
-    queryKey: ['automations'],
+    queryKey: ['automations', companyId],
     queryFn: async () => {
+      if (!companyId) return [];
       const { data, error } = await supabase
         .from('automations')
         .select('*')
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data;
     },
+    enabled: !!companyId,
   });
 
   const handleEdit = (automation: any) => {

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useCompany } from '@/hooks/useCompany';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const automationSchema = z.object({
@@ -27,6 +28,7 @@ interface AutomationFormProps {
 }
 
 export function AutomationForm({ automation, onSuccess, onCancel }: AutomationFormProps) {
+  const { currentCompany } = useCompany();
   const {
     register,
     handleSubmit,
@@ -56,6 +58,7 @@ export function AutomationForm({ automation, onSuccess, onCancel }: AutomationFo
         status: data.status,
         custo: data.custo ? parseFloat(data.custo) : null,
         retorno: data.retorno ? parseFloat(data.retorno) : null,
+        company_id: currentCompany?.id || null,
       };
 
       if (automation) {

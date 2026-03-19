@@ -18,6 +18,8 @@ import Automacoes from "./pages/Automacoes";
 import WhatsAppPage from "./pages/WhatsApp";
 import Documentos from "./pages/Documentos";
 import Configuracoes from "./pages/Configuracoes";
+import Leads from "./pages/Leads";
+import Conversas from "./pages/Conversas";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -55,6 +57,8 @@ const App = () => (
                               <Route path="/automacoes" element={<Automacoes />} />
                               <Route path="/whatsapp" element={<WhatsAppPage />} />
                               <Route path="/documentos" element={<Documentos />} />
+                              <Route path="/leads" element={<Leads />} />
+                              <Route path="/conversas" element={<Conversas />} />
                               <Route path="/configuracoes" element={<Configuracoes />} />
                               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                               <Route path="*" element={<NotFound />} />
