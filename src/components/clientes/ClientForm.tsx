@@ -159,7 +159,7 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
             onValueChange={(value) => setValue('area', value)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecione a área" />
+              <SelectValue placeholder="Selecione o segmento" />
             </SelectTrigger>
             <SelectContent>
               {areas.length === 0 ? (
