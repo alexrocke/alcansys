@@ -75,7 +75,7 @@ export function AppSidebar() {
   const role = (userRole as AppRole) || 'colaborador';
 
   const isActive = (path: string) => {
-    if (path === "/") return currentPath === "/";
+    if (path === "/dashboard") return currentPath === "/dashboard";
     return currentPath.startsWith(path);
   };
 
