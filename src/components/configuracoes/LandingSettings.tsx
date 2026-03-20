@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
@@ -193,6 +194,11 @@ function ServicesEditor({ config, onChange }: { config: Record<string, any>; onC
     onChange({ ...config, cards: cards.filter((_: any, i: number) => i !== index) });
   };
 
+  const paddingX = config.card_padding_x ?? 24;
+  const paddingY = config.card_padding_y ?? 24;
+  const spacingX = config.card_spacing_x ?? 80;
+  const spacingY = config.card_spacing_y ?? 48;
+
   return (
     <div className="space-y-4">
       <div>
@@ -203,6 +209,52 @@ function ServicesEditor({ config, onChange }: { config: Record<string, any>; onC
         <Label>Subtítulo da seção</Label>
         <Textarea value={config.subtitle || ""} onChange={(e) => onChange({ ...config, subtitle: e.target.value })} />
       </div>
+
+      <Card className="p-4 space-y-4">
+        <Label className="text-base font-semibold">Tamanho e Espaçamento dos Cards</Label>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-xs">Padding Horizontal: {paddingX}px</Label>
+            <Slider
+              value={[paddingX]}
+              onValueChange={([v]) => onChange({ ...config, card_padding_x: v })}
+              min={8}
+              max={64}
+              step={4}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs">Padding Vertical: {paddingY}px</Label>
+            <Slider
+              value={[paddingY]}
+              onValueChange={([v]) => onChange({ ...config, card_padding_y: v })}
+              min={8}
+              max={64}
+              step={4}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs">Espaçamento Lateral: {spacingX}px</Label>
+            <Slider
+              value={[spacingX]}
+              onValueChange={([v]) => onChange({ ...config, card_spacing_x: v })}
+              min={0}
+              max={160}
+              step={8}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs">Espaçamento Vertical: {spacingY}px</Label>
+            <Slider
+              value={[spacingY]}
+              onValueChange={([v]) => onChange({ ...config, card_spacing_y: v })}
+              min={0}
+              max={120}
+              step={4}
+            />
+          </div>
+        </div>
+      </Card>
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
