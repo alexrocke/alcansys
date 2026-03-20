@@ -38,7 +38,7 @@ export function ClientAutomationManager() {
   const { data: clients } = useQuery({
     queryKey: ['clients-list'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('clients').select('id, nome, email, area').eq('status', 'ativo').order('nome');
+      const { data, error } = await supabase.from('clients').select('id, nome, email, area, company_id').eq('status', 'ativo').order('nome');
       if (error) throw error;
       return data;
     },
