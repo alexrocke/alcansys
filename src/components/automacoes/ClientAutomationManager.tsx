@@ -28,7 +28,7 @@ export function ClientAutomationManager() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('client_automations')
-        .select('*, companies:company_id(nome), workflow_templates:template_id(nome, categoria), whatsapp_instances:whatsapp_instance_id(status, phone_number)')
+        .select('*, clients:company_id(nome, email, telefone, area, plano), workflow_templates:template_id(nome, categoria), whatsapp_instances:whatsapp_instance_id(status, phone_number)')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data;
