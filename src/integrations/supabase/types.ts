@@ -694,6 +694,36 @@ export type Database = {
           },
         ]
       }
+      landing_config: {
+        Row: {
+          config: Json
+          created_at: string
+          id: string
+          order: number
+          section: string
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          id?: string
+          order?: number
+          section: string
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          id?: string
+          order?: number
+          section?: string
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           cargo: string | null

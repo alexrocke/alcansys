@@ -1,11 +1,12 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, Users, Target, DollarSign, Building2 } from "lucide-react";
+import { Settings, Users, Target, DollarSign, Building2, Globe } from "lucide-react";
 import { AreasSettings } from "@/components/configuracoes/AreasSettings";
 import { MetasSettings } from "@/components/configuracoes/MetasSettings";
 import { CustosFixosSettings } from "@/components/configuracoes/CustosFixosSettings";
 import { UsuariosSettings } from "@/components/configuracoes/UsuariosSettings";
 import { GeralSettings } from "@/components/configuracoes/GeralSettings";
+import { LandingSettings } from "@/components/configuracoes/LandingSettings";
 
 export default function Configuracoes() {
   return (
@@ -20,7 +21,7 @@ export default function Configuracoes() {
       </div>
 
       <Tabs defaultValue="geral" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="geral" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             Geral
@@ -40,6 +41,10 @@ export default function Configuracoes() {
           <TabsTrigger value="usuarios" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             Usuários
+          </TabsTrigger>
+          <TabsTrigger value="landing" className="flex items-center gap-2">
+            <Globe className="h-4 w-4" />
+            Landing Page
           </TabsTrigger>
         </TabsList>
 
@@ -109,6 +114,20 @@ export default function Configuracoes() {
             </CardHeader>
             <CardContent>
               <UsuariosSettings />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="landing">
+          <Card>
+            <CardHeader>
+              <CardTitle>Landing Page</CardTitle>
+              <CardDescription>
+                Edite textos, cards de serviço, métricas e seções da página inicial pública
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <LandingSettings />
             </CardContent>
           </Card>
         </TabsContent>
