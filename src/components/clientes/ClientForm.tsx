@@ -213,6 +213,22 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
             <p className="text-sm text-red-500">{errors.status.message}</p>
           )}
         </div>
+
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="email_portal">Email do Portal</Label>
+          <Input
+            id="email_portal"
+            type="email"
+            {...register('email_portal')}
+            placeholder="email-acesso@cliente.com"
+          />
+          <p className="text-xs text-muted-foreground">
+            Este email será usado para o cliente acessar o Portal do Cliente com informações exclusivas da empresa dele.
+          </p>
+          {errors.email_portal && (
+            <p className="text-sm text-red-500">{errors.email_portal.message}</p>
+          )}
+        </div>
       </div>
 
       <div className="flex gap-3 justify-end">
