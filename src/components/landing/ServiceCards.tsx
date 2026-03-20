@@ -2,13 +2,6 @@ import DisplayCards from "@/components/ui/display-cards";
 import { useLandingSection } from "@/hooks/useLandingConfig";
 import { getLucideIcon } from "@/lib/lucide-icon-map";
 
-const stackClasses = [
-  "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-  "[grid-area:stack] translate-x-20 translate-y-12 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-  "[grid-area:stack] translate-x-40 translate-y-24 hover:translate-y-12 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-  "[grid-area:stack] translate-x-60 translate-y-36 hover:translate-y-24",
-];
-
 const defaultCards = [
   { icon: "Zap", title: "Automação com IA", description: "Chatbots inteligentes e fluxos automatizados", subtitle: "WhatsApp integrado" },
   { icon: "FolderKanban", title: "Gestão de Projetos", description: "Organize tarefas e acompanhe prazos", subtitle: "Dashboards em tempo real" },
@@ -26,7 +19,12 @@ export function ServiceCards() {
   const config = section?.config as Record<string, any> | undefined;
   const cards = (config?.cards as any[]) || defaultCards;
 
-  const displayCards = cards.map((card: any, i: number) => {
+  const paddingX = config?.card_padding_x ?? 24;
+  const paddingY = config?.card_padding_y ?? 24;
+  const spacingX = config?.card_spacing_x ?? 80;
+  const spacingY = config?.card_spacing_y ?? 48;
+
+  const displayCards = cards.map((card: any) => {
     const Icon = getLucideIcon(card.icon);
     return {
       icon: <Icon className="size-5 text-primary" />,
@@ -35,7 +33,6 @@ export function ServiceCards() {
       date: card.subtitle,
       iconClassName: "text-primary",
       titleClassName: "text-primary",
-      className: stackClasses[i % stackClasses.length],
     };
   });
 
@@ -50,7 +47,13 @@ export function ServiceCards() {
         </p>
         <div className="flex min-h-[450px] w-full items-center justify-center">
           <div className="w-full max-w-4xl">
-            <DisplayCards cards={displayCards} />
+            <DisplayCards
+              cards={displayCards}
+              paddingX={paddingX}
+              paddingY={paddingY}
+              spacingX={spacingX}
+              spacingY={spacingY}
+            />
           </div>
         </div>
       </div>
