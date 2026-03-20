@@ -75,8 +75,8 @@ export function AreasSettings() {
 
     if (areas.includes(novaArea.trim())) {
       toast({
-        title: 'Área já existe',
-        description: 'Esta área já está cadastrada.',
+        title: 'Segmento já existe',
+        description: 'Este segmento já está cadastrado.',
         variant: 'destructive',
       });
       return;
