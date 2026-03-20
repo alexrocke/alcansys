@@ -214,43 +214,43 @@ function ServicesEditor({ config, onChange }: { config: Record<string, any>; onC
         <Label className="text-base font-semibold">Tamanho e Espaçamento dos Cards</Label>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-xs">Padding Horizontal: {paddingX}px</Label>
-            <Slider
-              value={[paddingX]}
-              onValueChange={([v]) => onChange({ ...config, card_padding_x: v })}
+            <Label className="text-xs">Padding Horizontal (px)</Label>
+            <Input
+              type="number"
               min={8}
               max={64}
-              step={4}
+              value={paddingX}
+              onChange={(e) => onChange({ ...config, card_padding_x: Number(e.target.value) })}
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-xs">Padding Vertical: {paddingY}px</Label>
-            <Slider
-              value={[paddingY]}
-              onValueChange={([v]) => onChange({ ...config, card_padding_y: v })}
+            <Label className="text-xs">Padding Vertical (px)</Label>
+            <Input
+              type="number"
               min={8}
               max={64}
-              step={4}
+              value={paddingY}
+              onChange={(e) => onChange({ ...config, card_padding_y: Number(e.target.value) })}
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-xs">Espaçamento Lateral: {spacingX}px</Label>
-            <Slider
-              value={[spacingX]}
-              onValueChange={([v]) => onChange({ ...config, card_spacing_x: v })}
+            <Label className="text-xs">Espaçamento Lateral (px)</Label>
+            <Input
+              type="number"
               min={0}
               max={160}
-              step={8}
+              value={spacingX}
+              onChange={(e) => onChange({ ...config, card_spacing_x: Number(e.target.value) })}
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-xs">Espaçamento Vertical: {spacingY}px</Label>
-            <Slider
-              value={[spacingY]}
-              onValueChange={([v]) => onChange({ ...config, card_spacing_y: v })}
+            <Label className="text-xs">Espaçamento Vertical (px)</Label>
+            <Input
+              type="number"
               min={0}
               max={120}
-              step={4}
+              value={spacingY}
+              onChange={(e) => onChange({ ...config, card_spacing_y: Number(e.target.value) })}
             />
           </div>
         </div>
