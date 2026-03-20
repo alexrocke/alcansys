@@ -43,7 +43,28 @@ serve(async (req) => {
 
     const { messages, context, type = "chat", clientId } = await req.json();
 
-    const systemPrompt = buildSystemPrompt(type, context);
+    let clientContext = "";
+    if (type === "workflow" && clientId) {
+      try {
+        const supabaseUrl = Deno.env.get("SUPABASE_URL");
+        const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+        if (supabaseUrl && serviceRoleKey) {
+          const sb = createClient(supabaseUrl, serviceRoleKey);
+          const { data: clientData } = await sb
+            .from("clients")
+            .select("nome, email, telefone, area, plano, status")
+            .eq("id", clientId)
+            .maybeSingle();
+          if (clientData) {
+            clientContext = `\n\nDados do cliente atribuído:\n- Nome: ${clientData.nome}\n- Email: ${clientData.email || 'N/A'}\n- Telefone: ${clientData.telefone || 'N/A'}\n- Segmento: ${clientData.area || 'N/A'}\n- Plano: ${clientData.plano || 'N/A'}\n- Status: ${clientData.status}`;
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch client data:", e);
+      }
+    }
+
+    const systemPrompt = buildSystemPrompt(type, context) + clientContext;
     const model = await getModelFromSettings();
 
     const allMessages = [

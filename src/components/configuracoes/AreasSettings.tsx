@@ -50,8 +50,8 @@ export function AreasSettings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['settings'] });
       toast({
-        title: 'Áreas atualizadas',
-        description: 'As áreas foram atualizadas com sucesso.',
+        title: 'Segmentos atualizados',
+        description: 'Os segmentos foram atualizados com sucesso.',
       });
     },
     onError: (error) => {

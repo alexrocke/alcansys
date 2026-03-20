@@ -60,9 +60,9 @@ export default function Configuracoes() {
         <TabsContent value="areas">
           <Card>
             <CardHeader>
-              <CardTitle>Áreas e Departamentos</CardTitle>
+              <CardTitle>Segmentos de Mercado</CardTitle>
               <CardDescription>
-                Gerencie as áreas de atuação da empresa
+                Gerencie os segmentos de mercado dos seus clientes (ex: Varejo, Atacado, etc.)
               </CardDescription>
             </CardHeader>
             <CardContent>

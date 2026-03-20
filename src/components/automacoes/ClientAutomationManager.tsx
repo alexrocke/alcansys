@@ -207,7 +207,7 @@ export function ClientAutomationManager() {
             </div>
             <div className="flex justify-end gap-3">
               <Button variant="outline" onClick={() => setIsAssigning(false)}>Cancelar</Button>
-              <Button onClick={handleAssign} disabled={!selectedCompany || !selectedTemplate}>Atribuir</Button>
+              <Button onClick={handleAssign} disabled={!selectedClient || !selectedTemplate}>Atribuir</Button>
             </div>
           </div>
         </DialogContent>

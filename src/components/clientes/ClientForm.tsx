@@ -164,7 +164,7 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
             <SelectContent>
               {areas.length === 0 ? (
                 <SelectItem value="sem-areas" disabled>
-                  Nenhuma área cadastrada
+                  Nenhum segmento cadastrado
                 </SelectItem>
               ) : (
                 areas.map((area: string) => (
