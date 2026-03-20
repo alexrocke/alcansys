@@ -48,7 +48,7 @@ interface MenuItem {
 const allRoles: AppRole[] = ['admin', 'gestor', 'colaborador', 'financeiro', 'marketing', 'vendedor'];
 
 const mainItems: MenuItem[] = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard, allowedRoles: allRoles },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, allowedRoles: allRoles },
   { title: "Projetos", url: "/projetos", icon: FolderKanban, allowedRoles: ['admin', 'gestor', 'colaborador'] },
   { title: "Tarefas", url: "/tarefas", icon: ListChecks, allowedRoles: allRoles },
   { title: "Financeiro", url: "/financeiro", icon: DollarSign, allowedRoles: ['admin', 'financeiro'] },
