@@ -60,7 +60,7 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
     },
   });
 
-  const areas = (settings?.[0]?.valor as any)?.areas || [];
+  const areas = (settings?.valor as any as string[]) || [];
   const selectedArea = watch('area');
   const selectedStatus = watch('status');
 
