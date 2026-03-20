@@ -41,7 +41,7 @@ serve(async (req) => {
       throw new Error("OPENAI_API_KEY is not configured");
     }
 
-    const { messages, context, type = "chat" } = await req.json();
+    const { messages, context, type = "chat", clientId } = await req.json();
 
     const systemPrompt = buildSystemPrompt(type, context);
     const model = await getModelFromSettings();
