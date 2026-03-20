@@ -170,12 +170,12 @@ export function ClientAutomationManager() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Empresa</label>
-              <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-                <SelectTrigger><SelectValue placeholder="Selecione a empresa" /></SelectTrigger>
+              <label className="text-sm font-medium">Cliente</label>
+              <Select value={selectedClient} onValueChange={setSelectedClient}>
+                <SelectTrigger><SelectValue placeholder="Selecione o cliente" /></SelectTrigger>
                 <SelectContent>
-                  {companies?.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                  {clients?.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>{c.nome} {c.area ? `(${c.area})` : ''}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
