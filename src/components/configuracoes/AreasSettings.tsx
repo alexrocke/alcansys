@@ -117,9 +117,9 @@ export function AreasSettings() {
       </div>
 
       <div className="space-y-2">
-        <p className="text-sm font-medium">Áreas Cadastradas</p>
+        <p className="text-sm font-medium">Segmentos Cadastrados</p>
         {areas.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhuma área cadastrada</p>
+          <p className="text-sm text-muted-foreground">Nenhum segmento cadastrado</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {areas.map((area) => (
