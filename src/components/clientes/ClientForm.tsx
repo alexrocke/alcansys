@@ -53,13 +53,14 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
       const { data, error } = await supabase
         .from('settings')
         .select('*')
-        .eq('chave', 'areas_ativas');
+        .eq('chave', 'areas')
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
   });
 
-  const areas = (settings?.[0]?.valor as any)?.areas || [];
+  const areas = (settings?.valor as any as string[]) || [];
   const selectedArea = watch('area');
   const selectedStatus = watch('status');
 
@@ -152,18 +153,18 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="area">Área *</Label>
+          <Label htmlFor="area">Segmento *</Label>
           <Select
             value={selectedArea}
             onValueChange={(value) => setValue('area', value)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecione a área" />
+              <SelectValue placeholder="Selecione o segmento" />
             </SelectTrigger>
             <SelectContent>
               {areas.length === 0 ? (
                 <SelectItem value="sem-areas" disabled>
-                  Nenhuma área cadastrada
+                  Nenhum segmento cadastrado
                 </SelectItem>
               ) : (
                 areas.map((area: string) => (

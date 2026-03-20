@@ -9,9 +9,12 @@ import { Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const OPENAI_MODELS = [
+  { value: "gpt-5", label: "GPT-5", desc: "Mais poderoso, raciocínio avançado" },
+  { value: "gpt-5-mini", label: "GPT-5 Mini", desc: "Equilíbrio custo/qualidade (recomendado)" },
+  { value: "gpt-5-nano", label: "GPT-5 Nano", desc: "Mais rápido e barato, alto volume" },
   { value: "gpt-4o", label: "GPT-4o", desc: "Multimodal, rápido" },
   { value: "gpt-4o-mini", label: "GPT-4o Mini", desc: "Equilíbrio custo/qualidade" },
-  { value: "gpt-4.1", label: "GPT-4.1", desc: "Último modelo, melhor raciocínio" },
+  { value: "gpt-4.1", label: "GPT-4.1", desc: "Melhor raciocínio" },
   { value: "gpt-4.1-mini", label: "GPT-4.1 Mini", desc: "Versão compacta do 4.1" },
   { value: "gpt-4.1-nano", label: "GPT-4.1 Nano", desc: "Mais rápido e barato" },
   { value: "o4-mini", label: "o4-mini", desc: "Raciocínio avançado, compacto" },

@@ -50,8 +50,8 @@ export function AreasSettings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['settings'] });
       toast({
-        title: 'Áreas atualizadas',
-        description: 'As áreas foram atualizadas com sucesso.',
+        title: 'Segmentos atualizados',
+        description: 'Os segmentos foram atualizados com sucesso.',
       });
     },
     onError: (error) => {
@@ -67,7 +67,7 @@ export function AreasSettings() {
     if (!novaArea.trim()) {
       toast({
         title: 'Campo vazio',
-        description: 'Digite o nome da área.',
+        description: 'Digite o nome do segmento.',
         variant: 'destructive',
       });
       return;
@@ -75,8 +75,8 @@ export function AreasSettings() {
 
     if (areas.includes(novaArea.trim())) {
       toast({
-        title: 'Área já existe',
-        description: 'Esta área já está cadastrada.',
+        title: 'Segmento já existe',
+        description: 'Este segmento já está cadastrado.',
         variant: 'destructive',
       });
       return;
@@ -104,7 +104,7 @@ export function AreasSettings() {
         <Input
           value={novaArea}
           onChange={(e) => setNovaArea(e.target.value)}
-          placeholder="Nova área (ex: Marketing, TI, Vendas)"
+          placeholder="Novo segmento (ex: Varejo, Atacado, Material de Construção)"
           onKeyPress={(e) => e.key === 'Enter' && handleAddArea()}
         />
         <Button onClick={handleAddArea} disabled={saveMutation.isPending}>
@@ -117,9 +117,9 @@ export function AreasSettings() {
       </div>
 
       <div className="space-y-2">
-        <p className="text-sm font-medium">Áreas Cadastradas</p>
+        <p className="text-sm font-medium">Segmentos Cadastrados</p>
         {areas.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhuma área cadastrada</p>
+          <p className="text-sm text-muted-foreground">Nenhum segmento cadastrado</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {areas.map((area) => (

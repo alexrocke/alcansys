@@ -27,7 +27,7 @@ export default function Configuracoes() {
           </TabsTrigger>
           <TabsTrigger value="areas" className="flex items-center gap-2">
             <Building2 className="h-4 w-4" />
-            Áreas
+            Segmentos
           </TabsTrigger>
           <TabsTrigger value="metas" className="flex items-center gap-2">
             <Target className="h-4 w-4" />
@@ -60,9 +60,9 @@ export default function Configuracoes() {
         <TabsContent value="areas">
           <Card>
             <CardHeader>
-              <CardTitle>Áreas e Departamentos</CardTitle>
+              <CardTitle>Segmentos de Mercado</CardTitle>
               <CardDescription>
-                Gerencie as áreas de atuação da empresa
+                Gerencie os segmentos de mercado dos seus clientes (ex: Varejo, Atacado, etc.)
               </CardDescription>
             </CardHeader>
             <CardContent>

@@ -19,7 +19,7 @@ const statusColors: Record<string, string> = {
 export function ClientAutomationManager() {
   const queryClient = useQueryClient();
   const [isAssigning, setIsAssigning] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState('');
+  const [selectedClient, setSelectedClient] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [clientPrompt, setClientPrompt] = useState('');
 
@@ -28,17 +28,17 @@ export function ClientAutomationManager() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('client_automations')
-        .select('*, companies:company_id(nome), workflow_templates:template_id(nome, categoria), whatsapp_instances:whatsapp_instance_id(status, phone_number)')
+        .select('*, clients:company_id(nome, email, telefone, area, plano), workflow_templates:template_id(nome, categoria), whatsapp_instances:whatsapp_instance_id(status, phone_number)')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data;
     },
   });
 
-  const { data: companies } = useQuery({
-    queryKey: ['companies-list'],
+  const { data: clients } = useQuery({
+    queryKey: ['clients-list'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('companies').select('id, nome').order('nome');
+      const { data, error } = await supabase.from('clients').select('id, nome, email, area').eq('status', 'ativo').order('nome');
       if (error) throw error;
       return data;
     },
@@ -54,12 +54,16 @@ export function ClientAutomationManager() {
   });
 
   const handleAssign = async () => {
-    if (!selectedCompany || !selectedTemplate) return;
+    if (!selectedClient || !selectedTemplate) return;
+    
+    const client = clients?.find(c => c.id === selectedClient);
+    
     const { error } = await supabase.from('client_automations').insert([{
-      company_id: selectedCompany,
+      company_id: selectedClient,
       template_id: selectedTemplate,
       prompt: clientPrompt || null,
       status: 'configurando',
+      config: client ? { client_nome: client.nome, client_email: client.email, client_area: client.area } : {},
     }]);
     if (error) {
       toast({ title: 'Erro', description: error.message, variant: 'destructive' });
@@ -67,7 +71,7 @@ export function ClientAutomationManager() {
       toast({ title: 'Workflow atribuído ao cliente' });
       queryClient.invalidateQueries({ queryKey: ['client-automations'] });
       setIsAssigning(false);
-      setSelectedCompany('');
+      setSelectedClient('');
       setSelectedTemplate('');
       setClientPrompt('');
     }
@@ -123,8 +127,8 @@ export function ClientAutomationManager() {
               <Card key={ca.id} className="border rounded-xl">
                 <CardContent className="flex flex-col md:flex-row md:items-center justify-between gap-3 py-4">
                   <div className="space-y-1">
-                    <p className="font-medium">{ca.companies?.nome || 'Empresa'}</p>
-                    <p className="text-sm text-muted-foreground">{ca.workflow_templates?.nome || 'Template'}</p>
+                    <p className="font-medium">{ca.clients?.nome || 'Cliente'}</p>
+                    <p className="text-sm text-muted-foreground">{ca.workflow_templates?.nome || 'Template'} {ca.clients?.area ? `• ${ca.clients.area}` : ''}</p>
                   </div>
                   <div className="flex items-center gap-3 flex-wrap">
                     <Badge className={statusColors[ca.status] || ''}>
@@ -166,12 +170,12 @@ export function ClientAutomationManager() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Empresa</label>
-              <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-                <SelectTrigger><SelectValue placeholder="Selecione a empresa" /></SelectTrigger>
+              <label className="text-sm font-medium">Cliente</label>
+              <Select value={selectedClient} onValueChange={setSelectedClient}>
+                <SelectTrigger><SelectValue placeholder="Selecione o cliente" /></SelectTrigger>
                 <SelectContent>
-                  {companies?.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                  {clients?.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>{c.nome} {c.area ? `(${c.area})` : ''}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -203,7 +207,7 @@ export function ClientAutomationManager() {
             </div>
             <div className="flex justify-end gap-3">
               <Button variant="outline" onClick={() => setIsAssigning(false)}>Cancelar</Button>
-              <Button onClick={handleAssign} disabled={!selectedCompany || !selectedTemplate}>Atribuir</Button>
+              <Button onClick={handleAssign} disabled={!selectedClient || !selectedTemplate}>Atribuir</Button>
             </div>
           </div>
         </DialogContent>
