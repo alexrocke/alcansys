@@ -153,7 +153,7 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="area">Área *</Label>
+          <Label htmlFor="area">Segmento *</Label>
           <Select
             value={selectedArea}
             onValueChange={(value) => setValue('area', value)}
