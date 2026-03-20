@@ -12,6 +12,7 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { CompanyProvider } from "@/hooks/useCompany";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
+import Landing from "./pages/Landing";
 import Projetos from "./pages/Projetos";
 import Financeiro from "./pages/Financeiro";
 import Clientes from "./pages/Clientes";
