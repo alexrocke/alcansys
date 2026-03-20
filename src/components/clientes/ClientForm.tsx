@@ -17,6 +17,7 @@ const clientSchema = z.object({
   area: z.string().min(1, 'Área é obrigatória'),
   plano: z.string().optional().or(z.literal('')),
   status: z.enum(['ativo', 'inativo']),
+  email_portal: z.string().trim().email('Email inválido').max(255, 'Email muito longo').optional().or(z.literal('')),
 });
 
 type ClientFormData = z.infer<typeof clientSchema>;
