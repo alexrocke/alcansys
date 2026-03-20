@@ -43,10 +43,10 @@ export function ServiceCards() {
     <section className="py-24 px-6 md:px-12">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-4">
-          {config.title || defaultTexts.title}
+          {config?.title || defaultTexts.title}
         </h2>
         <p className="text-white/50 text-center mb-16 max-w-2xl mx-auto">
-          {config.subtitle || defaultTexts.subtitle}
+          {config?.subtitle || defaultTexts.subtitle}
         </p>
         <div className="flex min-h-[450px] w-full items-center justify-center">
           <div className="w-full max-w-4xl">
