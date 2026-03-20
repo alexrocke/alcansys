@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, X } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { WorkflowStepBuilder, type WorkflowStep } from './WorkflowStepBuilder';
 
 const schema = z.object({
   nome: z.string().min(1, 'Nome é obrigatório').max(100),
@@ -31,6 +33,9 @@ interface Props {
 export function WorkflowTemplateForm({ template, onSuccess, onCancel }: Props) {
   const [features, setFeatures] = useState<string[]>(template?.features || []);
   const [newFeature, setNewFeature] = useState('');
+  const [steps, setSteps] = useState<WorkflowStep[]>(
+    (template?.config_schema as any)?.steps || []
+  );
 
   const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -65,6 +70,7 @@ export function WorkflowTemplateForm({ template, onSuccess, onCancel }: Props) {
         prompt_template: data.prompt_template || null,
         ativo: data.ativo,
         features: features,
+        config_schema: { steps } as any,
       };
 
       if (template) {
@@ -148,6 +154,11 @@ export function WorkflowTemplateForm({ template, onSuccess, onCancel }: Props) {
           </div>
         )}
       </div>
+
+      <Separator />
+
+      {/* Workflow Step Builder */}
+      <WorkflowStepBuilder steps={steps} onChange={setSteps} />
 
       <div className="flex gap-3 justify-end">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>Cancelar</Button>

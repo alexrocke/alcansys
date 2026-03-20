@@ -6,12 +6,23 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const OPENAI_MODELS = [
+  { value: "gpt-4o", label: "GPT-4o", desc: "Multimodal, rápido" },
+  { value: "gpt-4o-mini", label: "GPT-4o Mini", desc: "Equilíbrio custo/qualidade" },
+  { value: "gpt-4.1", label: "GPT-4.1", desc: "Último modelo, melhor raciocínio" },
+  { value: "gpt-4.1-mini", label: "GPT-4.1 Mini", desc: "Versão compacta do 4.1" },
+  { value: "gpt-4.1-nano", label: "GPT-4.1 Nano", desc: "Mais rápido e barato" },
+  { value: "o4-mini", label: "o4-mini", desc: "Raciocínio avançado, compacto" },
+];
 
 export function GeralSettings() {
   const queryClient = useQueryClient();
   const [nomeEmpresa, setNomeEmpresa] = useState("");
   const [emailContato, setEmailContato] = useState("");
   const [telefoneContato, setTelefoneContato] = useState("");
+  const [modeloIA, setModeloIA] = useState("gpt-4o-mini");
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ['settings', 'geral'],
@@ -29,6 +40,7 @@ export function GeralSettings() {
         setNomeEmpresa(valorObj.nomeEmpresa || "");
         setEmailContato(valorObj.emailContato || "");
         setTelefoneContato(valorObj.telefoneContato || "");
+        setModeloIA(valorObj.modeloIA || "gpt-4o-mini");
       }
       
       return data;
@@ -41,6 +53,7 @@ export function GeralSettings() {
         nomeEmpresa,
         emailContato,
         telefoneContato,
+        modeloIA,
       };
 
       if (settings?.id) {
@@ -117,6 +130,26 @@ export function GeralSettings() {
           onChange={(e) => setTelefoneContato(e.target.value)}
           placeholder="(00) 00000-0000"
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Modelo de IA (OpenAI)</Label>
+        <Select value={modeloIA} onValueChange={setModeloIA}>
+          <SelectTrigger>
+            <SelectValue placeholder="Selecione o modelo" />
+          </SelectTrigger>
+          <SelectContent>
+            {OPENAI_MODELS.map((m) => (
+              <SelectItem key={m.value} value={m.value}>
+                <span className="font-medium">{m.label}</span>
+                <span className="ml-2 text-muted-foreground text-xs">— {m.desc}</span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">
+          Este modelo será usado como padrão para todas as funções de IA do sistema.
+        </p>
       </div>
 
       <Button

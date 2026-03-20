@@ -1,10 +1,34 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+async function getModelFromSettings(): Promise<string> {
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceRoleKey) return "gpt-4o-mini";
+
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    const { data } = await supabase
+      .from("settings")
+      .select("valor")
+      .eq("chave", "configuracoes_gerais")
+      .maybeSingle();
+
+    if (data?.valor) {
+      const valor = data.valor as any;
+      if (valor.modeloIA) return valor.modeloIA;
+    }
+  } catch (e) {
+    console.error("Failed to read model from settings:", e);
+  }
+  return "gpt-4o-mini";
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -19,8 +43,8 @@ serve(async (req) => {
 
     const { messages, context, type = "chat" } = await req.json();
 
-    // Build system prompt based on context type
     const systemPrompt = buildSystemPrompt(type, context);
+    const model = await getModelFromSettings();
 
     const allMessages = [
       { role: "system", content: systemPrompt },
@@ -34,7 +58,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model,
         messages: allMessages,
         stream: true,
       }),
@@ -82,19 +106,14 @@ function buildSystemPrompt(type: string, context?: any): string {
     case "workflow":
       return context?.prompt ||
         `${basePrompt} Você é um agente de atendimento automatizado via WhatsApp. Seja cordial, objetivo e resolva as dúvidas do cliente.`;
-
     case "leads":
       return `${basePrompt} Você é especialista em vendas e qualificação de leads. Analise os dados fornecidos e dê sugestões estratégicas para conversão. Seja direto e actionable.`;
-
     case "marketing":
       return `${basePrompt} Você é um copywriter especialista em marketing digital. Crie textos persuasivos, criativos e adaptados ao público-alvo. Use técnicas de copywriting como AIDA, PAS, etc.`;
-
     case "finance":
       return `${basePrompt} Você é um analista financeiro. Analise dados financeiros e forneça insights sobre receitas, despesas, margens e tendências. Seja preciso com números.`;
-
     case "tasks":
       return `${basePrompt} Você é um gerente de projetos. Ajude a organizar tarefas, priorizar atividades e sugerir melhorias no fluxo de trabalho.`;
-
     case "chat":
     default:
       return `${basePrompt} Ajude o usuário com qualquer dúvida sobre a plataforma, negócios, vendas, marketing ou gestão.`;
