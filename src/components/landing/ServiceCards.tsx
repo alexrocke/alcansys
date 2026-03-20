@@ -23,8 +23,8 @@ const defaultTexts = {
 
 export function ServiceCards() {
   const { data: section } = useLandingSection("services");
-  const config = section?.config || defaultTexts;
-  const cards = (config.cards as any[]) || defaultCards;
+  const config = section?.config as Record<string, any> | undefined;
+  const cards = (config?.cards as any[]) || defaultCards;
 
   const displayCards = cards.map((card: any, i: number) => {
     const Icon = getLucideIcon(card.icon);

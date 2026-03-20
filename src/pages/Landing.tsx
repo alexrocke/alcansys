@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { LandingHeader } from "@/components/landing/LandingHeader";
-import { LandingFooter } from "@/components/landing/LandingFooter";
+
 import { SplineScene } from "@/components/landing/SplineRobot";
 import { ServiceCards } from "@/components/landing/ServiceCards";
 import { Spotlight } from "@/components/ui/spotlight";
