@@ -48,7 +48,7 @@ interface MenuItem {
 const allRoles: AppRole[] = ['admin', 'gestor', 'colaborador', 'financeiro', 'marketing', 'vendedor'];
 
 const mainItems: MenuItem[] = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard, allowedRoles: allRoles },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, allowedRoles: allRoles },
   { title: "Projetos", url: "/projetos", icon: FolderKanban, allowedRoles: ['admin', 'gestor', 'colaborador'] },
   { title: "Tarefas", url: "/tarefas", icon: ListChecks, allowedRoles: allRoles },
   { title: "Financeiro", url: "/financeiro", icon: DollarSign, allowedRoles: ['admin', 'financeiro'] },
@@ -75,7 +75,7 @@ export function AppSidebar() {
   const role = (userRole as AppRole) || 'colaborador';
 
   const isActive = (path: string) => {
-    if (path === "/") return currentPath === "/";
+    if (path === "/dashboard") return currentPath === "/dashboard";
     return currentPath.startsWith(path);
   };
 
@@ -108,7 +108,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink 
                       to={item.url} 
-                      end={item.url === "/"}
+                      end={item.url === "/dashboard"}
                       className="flex items-center gap-3"
                       activeClassName="bg-primary/10 text-primary font-semibold"
                     >

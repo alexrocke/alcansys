@@ -12,6 +12,7 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { CompanyProvider } from "@/hooks/useCompany";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
+import Landing from "./pages/Landing";
 import Projetos from "./pages/Projetos";
 import Financeiro from "./pages/Financeiro";
 import Clientes from "./pages/Clientes";
@@ -51,7 +52,7 @@ function InternalLayout() {
           </header>
           <main className="flex-1 overflow-auto">
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/dashboard" element={<Index />} />
               <Route path="/projetos" element={<Projetos />} />
               <Route path="/tarefas" element={<Tarefas />} />
               <Route path="/financeiro" element={<Financeiro />} />
@@ -156,6 +157,7 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <Routes>
+              <Route path="/" element={<Landing />} />
               <Route path="/auth" element={<Auth />} />
               <Route
                 path="/*"
