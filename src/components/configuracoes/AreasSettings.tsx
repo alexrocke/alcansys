@@ -104,7 +104,7 @@ export function AreasSettings() {
         <Input
           value={novaArea}
           onChange={(e) => setNovaArea(e.target.value)}
-          placeholder="Nova área (ex: Marketing, TI, Vendas)"
+          placeholder="Novo segmento (ex: Varejo, Atacado, Material de Construção)"
           onKeyPress={(e) => e.key === 'Enter' && handleAddArea()}
         />
         <Button onClick={handleAddArea} disabled={saveMutation.isPending}>
