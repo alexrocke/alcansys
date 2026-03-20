@@ -127,8 +127,8 @@ export function ClientAutomationManager() {
               <Card key={ca.id} className="border rounded-xl">
                 <CardContent className="flex flex-col md:flex-row md:items-center justify-between gap-3 py-4">
                   <div className="space-y-1">
-                    <p className="font-medium">{ca.companies?.nome || 'Empresa'}</p>
-                    <p className="text-sm text-muted-foreground">{ca.workflow_templates?.nome || 'Template'}</p>
+                    <p className="font-medium">{ca.clients?.nome || 'Cliente'}</p>
+                    <p className="text-sm text-muted-foreground">{ca.workflow_templates?.nome || 'Template'} {ca.clients?.area ? `• ${ca.clients.area}` : ''}</p>
                   </div>
                   <div className="flex items-center gap-3 flex-wrap">
                     <Badge className={statusColors[ca.status] || ''}>
