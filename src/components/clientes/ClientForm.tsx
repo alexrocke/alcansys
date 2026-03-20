@@ -45,6 +45,7 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
       area: client?.area || '',
       plano: client?.plano || '',
       status: client?.status || 'ativo',
+      email_portal: client?.email_portal || '',
     },
   });
 
