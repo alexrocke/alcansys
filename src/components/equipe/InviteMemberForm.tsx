@@ -5,10 +5,9 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Check } from 'lucide-react';
 
 const inviteSchema = z.object({
   nome: z.string().trim().min(1, 'Nome é obrigatório').max(100, 'Nome muito longo'),
@@ -116,29 +115,33 @@ export function InviteMemberForm({ onSuccess, onCancel }: InviteMemberFormProps)
       <div className="space-y-3">
         <Label>Permissões *</Label>
         <div className="grid gap-3 md:grid-cols-2">
-          {availableRoles.map((role) => (
-            <div
-              key={role.value}
-              className="flex items-start space-x-3 rounded-lg border border-border p-3 hover:bg-muted/50 transition-colors cursor-pointer"
-              onClick={() => handleRoleToggle(role.value)}
-            >
-              <Checkbox
-                id={`invite-${role.value}`}
-                checked={selectedRoles.includes(role.value)}
-                onCheckedChange={() => handleRoleToggle(role.value)}
-                className="mt-0.5"
-              />
-              <div className="space-y-0.5">
-                <label
-                  htmlFor={`invite-${role.value}`}
-                  className="text-sm font-medium leading-none cursor-pointer"
-                >
-                  {role.label}
-                </label>
-                <p className="text-xs text-muted-foreground">{role.description}</p>
-              </div>
-            </div>
-          ))}
+          {availableRoles.map((role) => {
+            const isSelected = selectedRoles.includes(role.value);
+            return (
+              <button
+                key={role.value}
+                type="button"
+                className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-colors ${
+                  isSelected
+                    ? 'border-primary bg-primary/10'
+                    : 'border-border hover:bg-muted/50'
+                }`}
+                onClick={() => handleRoleToggle(role.value)}
+              >
+                <div className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
+                  isSelected ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'
+                }`}>
+                  {isSelected && <Check className="h-3 w-3" />}
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-sm font-medium leading-none">
+                    {role.label}
+                  </span>
+                  <p className="text-xs text-muted-foreground">{role.description}</p>
+                </div>
+              </button>
+            );
+          })}
         </div>
         {selectedRoles.length === 0 && (
           <p className="text-sm text-muted-foreground">Selecione pelo menos uma permissão</p>
