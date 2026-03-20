@@ -35,10 +35,10 @@ export function ClientAutomationManager() {
     },
   });
 
-  const { data: companies } = useQuery({
-    queryKey: ['companies-list'],
+  const { data: clients } = useQuery({
+    queryKey: ['clients-list'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('companies').select('id, nome').order('nome');
+      const { data, error } = await supabase.from('clients').select('id, nome, email, area').eq('status', 'ativo').order('nome');
       if (error) throw error;
       return data;
     },
