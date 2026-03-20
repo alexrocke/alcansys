@@ -1,64 +1,44 @@
 
 
-## Plano: Correções e Melhorias (Modelos GPT-5, Áreas/Segmentos, Automações vinculadas a Clientes)
+## Plano: Corrigir listagem de Clientes Ativos + Adicionar email de portal no cadastro de cliente
 
-### 1. Adicionar modelos GPT-5 ao seletor
+### Problemas identificados
 
-Adicionar os modelos GPT-5 da OpenAI na lista de `OPENAI_MODELS` em `GeralSettings.tsx`:
-- `gpt-5` — Modelo mais poderoso, raciocínio avançado
-- `gpt-5-mini` — Equilíbrio custo/qualidade (recomendado)
-- `gpt-5-nano` — Mais rápido e barato, alto volume
+1. **Listagem vazia em "Clientes Ativos"**: A query usa `clients:company_id(...)` para fazer join, mas `company_id` é FK para a tabela `companies`, não `clients`. Resultado: mostra o nome da *empresa* (Alcansys), não do *cliente*. E como o client_id real está no campo `config` (JSONB), a listagem não consegue mostrar os dados corretos do cliente.
 
-**Arquivo**: `src/components/configuracoes/GeralSettings.tsx`
+2. **Dois "Alcansys" no dropdown**: São dois registros distintos na tabela `clients` — "Alcansys" e "Alcansys Sistemas", ambos com segmento "Desenvolvimento". Isso é dado, não bug. Se quiser remover o duplicado, basta deletar um dos registros em Clientes.
 
----
+3. **Email de acesso ao portal**: O usuário quer um campo separado `email_portal` no cadastro do cliente. Esse email será usado para dar acesso ao Portal do Cliente, onde ele verá apenas informações da empresa dele.
 
-### 2. Página de Conversas
+### Mudanças
 
-A página "Conversas" existe para gerenciar as **conversas de WhatsApp** geradas pelas automações (quando um cliente final interage via WhatsApp, a conversa aparece ali). Ela está vazia porque ainda não há instâncias WhatsApp conectadas enviando/recebendo mensagens. Quando as automações estiverem ativas com WhatsApp conectado, as conversas aparecerão automaticamente. Nenhuma alteração necessária por enquanto.
+**1. Corrigir `ClientAutomationManager.tsx` — listagem de clientes ativos**
 
----
+- Mudar a query principal para não depender do join `clients:company_id` (que aponta para `companies`)
+- Ler o nome do cliente do campo `config` (JSONB) onde `client_nome`, `client_email`, `client_area` já são salvos na atribuição
+- Mostrar corretamente o nome do cliente na listagem
 
-### 3. Campo "Área" no cadastro de cliente → Segmentos de mercado
+**2. Adicionar campo `email_portal` na tabela `clients`**
 
-Atualmente o campo "Área" no formulário de cliente puxa de `settings.areas_ativas`, que são áreas internas da empresa (Desenvolvimento, Marketing, etc.). O usuário quer que esse campo represente **segmentos de mercado** do cliente.
+- Migration: `ALTER TABLE clients ADD COLUMN email_portal text;`
+- Este email será o login do cliente no portal
 
-**Solução**: Criar uma nova configuração `segmentos` na aba de Configurações (ou renomear "Áreas" para "Segmentos") com valores como Varejo, Atacado, Material de Construção, etc. Ajustar o `ClientForm` para usar essa nova configuração.
+**3. Atualizar `ClientForm.tsx`**
 
-**Alternativa mais simples**: Manter a mesma estrutura de `AreasSettings`, mas renomear o conceito para "Segmentos" e atualizar o placeholder/label no `ClientForm`. Vou adicionar segmentos pré-definidos sugeridos.
+- Adicionar campo "Email do Portal" com descrição explicando que é o email de acesso ao portal
+- Salvar no campo `email_portal`
 
-**Arquivos editados**:
-- `src/components/configuracoes/AreasSettings.tsx` — Renomear para "Segmentos de Mercado", atualizar placeholder
-- `src/components/clientes/ClientForm.tsx` — Ajustar para ler da chave `areas` (corrigir a inconsistência com `areas_ativas`), renomear label para "Segmento"
-- `src/pages/Configuracoes.tsx` — Atualizar label da aba para "Segmentos"
-- Outros arquivos que usam `areas_ativas` precisarão ser ajustados para consistência
+**4. Vincular portal ao cliente via `email_portal`**
 
----
+- No `useAuth` ou na lógica do portal, quando o usuário logado não tem `app_role`, buscar na tabela `clients` pelo `email_portal` = email do usuário logado
+- Filtrar dados do portal (automações, faturas, sistemas) pelo `company_id` do cliente encontrado
 
-### 4. Automações: vincular somente a clientes cadastrados
-
-Atualmente o `ClientAutomationManager` lista **companies** (empresas/tenants) para atribuir workflows. O correto é listar **clients** (clientes cadastrados na tabela `clients`).
-
-**Mudanças**:
-- Trocar a query de `companies` para `clients` no dialog de atribuição
-- Salvar o `client_id` em vez de `company_id` (ou usar `company_id` do cliente selecionado)
-- Na listagem, mostrar o nome do cliente em vez da empresa
-- Ao processar IA, buscar todos os dados do cliente (nome, email, telefone, área, plano) e incluir no contexto do prompt
-
-**Arquivos editados**:
-- `src/components/automacoes/ClientAutomationManager.tsx` — Query de `clients` em vez de `companies`, ajustar atribuição
-- `supabase/functions/ai-assistant/index.ts` — Quando tipo for `workflow`, buscar dados do cliente atribuído e injetar no contexto da IA
-
----
-
-### Resumo de arquivos
+### Arquivos editados
 
 | Arquivo | Mudança |
 |---------|---------|
-| `GeralSettings.tsx` | Adicionar GPT-5, GPT-5 Mini, GPT-5 Nano |
-| `AreasSettings.tsx` | Renomear para Segmentos, ajustar placeholder |
-| `Configuracoes.tsx` | Renomear aba "Áreas" → "Segmentos" |
-| `ClientForm.tsx` | Corrigir chave settings, renomear label |
-| `ClientAutomationManager.tsx` | Usar tabela `clients` em vez de `companies` |
-| `ai-assistant/index.ts` | Injetar dados do cliente no contexto do workflow |
+| `ClientAutomationManager.tsx` | Ler nome do cliente do `config` JSONB em vez de join errado |
+| `ClientForm.tsx` | Adicionar campo `email_portal` |
+| Migration (nova) | `ALTER TABLE clients ADD COLUMN email_portal text` |
+| `src/integrations/supabase/types.ts` | Atualizar tipos para incluir `email_portal` |
 
