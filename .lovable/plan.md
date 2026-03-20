@@ -1,63 +1,64 @@
 
 
-## Plano: Seletor de Modelo OpenAI em Configurações + Criador Visual de Workflow em Automações
+## Plano: Correções e Melhorias (Modelos GPT-5, Áreas/Segmentos, Automações vinculadas a Clientes)
 
-### 1. Seletor de Modelo OpenAI nas Configurações Gerais
+### 1. Adicionar modelos GPT-5 ao seletor
 
-**O que muda**: Na aba "Geral" de Configurações, adicionar um campo para escolher o modelo OpenAI padrão do sistema. O modelo selecionado será salvo na tabela `settings` (chave `configuracoes_gerais`) e lido pela edge function `ai-assistant`.
+Adicionar os modelos GPT-5 da OpenAI na lista de `OPENAI_MODELS` em `GeralSettings.tsx`:
+- `gpt-5` — Modelo mais poderoso, raciocínio avançado
+- `gpt-5-mini` — Equilíbrio custo/qualidade (recomendado)
+- `gpt-5-nano` — Mais rápido e barato, alto volume
 
-**Modelos disponíveis** (OpenAI atualizados):
-- `gpt-4o` — Modelo principal, multimodal, rápido
-- `gpt-4o-mini` — Equilíbrio entre custo e qualidade (padrão atual)
-- `gpt-4.1` — Último modelo, melhor raciocínio
-- `gpt-4.1-mini` — Versão compacta do 4.1
-- `gpt-4.1-nano` — Mais rápido e barato, alto volume
-- `o4-mini` — Modelo de raciocínio avançado, compacto
+**Arquivo**: `src/components/configuracoes/GeralSettings.tsx`
+
+---
+
+### 2. Página de Conversas
+
+A página "Conversas" existe para gerenciar as **conversas de WhatsApp** geradas pelas automações (quando um cliente final interage via WhatsApp, a conversa aparece ali). Ela está vazia porque ainda não há instâncias WhatsApp conectadas enviando/recebendo mensagens. Quando as automações estiverem ativas com WhatsApp conectado, as conversas aparecerão automaticamente. Nenhuma alteração necessária por enquanto.
+
+---
+
+### 3. Campo "Área" no cadastro de cliente → Segmentos de mercado
+
+Atualmente o campo "Área" no formulário de cliente puxa de `settings.areas_ativas`, que são áreas internas da empresa (Desenvolvimento, Marketing, etc.). O usuário quer que esse campo represente **segmentos de mercado** do cliente.
+
+**Solução**: Criar uma nova configuração `segmentos` na aba de Configurações (ou renomear "Áreas" para "Segmentos") com valores como Varejo, Atacado, Material de Construção, etc. Ajustar o `ClientForm` para usar essa nova configuração.
+
+**Alternativa mais simples**: Manter a mesma estrutura de `AreasSettings`, mas renomear o conceito para "Segmentos" e atualizar o placeholder/label no `ClientForm`. Vou adicionar segmentos pré-definidos sugeridos.
 
 **Arquivos editados**:
-- `src/components/configuracoes/GeralSettings.tsx` — Adicionar Select com os modelos, salvar junto com as outras configs
-- `supabase/functions/ai-assistant/index.ts` — Ler o modelo da tabela `settings` via Supabase client (com service role key) ao invés de usar hardcoded `gpt-4o-mini`
+- `src/components/configuracoes/AreasSettings.tsx` — Renomear para "Segmentos de Mercado", atualizar placeholder
+- `src/components/clientes/ClientForm.tsx` — Ajustar para ler da chave `areas` (corrigir a inconsistência com `areas_ativas`), renomear label para "Segmento"
+- `src/pages/Configuracoes.tsx` — Atualizar label da aba para "Segmentos"
+- Outros arquivos que usam `areas_ativas` precisarão ser ajustados para consistência
 
-### 2. Criador Visual de Workflow em Automações
+---
 
-**O que muda**: Na aba "Templates" da página de Automações, o formulário existente (`WorkflowTemplateForm`) será expandido para incluir um **construtor de etapas do workflow** — permitindo montar visualmente a sequência de ações que a automação vai executar.
+### 4. Automações: vincular somente a clientes cadastrados
 
-**Funcionalidade do criador**:
-- Lista ordenável de **etapas** (steps) do workflow
-- Cada etapa tem: tipo (ex: "Enviar mensagem", "Aguardar resposta", "Consultar IA", "Condicional", "Transferir atendente"), configuração específica, e delay opcional
-- Botão para adicionar/remover etapas
-- As etapas ficam salvas no campo `config_schema` (jsonb) do `workflow_templates`
-- Tipos de etapas disponíveis:
-  - **Mensagem**: Enviar texto fixo ou template
-  - **IA**: Processar com prompt da IA
-  - **Aguardar**: Esperar resposta do cliente (com timeout)
-  - **Condição**: If/else baseado em palavra-chave ou intent
-  - **Transferir**: Encaminhar para atendente humano
-  - **Webhook**: Chamar URL externa
-  - **Delay**: Aguardar X minutos/horas antes da próxima etapa
+Atualmente o `ClientAutomationManager` lista **companies** (empresas/tenants) para atribuir workflows. O correto é listar **clients** (clientes cadastrados na tabela `clients`).
 
-**Arquivos editados/criados**:
-- `src/components/automacoes/WorkflowStepBuilder.tsx` — **Novo** componente com lista de etapas, drag-and-drop simplificado (botões subir/descer), formulário de cada tipo de etapa
-- `src/components/automacoes/WorkflowTemplateForm.tsx` — Integrar o `WorkflowStepBuilder` para editar as etapas junto com o template
+**Mudanças**:
+- Trocar a query de `companies` para `clients` no dialog de atribuição
+- Salvar o `client_id` em vez de `company_id` (ou usar `company_id` do cliente selecionado)
+- Na listagem, mostrar o nome do cliente em vez da empresa
+- Ao processar IA, buscar todos os dados do cliente (nome, email, telefone, área, plano) e incluir no contexto do prompt
 
-**Nenhuma migration necessária** — o campo `config_schema` (jsonb) já existe na tabela `workflow_templates` e será usado para armazenar as etapas.
+**Arquivos editados**:
+- `src/components/automacoes/ClientAutomationManager.tsx` — Query de `clients` em vez de `companies`, ajustar atribuição
+- `supabase/functions/ai-assistant/index.ts` — Quando tipo for `workflow`, buscar dados do cliente atribuído e injetar no contexto da IA
 
-### Resumo técnico
+---
 
-```text
-Configurações (GeralSettings)
-├── Campos existentes (nome, email, tel)
-└── NOVO: Select "Modelo OpenAI" → salva em settings.configuracoes_gerais.modeloIA
+### Resumo de arquivos
 
-Edge Function (ai-assistant)
-└── Lê settings.configuracoes_gerais.modeloIA → usa como model na chamada OpenAI
-
-Automações (WorkflowTemplateForm)
-├── Formulário existente (nome, desc, categoria, prompt, features)
-└── NOVO: WorkflowStepBuilder
-    ├── Etapa 1: Mensagem de boas-vindas
-    ├── Etapa 2: Aguardar resposta
-    ├── Etapa 3: Processar com IA
-    └── ... (salvo em config_schema jsonb)
-```
+| Arquivo | Mudança |
+|---------|---------|
+| `GeralSettings.tsx` | Adicionar GPT-5, GPT-5 Mini, GPT-5 Nano |
+| `AreasSettings.tsx` | Renomear para Segmentos, ajustar placeholder |
+| `Configuracoes.tsx` | Renomear aba "Áreas" → "Segmentos" |
+| `ClientForm.tsx` | Corrigir chave settings, renomear label |
+| `ClientAutomationManager.tsx` | Usar tabela `clients` em vez de `companies` |
+| `ai-assistant/index.ts` | Injetar dados do cliente no contexto do workflow |
 
