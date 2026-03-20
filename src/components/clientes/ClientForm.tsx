@@ -53,7 +53,8 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
       const { data, error } = await supabase
         .from('settings')
         .select('*')
-        .eq('chave', 'areas_ativas');
+        .eq('chave', 'areas')
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
