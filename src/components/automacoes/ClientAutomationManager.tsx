@@ -19,7 +19,7 @@ const statusColors: Record<string, string> = {
 export function ClientAutomationManager() {
   const queryClient = useQueryClient();
   const [isAssigning, setIsAssigning] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState('');
+  const [selectedClient, setSelectedClient] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [clientPrompt, setClientPrompt] = useState('');
 
