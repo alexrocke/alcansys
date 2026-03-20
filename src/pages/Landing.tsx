@@ -4,8 +4,10 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingFooter } from "@/components/landing/LandingFooter";
-import { SplineRobot } from "@/components/landing/SplineRobot";
+import { SplineScene } from "@/components/landing/SplineRobot";
 import { ServiceCards } from "@/components/landing/ServiceCards";
+import { Card } from "@/components/ui/card";
+import { Spotlight } from "@/components/ui/spotlight";
 import { ArrowRight, Users, Zap, BarChart3 } from "lucide-react";
 
 const stats = [
@@ -28,45 +30,59 @@ export default function Landing() {
     <div className="min-h-screen bg-[hsl(222,47%,11%)] text-white overflow-x-hidden">
       <LandingHeader />
 
-      {/* Hero */}
+      {/* Hero — Spline Scene with Spotlight */}
       <section className="pt-32 pb-16 px-6 md:px-12">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6 animate-fade-in">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
-              Sua empresa mais{" "}
-              <span className="bg-gradient-to-r from-[hsl(217,91%,60%)] to-[hsl(217,91%,75%)] bg-clip-text text-transparent">
-                inteligente
-              </span>
-            </h1>
-            <p className="text-lg text-white/60 max-w-md leading-relaxed">
-              Automação, gestão e marketing digital integrados em uma única plataforma. Escale resultados com tecnologia e IA.
-            </p>
-            <div className="flex gap-4">
-              <Button
-                size="lg"
-                onClick={() => navigate("/auth")}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2"
-              >
-                Começar agora <ArrowRight className="w-4 h-4" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white/20 text-white hover:bg-white/10"
-                onClick={() => document.getElementById("servicos")?.scrollIntoView({ behavior: "smooth" })}
-              >
-                Ver serviços
-              </Button>
-            </div>
-          </div>
+        <div className="max-w-6xl mx-auto">
+          <Card className="w-full h-[500px] bg-black/[0.96] relative overflow-hidden border-border/40">
+            <Spotlight
+              className="-top-40 left-0 md:left-60 md:-top-20"
+              fill="white"
+            />
 
-          <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            <SplineRobot />
-          </div>
+            <div className="flex h-full flex-col md:flex-row">
+              {/* Left content */}
+              <div className="flex-1 p-8 relative z-10 flex flex-col justify-center">
+                <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+                  Sua empresa mais{" "}
+                  <span className="bg-gradient-to-r from-[hsl(217,91%,60%)] to-[hsl(217,91%,75%)] bg-clip-text text-transparent">
+                    inteligente
+                  </span>
+                </h1>
+                <p className="mt-4 text-neutral-300 max-w-lg leading-relaxed">
+                  Automação, gestão e marketing digital integrados em uma única plataforma. Escale resultados com tecnologia e IA.
+                </p>
+                <div className="flex gap-4 mt-6">
+                  <Button
+                    size="lg"
+                    onClick={() => navigate("/auth")}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2"
+                  >
+                    Começar agora <ArrowRight className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-white/20 text-white hover:bg-white/10"
+                    onClick={() => document.getElementById("servicos")?.scrollIntoView({ behavior: "smooth" })}
+                  >
+                    Ver serviços
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right content — 3D Robot */}
+              <div className="flex-1 relative">
+                <SplineScene
+                  scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                  className="w-full h-full"
+                />
+              </div>
+            </div>
+          </Card>
         </div>
       </section>
 
-      {/* Services */}
+      {/* Services — Display Cards */}
       <div id="servicos">
         <ServiceCards />
       </div>
