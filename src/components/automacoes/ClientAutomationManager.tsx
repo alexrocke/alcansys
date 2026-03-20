@@ -28,7 +28,7 @@ export function ClientAutomationManager() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('client_automations')
-        .select('*, clients:company_id(nome, email, telefone, area, plano), workflow_templates:template_id(nome, categoria), whatsapp_instances:whatsapp_instance_id(status, phone_number)')
+        .select('*, workflow_templates:template_id(nome, categoria), whatsapp_instances:whatsapp_instance_id(status, phone_number)')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data;
@@ -127,8 +127,8 @@ export function ClientAutomationManager() {
               <Card key={ca.id} className="border rounded-xl">
                 <CardContent className="flex flex-col md:flex-row md:items-center justify-between gap-3 py-4">
                   <div className="space-y-1">
-                    <p className="font-medium">{ca.clients?.nome || 'Cliente'}</p>
-                    <p className="text-sm text-muted-foreground">{ca.workflow_templates?.nome || 'Template'} {ca.clients?.area ? `• ${ca.clients.area}` : ''}</p>
+                    <p className="font-medium">{(ca.config as any)?.client_nome || 'Cliente'}</p>
+                    <p className="text-sm text-muted-foreground">{ca.workflow_templates?.nome || 'Template'} {(ca.config as any)?.client_area ? `• ${(ca.config as any).client_area}` : ''}</p>
                   </div>
                   <div className="flex items-center gap-3 flex-wrap">
                     <Badge className={statusColors[ca.status] || ''}>

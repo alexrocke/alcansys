@@ -252,6 +252,7 @@ export type Database = {
           company_id: string | null
           created_at: string
           email: string | null
+          email_portal: string | null
           id: string
           nome: string
           plano: string | null
@@ -264,6 +265,7 @@ export type Database = {
           company_id?: string | null
           created_at?: string
           email?: string | null
+          email_portal?: string | null
           id?: string
           nome: string
           plano?: string | null
@@ -276,6 +278,7 @@ export type Database = {
           company_id?: string | null
           created_at?: string
           email?: string | null
+          email_portal?: string | null
           id?: string
           nome?: string
           plano?: string | null

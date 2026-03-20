@@ -17,6 +17,7 @@ const clientSchema = z.object({
   area: z.string().min(1, 'Área é obrigatória'),
   plano: z.string().optional().or(z.literal('')),
   status: z.enum(['ativo', 'inativo']),
+  email_portal: z.string().trim().email('Email inválido').max(255, 'Email muito longo').optional().or(z.literal('')),
 });
 
 type ClientFormData = z.infer<typeof clientSchema>;
@@ -44,6 +45,7 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
       area: client?.area || '',
       plano: client?.plano || '',
       status: client?.status || 'ativo',
+      email_portal: client?.email_portal || '',
     },
   });
 
@@ -73,6 +75,7 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
         area: data.area,
         plano: data.plano || null,
         status: data.status,
+        email_portal: data.email_portal || null,
         company_id: currentCompany?.id || null,
       };
 
@@ -208,6 +211,22 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
           </Select>
           {errors.status && (
             <p className="text-sm text-red-500">{errors.status.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="email_portal">Email do Portal</Label>
+          <Input
+            id="email_portal"
+            type="email"
+            {...register('email_portal')}
+            placeholder="email-acesso@cliente.com"
+          />
+          <p className="text-xs text-muted-foreground">
+            Este email será usado para o cliente acessar o Portal do Cliente com informações exclusivas da empresa dele.
+          </p>
+          {errors.email_portal && (
+            <p className="text-sm text-red-500">{errors.email_portal.message}</p>
           )}
         </div>
       </div>
