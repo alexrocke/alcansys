@@ -38,7 +38,7 @@ export function ClientAutomationManager() {
   const { data: clients } = useQuery({
     queryKey: ['clients-list'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('clients').select('id, nome, email, area').eq('status', 'ativo').order('nome');
+      const { data, error } = await supabase.from('clients').select('id, nome, email, area, company_id').eq('status', 'ativo').order('nome');
       if (error) throw error;
       return data;
     },
@@ -59,11 +59,11 @@ export function ClientAutomationManager() {
     const client = clients?.find(c => c.id === selectedClient);
     
     const { error } = await supabase.from('client_automations').insert([{
-      company_id: selectedClient,
+      company_id: client?.company_id || selectedClient,
       template_id: selectedTemplate,
       prompt: clientPrompt || null,
       status: 'configurando',
-      config: client ? { client_nome: client.nome, client_email: client.email, client_area: client.area } : {},
+      config: client ? { client_id: client.id, client_nome: client.nome, client_email: client.email, client_area: client.area } : {},
     }]);
     if (error) {
       toast({ title: 'Erro', description: error.message, variant: 'destructive' });
