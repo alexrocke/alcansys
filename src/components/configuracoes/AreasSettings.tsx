@@ -67,7 +67,7 @@ export function AreasSettings() {
     if (!novaArea.trim()) {
       toast({
         title: 'Campo vazio',
-        description: 'Digite o nome da área.',
+        description: 'Digite o nome do segmento.',
         variant: 'destructive',
       });
       return;
