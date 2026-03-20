@@ -66,9 +66,8 @@ export function WorkflowStepBuilder({ steps, onChange }: Props) {
     onChange(arr);
   };
 
-  const updateStep = (id: string, updates: Partial<WorkflowStep>) => {
-    onChange(steps.map(s => s.id === id ? { ...s, ...updates } : s));
-  };
+
+
 
   const updateStepConfig = (id: string, key: string, value: any) => {
     onChange(steps.map(s => s.id === id ? { ...s, config: { ...s.config, [key]: value } } : s));

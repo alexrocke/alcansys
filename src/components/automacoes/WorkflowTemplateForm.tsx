@@ -70,7 +70,7 @@ export function WorkflowTemplateForm({ template, onSuccess, onCancel }: Props) {
         prompt_template: data.prompt_template || null,
         ativo: data.ativo,
         features: features,
-        config_schema: { steps },
+        config_schema: { steps } as any,
       };
 
       if (template) {
