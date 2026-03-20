@@ -23,18 +23,18 @@ function DisplayCard({
   return (
     <div
       className={cn(
-        "border border-border/40 rounded-xl bg-muted/70 p-4 flex flex-col gap-1 transition-all duration-700 hover:border-border [&>*]:flex [&>*]:items-center [&>*]:gap-2",
+        "border border-border/40 rounded-xl bg-muted/70 p-6 flex flex-col gap-2 transition-all duration-700 hover:border-border [&>*]:flex [&>*]:items-center [&>*]:gap-2",
         className
       )}
     >
       <div>
-        <span className={cn("relative flex size-5 items-center justify-center", iconClassName)}>
+        <span className={cn("relative flex size-6 items-center justify-center", iconClassName)}>
           {icon}
         </span>
-        <span className={cn("text-sm font-semibold", titleClassName)}>{title}</span>
+        <span className={cn("text-base font-semibold", titleClassName)}>{title}</span>
       </div>
-      <p className="text-sm text-muted-foreground whitespace-nowrap">{description}</p>
-      <p className="text-xs text-muted-foreground/50">{date}</p>
+      <p className="text-base text-muted-foreground whitespace-nowrap">{description}</p>
+      <p className="text-sm text-muted-foreground/50">{date}</p>
     </div>
   );
 }
@@ -51,11 +51,11 @@ export default function DisplayCards({ cards }: DisplayCardsProps) {
     },
     {
       className:
-        "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
+        "[grid-area:stack] translate-x-20 translate-y-12 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
     },
     {
       className:
-        "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
+        "[grid-area:stack] translate-x-40 translate-y-24 hover:translate-y-12",
     },
   ];
 
