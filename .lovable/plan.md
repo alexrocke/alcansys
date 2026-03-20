@@ -1,29 +1,61 @@
 
 
-## Plano: Integrar componentes 21st.dev na Landing Page
+## Plano: Ajustar visual da Landing + Painel de edição da Landing Page
 
-### O que muda
+### 1. Ajustes visuais imediatos
 
-Substituir os componentes atuais da landing pelos dois componentes do 21st.dev:
+**Hero — Remover fundo preto do robô**
+- Remover o `Card` wrapper com `bg-black/[0.96]` do hero
+- Colocar o Spline diretamente no layout, sem card escuro, fazendo o robô "flutuar" sobre o fundo da página (`hsl(222,47%,11%)`)
+- Manter o Spotlight como efeito sutil sobre o fundo da seção
 
-1. **Spline Scene (robô 3D)** — Usar a cena `https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode` (do componente serafim/splite) dentro de um Card com efeito Spotlight. O hero passa a ter o layout do componente: texto gradiente à esquerda + robô 3D à direita, dentro de um card escuro com spotlight.
+**Display Cards — Aumentar tamanho**
+- Aumentar o `p-4` dos cards para `p-6`, texto de `text-sm` para `text-base`
+- Aumentar os `translate-x/y` entre cards para espalhar mais
+- Reduzir o `min-h-[400px]` do container e `max-w-3xl` para ocupar mais espaço
 
-2. **Display Cards (cards empilhados)** — Substituir os TiltCards atuais por cards empilhados com efeito grayscale-to-color no hover, usando `[grid-area:stack]` + translate para criar o efeito de sobreposição. Cada card representa um serviço da Alcansys.
+### 2. Painel de edição da Landing Page (Configurações)
+
+Criar uma nova aba "Landing Page" na página de Configurações (`/configuracoes`) que permite editar todo o conteúdo da landing page via banco de dados.
+
+**Tabela no Supabase: `landing_config`**
+
+| Coluna | Tipo | Descrição |
+|--------|------|-----------|
+| `id` | uuid | PK |
+| `company_id` | uuid | FK para companies |
+| `section` | text | hero, services, stats, cta, footer |
+| `config` | jsonb | Conteúdo da seção (título, subtítulo, cards, etc.) |
+| `order` | int | Ordem de exibição |
+| `visible` | boolean | Se a seção aparece |
+
+**Funcionalidades do painel:**
+- Editar textos do Hero (título, subtítulo, URL do Spline)
+- CRUD de Service Cards (adicionar, editar, excluir cards de serviço)
+- Editar stats (números/resultados)
+- Editar CTA final (título, subtítulo, texto do botão)
+- Editar footer (email, WhatsApp)
+- Toggle de visibilidade por seção
+
+**A Landing Page lê do banco:** Em vez de dados hardcoded, `Landing.tsx` busca `landing_config` e renderiza dinamicamente.
 
 ### Arquivos
 
 | Arquivo | Mudança |
 |---------|---------|
-| `src/components/ui/spotlight.tsx` | **Novo** — Componente Spotlight (efeito de luz que segue o mouse) |
-| `src/components/ui/display-cards.tsx` | **Novo** — Componente DisplayCards com layout stacked + grayscale hover |
-| `src/components/landing/SplineRobot.tsx` | Atualizar para usar a cena do 21st.dev (`kZDDjO5HuC9GJUM2`) dentro de Card + Spotlight |
-| `src/components/landing/ServiceCards.tsx` | Substituir TiltCards pelo DisplayCards com os 4 serviços Alcansys |
-| `src/pages/Landing.tsx` | Ajustar hero para usar o novo layout (Card com Spline + Spotlight) |
+| Migration (nova) | Criar tabela `landing_config` com seed dos dados atuais |
+| `src/pages/Landing.tsx` | Remover Card do hero, ler dados de `landing_config` |
+| `src/components/landing/ServiceCards.tsx` | Ler cards do banco, aumentar tamanho |
+| `src/components/ui/display-cards.tsx` | Aumentar padding/fontes dos cards |
+| `src/components/configuracoes/LandingSettings.tsx` | **Novo** — Painel CRUD para editar toda a landing |
+| `src/pages/Configuracoes.tsx` | Adicionar aba "Landing Page" |
+| `src/integrations/supabase/types.ts` | Tipos da nova tabela |
 
 ### Detalhes técnicos
 
-- **Spotlight**: Componente que renderiza um div com gradiente radial posicionado via props, criando efeito de luz ambiente no card.
-- **DisplayCards**: Grid CSS com `[grid-area:stack]` para empilhar cards. Cada card tem `translate-x/y` diferente, `grayscale-[100%]` por padrão, e remove grayscale + translada no hover. Usa pseudo-elemento `before` para overlay semitransparente.
-- **Spline Scene**: Mesma lib `@splinetool/react-spline`, só muda a URL da cena para a do robô interativo do 21st.dev.
-- Sem dependências novas (já tem `@splinetool/react-spline` e `lucide-react`).
+- O `config` JSONB do hero terá: `{ title, subtitle, spline_url, cta_primary, cta_secondary }`
+- O `config` JSONB de services terá: `{ cards: [{ icon, title, description, subtitle }] }`
+- O `config` JSONB de stats terá: `{ items: [{ icon, value, label }] }`
+- Ícones serão salvos como string (`"Zap"`, `"Users"`) e mapeados para componentes Lucide em runtime
+- RLS: leitura pública (landing é pública), escrita apenas para autenticados com role admin
 
