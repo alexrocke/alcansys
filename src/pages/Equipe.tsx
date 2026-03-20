@@ -3,15 +3,17 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Users, UserCheck, UserX, Shield } from 'lucide-react';
+import { Search, Users, UserCheck, UserX, Shield, UserPlus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TeamMemberForm } from '@/components/equipe/TeamMemberForm';
+import { InviteMemberForm } from '@/components/equipe/InviteMemberForm';
 import { TeamMemberList } from '@/components/equipe/TeamMemberList';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Equipe() {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -30,7 +32,7 @@ export default function Equipe() {
     },
   });
 
-  const { data: userRoles } = useQuery({
+  const { data: userRoles, refetch: refetchRoles } = useQuery({
     queryKey: ['user_roles'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -54,7 +56,14 @@ export default function Equipe() {
 
   const handleSuccess = () => {
     refetch();
+    refetchRoles();
     handleCloseForm();
+  };
+
+  const handleInviteSuccess = () => {
+    refetch();
+    refetchRoles();
+    setIsInviteOpen(false);
   };
 
   // Create a map of user_id to roles
@@ -97,6 +106,10 @@ export default function Equipe() {
             Gerencie membros da equipe e suas permissões
           </p>
         </div>
+        <Button onClick={() => setIsInviteOpen(true)} className="gap-2">
+          <UserPlus className="h-4 w-4" />
+          Convidar Membro
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -200,7 +213,7 @@ export default function Equipe() {
             <SelectItem value="gestor">Gestor</SelectItem>
             <SelectItem value="financeiro">Financeiro</SelectItem>
             <SelectItem value="marketing">Marketing</SelectItem>
-            <SelectItem value="usuario">Usuário</SelectItem>
+            <SelectItem value="colaborador">Colaborador</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -221,6 +234,18 @@ export default function Equipe() {
             member={editingMember}
             onSuccess={handleSuccess}
             onCancel={handleCloseForm}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Convidar Novo Membro</DialogTitle>
+          </DialogHeader>
+          <InviteMemberForm
+            onSuccess={handleInviteSuccess}
+            onCancel={() => setIsInviteOpen(false)}
           />
         </DialogContent>
       </Dialog>
