@@ -52,7 +52,7 @@ function InternalLayout() {
           </header>
           <main className="flex-1 overflow-auto">
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/dashboard" element={<Index />} />
               <Route path="/projetos" element={<Projetos />} />
               <Route path="/tarefas" element={<Tarefas />} />
               <Route path="/financeiro" element={<Financeiro />} />
