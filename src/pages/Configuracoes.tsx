@@ -27,7 +27,7 @@ export default function Configuracoes() {
           </TabsTrigger>
           <TabsTrigger value="areas" className="flex items-center gap-2">
             <Building2 className="h-4 w-4" />
-            Áreas
+            Segmentos
           </TabsTrigger>
           <TabsTrigger value="metas" className="flex items-center gap-2">
             <Target className="h-4 w-4" />
