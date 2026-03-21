@@ -67,17 +67,17 @@ const settingsItems: MenuItem[] = [
 export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
-  const { signOut, userRole } = useAuth();
+  const { signOut } = useAuth();
+  const { hasPageAccess } = usePermissions();
   const currentPath = location.pathname;
-  const role = (userRole as AppRole) || 'colaborador';
 
   const isActive = (path: string) => {
     if (path === "/dashboard") return currentPath === "/dashboard";
     return currentPath.startsWith(path);
   };
 
-  const visibleMain = mainItems.filter((item) => item.allowedRoles.includes(role));
-  const visibleSettings = settingsItems.filter((item) => item.allowedRoles.includes(role));
+  const visibleMain = mainItems.filter((item) => hasPageAccess(item.pageKey));
+  const visibleSettings = settingsItems.filter((item) => hasPageAccess(item.pageKey));
 
   return (
     <Sidebar className="border-r border-border">
