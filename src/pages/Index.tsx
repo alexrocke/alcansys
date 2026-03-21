@@ -6,6 +6,7 @@ import { format, startOfMonth, endOfMonth } from "date-fns";
 import { LineChart, Line, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { useCompany } from "@/hooks/useCompany";
+import { GoalsProgress } from "@/components/dashboard/GoalsProgress";
 
 const Index = () => {
   const { currentCompany } = useCompany();
@@ -312,6 +313,9 @@ const Index = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Company & Salesperson Goals */}
+      {companyId && <GoalsProgress companyId={companyId} />}
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="border-2 rounded-2xl shadow-sm">
