@@ -6,6 +6,7 @@ import { format, startOfMonth, endOfMonth } from "date-fns";
 import { LineChart, Line, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { useCompany } from "@/hooks/useCompany";
+import { GoalsProgress } from "@/components/dashboard/GoalsProgress";
 
 const Index = () => {
   const { currentCompany } = useCompany();
