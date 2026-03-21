@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Plus, Zap, Users } from 'lucide-react';
+import { Plus, Zap, Users, Building2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { WorkflowTemplateCard } from '@/components/automacoes/WorkflowTemplateCard';
 import { WorkflowTemplateForm } from '@/components/automacoes/WorkflowTemplateForm';
 import { ClientAutomationManager } from '@/components/automacoes/ClientAutomationManager';
+import { InternalAutomationManager } from '@/components/automacoes/InternalAutomationManager';
 
 export default function Automacoes() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -56,6 +57,9 @@ export default function Automacoes() {
           <TabsTrigger value="templates" className="gap-2">
             <Zap className="h-4 w-4" /> Templates
           </TabsTrigger>
+          <TabsTrigger value="interno" className="gap-2">
+            <Building2 className="h-4 w-4" /> Uso Interno
+          </TabsTrigger>
           <TabsTrigger value="clientes" className="gap-2">
             <Users className="h-4 w-4" /> Clientes Ativos
           </TabsTrigger>
@@ -87,6 +91,10 @@ export default function Automacoes() {
               ))}
             </div>
           )}
+        </TabsContent>
+
+        <TabsContent value="interno" className="mt-4">
+          <InternalAutomationManager />
         </TabsContent>
 
         <TabsContent value="clientes" className="mt-4">
