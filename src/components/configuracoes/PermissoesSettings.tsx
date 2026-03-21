@@ -5,15 +5,9 @@ import { usePermissions, ALL_PAGES, RolePermissions, UserPermissions } from "@/h
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Save, ShieldCheck, UserCog, RotateCcw } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Loader2, Save, ShieldCheck, UserCog, RotateCcw, Search } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 const CONFIGURABLE_ROLES = [
