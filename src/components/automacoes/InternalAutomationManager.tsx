@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { Plus, Wifi, WifiOff, Trash2, Building2, Zap } from 'lucide-react';
 import { UazapInstanceSetup } from './UazapInstanceSetup';
+import { WebhookRelayConfig } from './WebhookRelayConfig';
 
 const statusColors: Record<string, string> = {
   ativa: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
@@ -233,6 +234,12 @@ export function InternalAutomationManager() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Webhook Relay Configuration */}
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-4">Webhook Relay (Sistemas Externos)</h2>
+        <WebhookRelayConfig />
+      </div>
     </div>
   );
 }

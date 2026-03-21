@@ -1368,6 +1368,66 @@ export type Database = {
           },
         ]
       }
+      webhook_relay_configs: {
+        Row: {
+          ativo: boolean
+          company_id: string
+          created_at: string
+          descricao: string | null
+          id: string
+          instance_name: string | null
+          phone_number: string | null
+          relay_headers: Json | null
+          relay_secret: string | null
+          relay_url: string
+          updated_at: string
+          whatsapp_instance_id: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          company_id: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          instance_name?: string | null
+          phone_number?: string | null
+          relay_headers?: Json | null
+          relay_secret?: string | null
+          relay_url: string
+          updated_at?: string
+          whatsapp_instance_id?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          company_id?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          instance_name?: string | null
+          phone_number?: string | null
+          relay_headers?: Json | null
+          relay_secret?: string | null
+          relay_url?: string
+          updated_at?: string
+          whatsapp_instance_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_relay_configs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "webhook_relay_configs_whatsapp_instance_id_fkey"
+            columns: ["whatsapp_instance_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_instances"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       whatsapp_instances: {
         Row: {
           api_token: string | null
