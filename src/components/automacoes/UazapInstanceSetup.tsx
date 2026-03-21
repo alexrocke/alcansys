@@ -47,15 +47,34 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
     setLoading(true);
     try {
       const instanceName = `auto_${automationId.slice(0, 8)}_${Date.now()}`;
-      const result = await callUazap('create-instance', { instance_name: instanceName });
-      const newUazapId = result.instance_id || result.id;
-      setUazapId(newUazapId);
+      
+      // Step 1: Create the instance
+      const createResult = await callUazap('create-instance', { instance_name: instanceName });
+      const newInstanceName = createResult.instanceName || createResult.instance_name || instanceName;
+      const instanceToken = createResult.token || createResult.instance_token || null;
+      setUazapId(newInstanceName);
 
-      // Fetch QR code
-      const qrResult = await callUazap('get-qrcode', { instance_id: newUazapId });
-      setQrCode(qrResult.qr_code || qrResult.qrcode || qrResult.base64 || null);
+      // Step 2: Connect instance to generate QR code
+      const connectResult = await callUazap('connect-instance', { 
+        instance_id: newInstanceName,
+        instance_name: newInstanceName,
+        instance_token: instanceToken,
+      });
+      
+      // Step 3: Get QR code
+      const qrData = connectResult.qrcode || connectResult.qr_code || connectResult.base64;
+      if (qrData) {
+        setQrCode(qrData);
+      } else {
+        // Try separate QR code endpoint
+        const qrResult = await callUazap('get-qrcode', { 
+          instance_id: newInstanceName,
+          instance_token: instanceToken,
+        });
+        setQrCode(qrResult.qrcode || qrResult.qr_code || qrResult.base64 || null);
+      }
+      
       setPolling(true);
-
       toast({ title: 'Instância criada', description: 'Escaneie o QR code com o WhatsApp.' });
     } catch (error: any) {
       toast({ title: 'Erro', description: error.message, variant: 'destructive' });

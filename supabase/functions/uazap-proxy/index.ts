@@ -17,7 +17,8 @@ Deno.serve(async (req) => {
       throw new Error("UAZAP_API_TOKEN is not configured");
     }
 
-    const UAZAP_API_URL = Deno.env.get("UAZAP_API_URL") || "https://api.uazapi.com";
+    // URL base - ex: https://free.uazapi.com ou https://seudominio.uazapi.com
+    const UAZAP_API_URL = Deno.env.get("UAZAP_API_URL") || "https://free.uazapi.com";
 
     // Validate auth
     const authHeader = req.headers.get("Authorization");
@@ -51,7 +52,6 @@ Deno.serve(async (req) => {
         _company_id: company_id,
       });
       
-      // Also check if admin
       const { data: isAdmin } = await supabase.rpc("has_role", {
         _user_id: user.id,
         _role: "admin",
@@ -69,13 +69,14 @@ Deno.serve(async (req) => {
 
     switch (action) {
       case "create-instance": {
-        const response = await fetch(`${UAZAP_API_URL}/instance/init`, {
+        // Endpoint admin: usa header 'admintoken'
+        const response = await fetch(`${UAZAP_API_URL}/instance/create`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${UAZAP_API_TOKEN}`,
+            "admintoken": UAZAP_API_TOKEN,
           },
-          body: JSON.stringify({ instance_name }),
+          body: JSON.stringify({ instanceName: instance_name }),
         });
         result = await response.json();
         if (!response.ok) {
@@ -84,11 +85,36 @@ Deno.serve(async (req) => {
         break;
       }
 
+      case "connect-instance": {
+        // Conectar instância (gera QR code) - usa header 'token' da instância
+        const instanceToken = body.instance_token || UAZAP_API_TOKEN;
+        const response = await fetch(`${UAZAP_API_URL}/instance/connect`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "token": instanceToken,
+          },
+          body: JSON.stringify({ instanceName: instance_id || instance_name }),
+        });
+        result = await response.json();
+        if (!response.ok) {
+          throw new Error(`UAZAP connect failed [${response.status}]: ${JSON.stringify(result)}`);
+        }
+        break;
+      }
+
       case "get-qrcode": {
+        // Busca QR code da instância
+        const instanceToken = body.instance_token || UAZAP_API_TOKEN;
         const response = await fetch(
-          `${UAZAP_API_URL}/v1/instance/qr?instance_id=${instance_id}`,
+          `${UAZAP_API_URL}/instance/qrcode`,
           {
-            headers: { Authorization: `Bearer ${UAZAP_API_TOKEN}` },
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "token": instanceToken,
+            },
+            body: JSON.stringify({ instanceName: instance_id }),
           }
         );
         result = await response.json();
@@ -99,10 +125,16 @@ Deno.serve(async (req) => {
       }
 
       case "get-status": {
+        const instanceToken = body.instance_token || UAZAP_API_TOKEN;
         const response = await fetch(
-          `${UAZAP_API_URL}/v1/instance/status?instance_id=${instance_id}`,
+          `${UAZAP_API_URL}/instance/status`,
           {
-            headers: { Authorization: `Bearer ${UAZAP_API_TOKEN}` },
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "token": instanceToken,
+            },
+            body: JSON.stringify({ instanceName: instance_id }),
           }
         );
         result = await response.json();
@@ -113,13 +145,14 @@ Deno.serve(async (req) => {
       }
 
       case "restart": {
-        const response = await fetch(`${UAZAP_API_URL}/v1/instance/restart`, {
+        const instanceToken = body.instance_token || UAZAP_API_TOKEN;
+        const response = await fetch(`${UAZAP_API_URL}/instance/restart`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${UAZAP_API_TOKEN}`,
+            "token": instanceToken,
           },
-          body: JSON.stringify({ instance_id }),
+          body: JSON.stringify({ instanceName: instance_id }),
         });
         result = await response.json();
         if (!response.ok) {
