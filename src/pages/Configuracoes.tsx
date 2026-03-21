@@ -22,7 +22,7 @@ export default function Configuracoes() {
       </div>
 
       <Tabs defaultValue="geral" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="geral" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             Geral
@@ -42,6 +42,10 @@ export default function Configuracoes() {
           <TabsTrigger value="usuarios" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             Usuários
+          </TabsTrigger>
+          <TabsTrigger value="permissoes" className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4" />
+            Permissões
           </TabsTrigger>
           <TabsTrigger value="landing" className="flex items-center gap-2">
             <Globe className="h-4 w-4" />
