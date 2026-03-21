@@ -66,8 +66,15 @@ function InternalLayout() {
               <Route path="/conversas" element={<Conversas />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
               <Route path="/vendedores" element={<Vendedores />} />
-              <Route path="/portal/*" element={<Navigate to="/" replace />} />
-              <Route path="/vendedor/*" element={<Navigate to="/" replace />} />
+              {/* Admin can access portal and vendedor routes */}
+              <Route path="/portal/servicos" element={<PortalServicos />} />
+              <Route path="/portal/automacoes" element={<PortalAutomacoes />} />
+              <Route path="/portal/faturas" element={<PortalFaturas />} />
+              <Route path="/portal/sistemas" element={<PortalSistemas />} />
+              <Route path="/vendedor" element={<VendedorDashboard />} />
+              <Route path="/vendedor/leads" element={<VendedorLeads />} />
+              <Route path="/vendedor/comissoes" element={<VendedorComissoes />} />
+              <Route path="/vendedor/clientes" element={<VendedorClientes />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
