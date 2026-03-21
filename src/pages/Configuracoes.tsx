@@ -1,12 +1,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, Users, Target, DollarSign, Building2, Globe } from "lucide-react";
+import { Settings, Users, Target, DollarSign, Building2, Globe, ShieldCheck } from "lucide-react";
 import { AreasSettings } from "@/components/configuracoes/AreasSettings";
 import { MetasSettings } from "@/components/configuracoes/MetasSettings";
 import { CustosFixosSettings } from "@/components/configuracoes/CustosFixosSettings";
 import { UsuariosSettings } from "@/components/configuracoes/UsuariosSettings";
 import { GeralSettings } from "@/components/configuracoes/GeralSettings";
 import { LandingSettings } from "@/components/configuracoes/LandingSettings";
+import { PermissoesSettings } from "@/components/configuracoes/PermissoesSettings";
 
 export default function Configuracoes() {
   return (
