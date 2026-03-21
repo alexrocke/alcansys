@@ -192,18 +192,45 @@ export function PermissoesSettings() {
           Sobrescreva as permissões da função para um usuário específico. Por exemplo, um Gestor que não deve acessar o Financeiro.
         </p>
 
-        <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-          <SelectTrigger className="w-full max-w-md">
-            <SelectValue placeholder="Selecione um usuário" />
-          </SelectTrigger>
-          <SelectContent>
-            {users?.filter(u => u.email !== PROTECTED_EMAIL).map((u) => (
-              <SelectItem key={u.id} value={u.id}>
-                {u.nome} — <span className="text-muted-foreground">{u.role || 'sem função'}</span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar usuário por nome ou email..."
+            value={userSearch}
+            onChange={(e) => {
+              setUserSearch(e.target.value);
+              setSelectedUserId("");
+            }}
+            className="pl-9"
+          />
+        </div>
+
+        {userSearch.length >= 2 && !selectedUserId && (() => {
+          const filtered = users?.filter(u =>
+            u.email !== PROTECTED_EMAIL &&
+            (u.nome.toLowerCase().includes(userSearch.toLowerCase()) ||
+             u.email.toLowerCase().includes(userSearch.toLowerCase()))
+          ) || [];
+          return filtered.length > 0 ? (
+            <div className="border rounded-lg max-w-md max-h-48 overflow-y-auto">
+              {filtered.map((u) => (
+                <button
+                  key={u.id}
+                  className="w-full text-left px-4 py-2 hover:bg-accent text-sm flex justify-between items-center"
+                  onClick={() => {
+                    setSelectedUserId(u.id);
+                    setUserSearch(u.nome);
+                  }}
+                >
+                  <span>{u.nome}</span>
+                  <Badge variant="outline" className="ml-2">{u.role || 'sem função'}</Badge>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Nenhum usuário encontrado.</p>
+          );
+        })()}
 
         {selectedUserId && selectedUser && (
           <div className="space-y-4 border rounded-lg p-4">
