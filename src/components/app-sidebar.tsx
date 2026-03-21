@@ -21,6 +21,7 @@ import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { CompanySelector } from "@/components/CompanySelector";
 import { NotificationBell } from "@/components/NotificationBell";
+import { usePermissions } from "@/hooks/usePermissions";
 
 import {
   Sidebar,
