@@ -76,9 +76,10 @@ Deno.serve(async (req) => {
             "Content-Type": "application/json",
             "admintoken": UAZAP_API_TOKEN,
           },
-          body: JSON.stringify({ instanceName: instance_name }),
+          body: JSON.stringify({ Name: instance_name }),
         });
         result = await response.json();
+        console.log("UAZAP create-instance response:", JSON.stringify(result));
         if (!response.ok) {
           throw new Error(`UAZAP create-instance failed [${response.status}]: ${JSON.stringify(result)}`);
         }
