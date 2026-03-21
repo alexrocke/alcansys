@@ -13,14 +13,21 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [nome, setNome] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp, user, userStatus } = useAuth();
+  const { signIn, signUp, user, userStatus, userRole, roleLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && userStatus === 'ativo') {
-      navigate('/');
+    if (user && userStatus === 'ativo' && !roleLoading) {
+      if (userRole === 'vendedor') {
+        navigate('/vendedor');
+      } else if (!userRole) {
+        // No role = client portal
+        navigate('/portal/servicos');
+      } else {
+        navigate('/dashboard');
+      }
     }
-  }, [user, userStatus, navigate]);
+  }, [user, userStatus, userRole, roleLoading, navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
