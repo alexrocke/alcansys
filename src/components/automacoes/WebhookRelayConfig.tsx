@@ -14,7 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Trash2, ArrowRightLeft, Globe, Smartphone } from 'lucide-react';
 
 export function WebhookRelayConfig() {
-  const { selectedCompany } = useCompany();
+  const { currentCompany } = useCompany();
+  const selectedCompany = currentCompany?.id;
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState({
