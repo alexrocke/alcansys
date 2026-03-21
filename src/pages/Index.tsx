@@ -314,6 +314,9 @@ const Index = () => {
         </Card>
       </div>
 
+      {/* Company & Salesperson Goals */}
+      {companyId && <GoalsProgress companyId={companyId} />}
+
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="border-2 rounded-2xl shadow-sm">
           <CardHeader>
