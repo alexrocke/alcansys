@@ -234,6 +234,12 @@ export function InternalAutomationManager() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Webhook Relay Configuration */}
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-4">Webhook Relay (Sistemas Externos)</h2>
+        <WebhookRelayConfig />
+      </div>
     </div>
   );
 }
