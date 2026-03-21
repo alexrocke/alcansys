@@ -1,12 +1,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, Users, Target, Building2, Globe, ShieldCheck } from "lucide-react";
+import { Settings, Users, Target, Building2, Globe, ShieldCheck, ArrowRightLeft } from "lucide-react";
 import { AreasSettings } from "@/components/configuracoes/AreasSettings";
 import { MetasSettings } from "@/components/configuracoes/MetasSettings";
 import { UsuariosSettings } from "@/components/configuracoes/UsuariosSettings";
 import { GeralSettings } from "@/components/configuracoes/GeralSettings";
 import { LandingSettings } from "@/components/configuracoes/LandingSettings";
 import { PermissoesSettings } from "@/components/configuracoes/PermissoesSettings";
+import { IntegracoesSettings } from "@/components/configuracoes/IntegracoesSettings";
 
 export default function Configuracoes() {
   return (
@@ -21,7 +22,7 @@ export default function Configuracoes() {
       </div>
 
       <Tabs defaultValue="geral" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="flex flex-wrap h-auto gap-1">
           <TabsTrigger value="geral" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             Geral
@@ -41,6 +42,10 @@ export default function Configuracoes() {
           <TabsTrigger value="permissoes" className="flex items-center gap-2">
             <ShieldCheck className="h-4 w-4" />
             Permissões
+          </TabsTrigger>
+          <TabsTrigger value="integracoes" className="flex items-center gap-2">
+            <ArrowRightLeft className="h-4 w-4" />
+            Integrações
           </TabsTrigger>
           <TabsTrigger value="landing" className="flex items-center gap-2">
             <Globe className="h-4 w-4" />
@@ -114,6 +119,20 @@ export default function Configuracoes() {
             </CardHeader>
             <CardContent>
               <PermissoesSettings />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="integracoes">
+          <Card>
+            <CardHeader>
+              <CardTitle>Integrações & Webhook Relay</CardTitle>
+              <CardDescription>
+                Configure integrações com sistemas externos. As mensagens do WhatsApp serão encaminhadas automaticamente para os endpoints configurados.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <IntegracoesSettings />
             </CardContent>
           </Card>
         </TabsContent>

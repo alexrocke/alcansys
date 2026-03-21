@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import {
-  Plus, Trash2, ArrowRightLeft, Globe, Smartphone, Copy, Check,
+  Trash2, ArrowRightLeft, Globe, Smartphone, Copy, Check,
   Building2, ShoppingCart, Stethoscope, GraduationCap, Wrench
 } from 'lucide-react';
 
