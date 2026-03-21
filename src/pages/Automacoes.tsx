@@ -57,6 +57,9 @@ export default function Automacoes() {
           <TabsTrigger value="templates" className="gap-2">
             <Zap className="h-4 w-4" /> Templates
           </TabsTrigger>
+          <TabsTrigger value="interno" className="gap-2">
+            <Building2 className="h-4 w-4" /> Uso Interno
+          </TabsTrigger>
           <TabsTrigger value="clientes" className="gap-2">
             <Users className="h-4 w-4" /> Clientes Ativos
           </TabsTrigger>
