@@ -37,35 +37,31 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 
-type AppRole = 'admin' | 'gestor' | 'colaborador' | 'financeiro' | 'marketing' | 'vendedor';
-
 interface MenuItem {
   title: string;
   url: string;
+  pageKey: string;
   icon: React.ComponentType<{ className?: string }>;
-  allowedRoles: AppRole[];
 }
 
-const allRoles: AppRole[] = ['admin', 'gestor', 'colaborador', 'financeiro', 'marketing', 'vendedor'];
-
 const mainItems: MenuItem[] = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, allowedRoles: allRoles },
-  { title: "Projetos", url: "/projetos", icon: FolderKanban, allowedRoles: ['admin', 'gestor', 'colaborador'] },
-  { title: "Tarefas", url: "/tarefas", icon: ListChecks, allowedRoles: allRoles },
-  { title: "Financeiro", url: "/financeiro", icon: DollarSign, allowedRoles: ['admin', 'financeiro'] },
-  { title: "Leads & CRM", url: "/leads", icon: Contact, allowedRoles: ['admin', 'gestor', 'marketing'] },
-  { title: "Conversas", url: "/conversas", icon: MessagesSquare, allowedRoles: ['admin', 'gestor', 'marketing'] },
-  { title: "Marketing", url: "/marketing", icon: TrendingUp, allowedRoles: ['admin', 'marketing'] },
-  { title: "Automações", url: "/automacoes", icon: Zap, allowedRoles: ['admin', 'marketing'] },
-  { title: "WhatsApp", url: "/whatsapp", icon: MessageCircle, allowedRoles: ['admin'] },
-  { title: "Clientes", url: "/clientes", icon: Users, allowedRoles: ['admin', 'gestor', 'financeiro'] },
-  { title: "Documentos", url: "/documentos", icon: FileText, allowedRoles: ['admin', 'gestor', 'colaborador', 'financeiro'] },
-  { title: "Vendedores", url: "/vendedores", icon: BadgeDollarSign, allowedRoles: ['admin', 'gestor'] },
-  { title: "Equipe", url: "/equipe", icon: UsersRound, allowedRoles: ['admin', 'gestor'] },
+  { title: "Dashboard", url: "/dashboard", pageKey: "dashboard", icon: LayoutDashboard },
+  { title: "Projetos", url: "/projetos", pageKey: "projetos", icon: FolderKanban },
+  { title: "Tarefas", url: "/tarefas", pageKey: "tarefas", icon: ListChecks },
+  { title: "Financeiro", url: "/financeiro", pageKey: "financeiro", icon: DollarSign },
+  { title: "Leads & CRM", url: "/leads", pageKey: "leads", icon: Contact },
+  { title: "Conversas", url: "/conversas", pageKey: "conversas", icon: MessagesSquare },
+  { title: "Marketing", url: "/marketing", pageKey: "marketing", icon: TrendingUp },
+  { title: "Automações", url: "/automacoes", pageKey: "automacoes", icon: Zap },
+  { title: "WhatsApp", url: "/whatsapp", pageKey: "whatsapp", icon: MessageCircle },
+  { title: "Clientes", url: "/clientes", pageKey: "clientes", icon: Users },
+  { title: "Documentos", url: "/documentos", pageKey: "documentos", icon: FileText },
+  { title: "Vendedores", url: "/vendedores", pageKey: "vendedores", icon: BadgeDollarSign },
+  { title: "Equipe", url: "/equipe", pageKey: "equipe", icon: UsersRound },
 ];
 
 const settingsItems: MenuItem[] = [
-  { title: "Configurações", url: "/configuracoes", icon: Settings, allowedRoles: ['admin'] },
+  { title: "Configurações", url: "/configuracoes", pageKey: "configuracoes", icon: Settings },
 ];
 
 export function AppSidebar() {
