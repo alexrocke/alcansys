@@ -32,6 +32,7 @@ export function PermissoesSettings() {
   const [localRolePerms, setLocalRolePerms] = useState<RolePermissions>({});
   const [localUserPerms, setLocalUserPerms] = useState<UserPermissions>({});
   const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [userSearch, setUserSearch] = useState("");
 
   // Fetch active users for the per-user section
   const { data: users } = useQuery({
