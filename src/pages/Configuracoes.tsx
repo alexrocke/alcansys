@@ -123,6 +123,20 @@ export default function Configuracoes() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="permissoes">
+          <Card>
+            <CardHeader>
+              <CardTitle>Permissões de Acesso</CardTitle>
+              <CardDescription>
+                Configure quais páginas cada função pode acessar
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PermissoesSettings />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="landing">
           <Card>
             <CardHeader>
