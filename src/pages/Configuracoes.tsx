@@ -1,9 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, Users, Target, DollarSign, Building2, Globe, ShieldCheck } from "lucide-react";
+import { Settings, Users, Target, Building2, Globe, ShieldCheck } from "lucide-react";
 import { AreasSettings } from "@/components/configuracoes/AreasSettings";
 import { MetasSettings } from "@/components/configuracoes/MetasSettings";
-import { CustosFixosSettings } from "@/components/configuracoes/CustosFixosSettings";
 import { UsuariosSettings } from "@/components/configuracoes/UsuariosSettings";
 import { GeralSettings } from "@/components/configuracoes/GeralSettings";
 import { LandingSettings } from "@/components/configuracoes/LandingSettings";
@@ -22,7 +21,7 @@ export default function Configuracoes() {
       </div>
 
       <Tabs defaultValue="geral" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="geral" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             Geral
@@ -34,10 +33,6 @@ export default function Configuracoes() {
           <TabsTrigger value="metas" className="flex items-center gap-2">
             <Target className="h-4 w-4" />
             Metas
-          </TabsTrigger>
-          <TabsTrigger value="custos" className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4" />
-            Custos Fixos
           </TabsTrigger>
           <TabsTrigger value="usuarios" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
@@ -95,20 +90,6 @@ export default function Configuracoes() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="custos">
-          <Card>
-            <CardHeader>
-              <CardTitle>Custos Fixos</CardTitle>
-              <CardDescription>
-                Configure os custos fixos mensais da empresa
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CustosFixosSettings />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
         <TabsContent value="usuarios">
           <Card>
             <CardHeader>
@@ -128,7 +109,7 @@ export default function Configuracoes() {
             <CardHeader>
               <CardTitle>Permissões de Acesso</CardTitle>
               <CardDescription>
-                Configure quais páginas cada função pode acessar
+                Configure permissões por função e por usuário
               </CardDescription>
             </CardHeader>
             <CardContent>
