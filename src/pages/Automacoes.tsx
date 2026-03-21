@@ -93,6 +93,10 @@ export default function Automacoes() {
           )}
         </TabsContent>
 
+        <TabsContent value="interno" className="mt-4">
+          <InternalAutomationManager />
+        </TabsContent>
+
         <TabsContent value="clientes" className="mt-4">
           <ClientAutomationManager />
         </TabsContent>
