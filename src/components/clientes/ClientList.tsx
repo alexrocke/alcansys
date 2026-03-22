@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { MoreHorizontal, Pencil, Trash2, Loader2, Mail, Phone } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { MoreHorizontal, Pencil, Trash2, Loader2, Mail, Phone, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
