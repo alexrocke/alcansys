@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { MoreHorizontal, Pencil, Trash2, Loader2, Mail, Phone } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { MoreHorizontal, Pencil, Trash2, Loader2, Mail, Phone, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -49,6 +50,7 @@ const statusLabels = {
 };
 
 export function ClientList({ clients, isLoading, onEdit, onRefetch }: ClientListProps) {
+  const navigate = useNavigate();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -167,6 +169,10 @@ export function ClientList({ clients, isLoading, onEdit, onRefetch }: ClientList
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => navigate(`/clientes/${client.id}`)}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        Visualizar
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onEdit(client)}>
                         <Pencil className="h-4 w-4 mr-2" />
                         Editar

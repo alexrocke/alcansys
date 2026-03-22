@@ -16,6 +16,7 @@ import Landing from "./pages/Landing";
 import Projetos from "./pages/Projetos";
 import Financeiro from "./pages/Financeiro";
 import Clientes from "./pages/Clientes";
+import ClienteDetalhe from "./pages/ClienteDetalhe";
 import Equipe from "./pages/Equipe";
 import Marketing from "./pages/Marketing";
 import Automacoes from "./pages/Automacoes";
@@ -57,6 +58,7 @@ function InternalLayout() {
               <Route path="/tarefas" element={<Tarefas />} />
               <Route path="/financeiro" element={<Financeiro />} />
               <Route path="/clientes" element={<Clientes />} />
+              <Route path="/clientes/:id" element={<ClienteDetalhe />} />
               <Route path="/equipe" element={<Equipe />} />
               <Route path="/marketing" element={<Marketing />} />
               <Route path="/automacoes" element={<Automacoes />} />
