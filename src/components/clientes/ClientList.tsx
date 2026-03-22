@@ -50,6 +50,7 @@ const statusLabels = {
 };
 
 export function ClientList({ clients, isLoading, onEdit, onRefetch }: ClientListProps) {
+  const navigate = useNavigate();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
