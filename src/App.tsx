@@ -16,6 +16,7 @@ import Landing from "./pages/Landing";
 import Projetos from "./pages/Projetos";
 import Financeiro from "./pages/Financeiro";
 import Clientes from "./pages/Clientes";
+import ClienteDetalhe from "./pages/ClienteDetalhe";
 import Equipe from "./pages/Equipe";
 import Marketing from "./pages/Marketing";
 import Automacoes from "./pages/Automacoes";
