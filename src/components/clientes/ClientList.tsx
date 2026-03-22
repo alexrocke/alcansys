@@ -169,6 +169,10 @@ export function ClientList({ clients, isLoading, onEdit, onRefetch }: ClientList
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => navigate(`/clientes/${client.id}`)}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        Visualizar
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onEdit(client)}>
                         <Pencil className="h-4 w-4 mr-2" />
                         Editar

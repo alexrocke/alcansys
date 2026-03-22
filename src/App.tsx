@@ -58,6 +58,7 @@ function InternalLayout() {
               <Route path="/tarefas" element={<Tarefas />} />
               <Route path="/financeiro" element={<Financeiro />} />
               <Route path="/clientes" element={<Clientes />} />
+              <Route path="/clientes/:id" element={<ClienteDetalhe />} />
               <Route path="/equipe" element={<Equipe />} />
               <Route path="/marketing" element={<Marketing />} />
               <Route path="/automacoes" element={<Automacoes />} />
