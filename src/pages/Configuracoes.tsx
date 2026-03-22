@@ -142,6 +142,20 @@ export default function Configuracoes() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="marketing-integracoes">
+          <Card>
+            <CardHeader>
+              <CardTitle>Google & Meta</CardTitle>
+              <CardDescription>
+                Configure Google Analytics, Ads, Meta Pixel, Conversions API e parâmetros UTM
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MarketingIntegracoesSettings />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="landing">
           <Card>
             <CardHeader>
