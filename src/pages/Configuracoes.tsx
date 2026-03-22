@@ -48,6 +48,10 @@ export default function Configuracoes() {
             <ArrowRightLeft className="h-4 w-4" />
             Integrações
           </TabsTrigger>
+          <TabsTrigger value="marketing-integracoes" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Google & Meta
+          </TabsTrigger>
           <TabsTrigger value="landing" className="flex items-center gap-2">
             <Globe className="h-4 w-4" />
             Landing Page
