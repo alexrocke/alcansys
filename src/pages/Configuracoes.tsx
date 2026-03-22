@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, Users, Target, Building2, Globe, ShieldCheck, ArrowRightLeft } from "lucide-react";
+import { Settings, Users, Target, Building2, Globe, ShieldCheck, ArrowRightLeft, BarChart3 } from "lucide-react";
 import { AreasSettings } from "@/components/configuracoes/AreasSettings";
 import { MetasSettings } from "@/components/configuracoes/MetasSettings";
 import { UsuariosSettings } from "@/components/configuracoes/UsuariosSettings";
@@ -8,6 +8,7 @@ import { GeralSettings } from "@/components/configuracoes/GeralSettings";
 import { LandingSettings } from "@/components/configuracoes/LandingSettings";
 import { PermissoesSettings } from "@/components/configuracoes/PermissoesSettings";
 import { IntegracoesSettings } from "@/components/configuracoes/IntegracoesSettings";
+import { MarketingIntegracoesSettings } from "@/components/configuracoes/MarketingIntegracoesSettings";
 
 export default function Configuracoes() {
   return (
@@ -46,6 +47,10 @@ export default function Configuracoes() {
           <TabsTrigger value="integracoes" className="flex items-center gap-2">
             <ArrowRightLeft className="h-4 w-4" />
             Integrações
+          </TabsTrigger>
+          <TabsTrigger value="marketing-integracoes" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Google & Meta
           </TabsTrigger>
           <TabsTrigger value="landing" className="flex items-center gap-2">
             <Globe className="h-4 w-4" />
@@ -133,6 +138,20 @@ export default function Configuracoes() {
             </CardHeader>
             <CardContent>
               <IntegracoesSettings />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="marketing-integracoes">
+          <Card>
+            <CardHeader>
+              <CardTitle>Google & Meta</CardTitle>
+              <CardDescription>
+                Configure Google Analytics, Ads, Meta Pixel, Conversions API e parâmetros UTM
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MarketingIntegracoesSettings />
             </CardContent>
           </Card>
         </TabsContent>
