@@ -199,7 +199,7 @@ export function GoalsProgress({ companyId }: GoalsProgressProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-64">
+            <div className="h-64 w-full overflow-hidden">
               <ChartContainer
                 config={{
                   vendas: { label: "Vendas", color: "hsl(var(--primary))" },
