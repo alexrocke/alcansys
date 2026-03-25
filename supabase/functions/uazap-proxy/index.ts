@@ -174,7 +174,13 @@ Deno.serve(async (req) => {
             "Content-Type": "application/json",
             "token": instanceToken,
           },
-          body: JSON.stringify({ webhookURL: webhookUrl }),
+          body: JSON.stringify({
+            webhookURL: webhookUrl,
+            addUrlEvents: true,
+            addUrlTypesMessages: true,
+            events: ["messages"],
+            exclude: ["wasSentByApi", "isGroupYes"],
+          }),
         });
         result = await response.json();
         console.log("UAZAP set-webhook response:", JSON.stringify(result));
