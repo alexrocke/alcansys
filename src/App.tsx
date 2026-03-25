@@ -29,6 +29,7 @@ import Conversas from "./pages/Conversas";
 import Tarefas from "./pages/Tarefas";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import PortalDashboard from "./pages/portal/PortalDashboard";
 import PortalServicos from "./pages/portal/PortalServicos";
 import PortalAutomacoes from "./pages/portal/PortalAutomacoes";
 import PortalFaturas from "./pages/portal/PortalFaturas";
@@ -100,11 +101,12 @@ function PortalLayout() {
           </header>
           <main className="flex-1 overflow-auto">
             <Routes>
+              <Route path="/portal" element={<PortalDashboard />} />
               <Route path="/portal/servicos" element={<PortalServicos />} />
               <Route path="/portal/automacoes" element={<PortalAutomacoes />} />
               <Route path="/portal/faturas" element={<PortalFaturas />} />
               <Route path="/portal/sistemas" element={<PortalSistemas />} />
-              <Route path="*" element={<Navigate to="/portal/servicos" replace />} />
+              <Route path="*" element={<Navigate to="/portal" replace />} />
             </Routes>
           </main>
         </div>

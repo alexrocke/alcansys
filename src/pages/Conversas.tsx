@@ -110,6 +110,26 @@ export default function Conversas() {
   const sendMessage = useMutation({
     mutationFn: async () => {
       if (!newMessage.trim() || !selectedConversation || !companyId) return;
+
+      // Try to send via WhatsApp if conversation has an instance
+      if (selectedConversation.instance_id && selectedConversation.contato_telefone) {
+        try {
+          const { error: fnError } = await supabase.functions.invoke('send-whatsapp', {
+            body: {
+              instance_id: selectedConversation.instance_id,
+              phone: selectedConversation.contato_telefone,
+              message: newMessage,
+            },
+          });
+          if (fnError) {
+            console.error('WhatsApp send error:', fnError);
+            toast({ title: 'Erro ao enviar via WhatsApp', description: fnError.message, variant: 'destructive' });
+          }
+        } catch (err) {
+          console.error('WhatsApp send exception:', err);
+        }
+      }
+
       const { error } = await supabase.from('messages').insert([{
         conversation_id: selectedConversation.id,
         company_id: companyId,
