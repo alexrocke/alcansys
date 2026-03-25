@@ -82,6 +82,7 @@ function InternalLayout() {
               <Route path="/portal/servicos" element={<PortalServicos />} />
               <Route path="/portal/automacoes" element={<PortalAutomacoes />} />
               <Route path="/portal/faturas" element={<PortalFaturas />} />
+              <Route path="/portal/conversas" element={<PortalConversas />} />
               <Route path="/portal/sistemas" element={<PortalSistemas />} />
               <Route path="/vendedor" element={<VendedorDashboard />} />
               <Route path="/vendedor/leads" element={<VendedorLeads />} />
