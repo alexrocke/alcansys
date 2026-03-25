@@ -65,6 +65,38 @@ export type Database = {
           },
         ]
       }
+      agent_presence: {
+        Row: {
+          company_id: string
+          id: string
+          last_seen_at: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          id?: string
+          last_seen_at?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          id?: string
+          last_seen_at?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_presence_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       alerts: {
         Row: {
           company_id: string | null
@@ -547,6 +579,8 @@ export type Database = {
           id: string
           instance_id: string | null
           lead_id: string | null
+          locked_at: string | null
+          locked_by: string | null
           mensagens_count: number
           status: Database["public"]["Enums"]["conversation_status"]
           ultima_mensagem: string | null
@@ -564,6 +598,8 @@ export type Database = {
           id?: string
           instance_id?: string | null
           lead_id?: string | null
+          locked_at?: string | null
+          locked_by?: string | null
           mensagens_count?: number
           status?: Database["public"]["Enums"]["conversation_status"]
           ultima_mensagem?: string | null
@@ -581,6 +617,8 @@ export type Database = {
           id?: string
           instance_id?: string | null
           lead_id?: string | null
+          locked_at?: string | null
+          locked_by?: string | null
           mensagens_count?: number
           status?: Database["public"]["Enums"]["conversation_status"]
           ultima_mensagem?: string | null
