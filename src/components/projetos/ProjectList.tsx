@@ -12,7 +12,8 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { MoreVertical, Pencil, Trash2, Loader2, ListChecks, Package } from 'lucide-react';
+import { MoreVertical, Pencil, Trash2, Loader2, ListChecks, Package, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { ProjectTasks } from './ProjectTasks';
@@ -41,6 +42,7 @@ const statusLabels = {
 };
 
 export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefetch }: ProjectListProps) {
+  const navigate = useNavigate();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [tasksProject, setTasksProject] = useState<any>(null);
@@ -159,6 +161,10 @@ export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefet
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => navigate(`/projetos/${project.id}`)}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        Visualizar
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => setTasksProject(project)}>
                         <ListChecks className="h-4 w-4 mr-2" />
                         Tarefas
