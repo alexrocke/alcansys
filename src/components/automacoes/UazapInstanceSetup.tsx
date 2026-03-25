@@ -51,6 +51,8 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
   // Step 1: Create instance only
   const handleCreateInstance = async () => {
     setLoading(true);
+    // Buscar nome da empresa para usar como identificador na UAZAP
+    const { data: company } = await supabase.from('companies').select('nome').eq('id', companyId).single();
     setErrorMsg(null);
     try {
       const instanceName = `auto_${automationId.slice(0, 8)}_${Date.now()}`;
