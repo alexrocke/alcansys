@@ -1,7 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, Users, Target, Building2, Globe, ShieldCheck, ArrowRightLeft, BarChart3 } from "lucide-react";
+import { Settings, Users, Target, Building2, Globe, ShieldCheck, ArrowRightLeft, BarChart3, ShoppingBag } from "lucide-react";
 import { AreasSettings } from "@/components/configuracoes/AreasSettings";
+import { ServicosSettings } from "@/components/configuracoes/ServicosSettings";
 import { MetasSettings } from "@/components/configuracoes/MetasSettings";
 import { UsuariosSettings } from "@/components/configuracoes/UsuariosSettings";
 import { GeralSettings } from "@/components/configuracoes/GeralSettings";
@@ -55,6 +56,10 @@ export default function Configuracoes() {
           <TabsTrigger value="landing" className="flex items-center gap-2">
             <Globe className="h-4 w-4" />
             Landing Page
+          </TabsTrigger>
+          <TabsTrigger value="servicos" className="flex items-center gap-2">
+            <ShoppingBag className="h-4 w-4" />
+            Serviços
           </TabsTrigger>
         </TabsList>
 
@@ -166,6 +171,20 @@ export default function Configuracoes() {
             </CardHeader>
             <CardContent>
               <LandingSettings />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="servicos">
+          <Card>
+            <CardHeader>
+              <CardTitle>Catálogo de Serviços</CardTitle>
+              <CardDescription>
+                Gerencie os serviços oferecidos aos clientes no portal
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ServicosSettings />
             </CardContent>
           </Card>
         </TabsContent>
