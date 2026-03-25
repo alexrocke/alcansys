@@ -448,6 +448,42 @@ export type Database = {
           },
         ]
       }
+      contract_templates: {
+        Row: {
+          ativo: boolean
+          campos: Json
+          conteudo: string
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          campos?: Json
+          conteudo: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          tipo?: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          campos?: Json
+          conteudo?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           atendente_id: string | null

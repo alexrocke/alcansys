@@ -4,12 +4,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/hooks/useCompany';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Search, FileText, Upload, Tag, FolderOpen } from 'lucide-react';
+import { Plus, Search, FileText, Upload, Tag, FolderOpen, ScrollText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DocumentForm } from '@/components/documentos/DocumentForm';
 import { DocumentList } from '@/components/documentos/DocumentList';
+import { ContractTemplateManager } from '@/components/documentos/ContractTemplateManager';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Documentos() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -112,129 +114,113 @@ export default function Documentos() {
             Gerencie arquivos e documentos da empresa
           </p>
         </div>
-        <Button 
-          onClick={() => setIsFormOpen(true)}
-          className="gap-2 w-full md:w-auto"
-        >
-          <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">Novo Documento</span>
-          <span className="sm:hidden">Novo</span>
-        </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-2 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total de Documentos
-            </CardTitle>
-            <FileText className="h-5 w-5 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl md:text-3xl font-bold text-foreground">
-              {totalDocuments}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Arquivos armazenados
-            </p>
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="documentos">
+        <TabsList>
+          <TabsTrigger value="documentos" className="gap-2">
+            <FileText className="h-4 w-4" /> Documentos
+          </TabsTrigger>
+          <TabsTrigger value="modelos" className="gap-2">
+            <ScrollText className="h-4 w-4" /> Modelos de Contrato
+          </TabsTrigger>
+        </TabsList>
 
-        <Card className="border-2 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Contratos
-            </CardTitle>
-            <FolderOpen className="h-5 w-5 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl md:text-3xl font-bold text-blue-500">
-              {documentsByType.contrato}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Documentos contratuais
-            </p>
-          </CardContent>
-        </Card>
+        <TabsContent value="documentos" className="space-y-6 mt-4">
+          <div className="flex justify-end">
+            <Button onClick={() => setIsFormOpen(true)} className="gap-2 w-full md:w-auto">
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Novo Documento</span>
+              <span className="sm:hidden">Novo</span>
+            </Button>
+          </div>
 
-        <Card className="border-2 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Propostas
-            </CardTitle>
-            <Upload className="h-5 w-5 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl md:text-3xl font-bold text-green-500">
-              {documentsByType.proposta}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Propostas comerciais
-            </p>
-          </CardContent>
-        </Card>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="border-2 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Total</CardTitle>
+                <FileText className="h-5 w-5 text-primary" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl md:text-3xl font-bold text-foreground">{totalDocuments}</div>
+              </CardContent>
+            </Card>
+            <Card className="border-2 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Contratos</CardTitle>
+                <FolderOpen className="h-5 w-5 text-primary" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl md:text-3xl font-bold text-primary">{documentsByType.contrato}</div>
+              </CardContent>
+            </Card>
+            <Card className="border-2 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Propostas</CardTitle>
+                <Upload className="h-5 w-5 text-primary" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl md:text-3xl font-bold text-primary">{documentsByType.proposta}</div>
+              </CardContent>
+            </Card>
+            <Card className="border-2 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Tags</CardTitle>
+                <Tag className="h-5 w-5 text-primary" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl md:text-3xl font-bold text-foreground">{allTags.length}</div>
+              </CardContent>
+            </Card>
+          </div>
 
-        <Card className="border-2 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Tags Únicas
-            </CardTitle>
-            <Tag className="h-5 w-5 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl md:text-3xl font-bold text-foreground">
-              {allTags.length}
+          <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
+            <div className="relative w-full md:max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por nome ou tags..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Categorias ativas
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+            <Select value={tipoFilter} onValueChange={setTipoFilter}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Filtrar por tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os tipos</SelectItem>
+                <SelectItem value="contrato">Contrato</SelectItem>
+                <SelectItem value="proposta">Proposta</SelectItem>
+                <SelectItem value="relatorio">Relatório</SelectItem>
+                <SelectItem value="outros">Outros</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={projectFilter} onValueChange={setProjectFilter}>
+              <SelectTrigger className="w-full md:w-[200px]">
+                <SelectValue placeholder="Filtrar por projeto" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os projetos</SelectItem>
+                {projects?.map((project) => (
+                  <SelectItem key={project.id} value={project.id}>{project.nome}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
-        <div className="relative w-full md:max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por nome ou tags..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+          <DocumentList
+            documents={filteredDocuments || []}
+            isLoading={isLoading}
+            onEdit={handleEdit}
+            onRefetch={refetch}
           />
-        </div>
-        <Select value={tipoFilter} onValueChange={setTipoFilter}>
-          <SelectTrigger className="w-full md:w-[180px]">
-            <SelectValue placeholder="Filtrar por tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os tipos</SelectItem>
-            <SelectItem value="contrato">Contrato</SelectItem>
-            <SelectItem value="proposta">Proposta</SelectItem>
-            <SelectItem value="relatorio">Relatório</SelectItem>
-            <SelectItem value="outros">Outros</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={projectFilter} onValueChange={setProjectFilter}>
-          <SelectTrigger className="w-full md:w-[200px]">
-            <SelectValue placeholder="Filtrar por projeto" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os projetos</SelectItem>
-            {projects?.map((project) => (
-              <SelectItem key={project.id} value={project.id}>
-                {project.nome}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+        </TabsContent>
 
-      <DocumentList
-        documents={filteredDocuments || []}
-        isLoading={isLoading}
-        onEdit={handleEdit}
-        onRefetch={refetch}
-      />
+        <TabsContent value="modelos" className="mt-4">
+          <ContractTemplateManager />
+        </TabsContent>
+      </Tabs>
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
