@@ -71,6 +71,7 @@ function InternalLayout() {
               <Route path="/leads" element={<Leads />} />
               <Route path="/conversas" element={<Conversas />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
+              <Route path="/atividades" element={<AtividadeLog />} />
               <Route path="/vendedores" element={<Vendedores />} />
               {/* Admin can access portal and vendedor routes */}
               <Route path="/portal/servicos" element={<PortalServicos />} />
