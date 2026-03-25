@@ -1,133 +1,75 @@
 
 
-## Plano de Implementacao Completo - Recursos Pendentes
+## Plano: Painel de Supervisao + Controle de Concorrencia
 
-Organizados por prioridade de impacto no negocio.
+### Contexto
+O sistema de conversas atual permite que qualquer atendente assuma qualquer conversa sem verificacao. Nao ha visibilidade sobre quem esta online ou quantas conversas cada atendente atende.
 
----
+### O que sera construido
 
-### FASE 1 - Alta Prioridade
+**1. Tabela `agent_presence` (nova migracao)**
+- Registra presenca online dos atendentes com heartbeat
+- Colunas: `id`, `user_id`, `company_id`, `last_seen_at`, `status` (online/away/offline)
+- Um cron ou logica client-side atualiza `last_seen_at` a cada 30s
+- Agente e considerado offline se `last_seen_at` > 2 minutos atras
 
-#### 1.1 Envio de Mensagens WhatsApp pelo Painel
+**2. Coluna `locked_by` + `locked_at` na tabela `conversations`**
+- Quando um atendente abre uma conversa, ela fica "travada" para ele
+- Outros atendentes veem que a conversa esta sendo atendida e por quem
+- Lock expira automaticamente apos 5 minutos sem atividade (heartbeat do lock)
 
-Atualmente o painel de Conversas salva mensagens no banco mas nao envia para o WhatsApp real.
+**3. Componente `SupervisaoPanel` (novo)**
+- Painel acessivel via tab ou botao no topo da pagina de Conversas
+- Mostra lista de atendentes com: nome, status (online/away/offline), quantidade de conversas ativas
+- Dados vem de: join `agent_presence` + count de `conversations` onde `atendente_id = user_id` e `status IN ('aberta', 'em_atendimento')`
 
-**Mudancas:**
-- Criar Edge Function `send-whatsapp` que recebe `instance_id`, `phone`, `message` e chama a API UAZAP `/message/send-text`
-- Alterar `Conversas.tsx` > `sendMessage` para chamar a Edge Function antes de salvar no banco
-- Buscar o `api_token` e `instance_name` da tabela `whatsapp_instances` vinculada a conversa
+**4. Controle de concorrencia no `Conversas.tsx`**
+- Ao selecionar uma conversa, faz UPDATE com condicao `WHERE locked_by IS NULL OR locked_by = user_id OR locked_at < now() - interval '5 minutes'`
+- Se o UPDATE retorna 0 rows, mostra toast "Conversa sendo atendida por [nome]"
+- Heartbeat: a cada 30s enquanto conversa esta aberta, atualiza `locked_at`
+- Ao sair da conversa (desselecionar ou navegar), limpa o lock
 
-**Arquivos:** `supabase/functions/send-whatsapp/index.ts`, `src/pages/Conversas.tsx`
+### Detalhes tecnicos
 
-#### 1.2 Dashboard do Portal do Cliente
+**Migracao SQL:**
+```sql
+-- Tabela de presenca
+CREATE TABLE agent_presence (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  company_id uuid NOT NULL,
+  last_seen_at timestamptz DEFAULT now(),
+  status text DEFAULT 'online',
+  UNIQUE(user_id, company_id)
+);
+ALTER TABLE agent_presence ENABLE ROW LEVEL SECURITY;
+-- RLS: company members can view, authenticated can upsert own
 
-O portal do cliente nao tem tela inicial com resumo.
+-- Lock na conversa
+ALTER TABLE conversations 
+  ADD COLUMN locked_by uuid,
+  ADD COLUMN locked_at timestamptz;
+```
 
-**Mudancas:**
-- Criar pagina `src/pages/portal/PortalDashboard.tsx` com cards resumo: projetos ativos, faturas pendentes, automacoes ativas, sistemas
-- Adicionar rota `/portal` no `App.tsx`
-- Adicionar link "Inicio" no `PortalSidebar.tsx`
+**Presenca client-side:**
+- Hook `useAgentPresence(companyId)` que faz upsert na `agent_presence` a cada 30s
+- Usado na pagina de Conversas
+- Cleanup no `beforeunload` e unmount
 
-**Arquivos:** `src/pages/portal/PortalDashboard.tsx`, `src/App.tsx`, `src/components/portal/PortalSidebar.tsx`
+**SupervisaoPanel:**
+- Query: `agent_presence` com join em `profiles` para nome, + subquery count de conversas ativas por atendente
+- Indicador visual: verde (online <2min), amarelo (away 2-5min), cinza (offline >5min)
+- Renderizado como drawer/sheet ou secao colapsavel no topo da lista de conversas
 
----
+**Lock flow no Conversas.tsx:**
+- `selectConversation` -> tenta lock via update condicional
+- Se falha -> toast + nao abre
+- Heartbeat interval de 30s atualizando `locked_at`
+- Cleanup: update `locked_by = null` ao desselecionar
 
-### FASE 2 - Media Prioridade
-
-#### 2.1 Notificacoes Automaticas (Triggers)
-
-O `NotificationBell` existe mas alertas so sao criados manualmente. Faltam triggers automaticos.
-
-**Mudancas:**
-- Migration com triggers para criar alertas automaticamente:
-  - Novo lead criado → alerta para admins/gestores
-  - Tarefa vencida → alerta para responsavel
-  - Fatura vencendo em 3 dias → alerta para financeiro
-  - Nova conversa WhatsApp → alerta para atendentes
-- Adicionar realtime subscription no `useNotifications` para atualizar em tempo real
-
-**Arquivos:** Migration SQL, `src/hooks/useNotifications.tsx`
-
-#### 2.2 Relatorios e Exportacoes
-
-Apenas financeiro tem exportacao PDF. Faltam relatorios para outras areas.
-
-**Mudancas:**
-- Criar componente `ReportGenerator` reutilizavel com jsPDF
-- Relatorio de Projetos: status, progresso, custos vs orcamento
-- Relatorio de Leads: funil de conversao, origem, taxa de conversao
-- Relatorio de Vendas: performance por vendedor, comissoes, metas
-- Relatorio de Equipe: tarefas concluidas, produtividade
-- Adicionar botao "Exportar Relatorio" nas paginas Projetos, Leads, Vendedores
-
-**Arquivos:** `src/lib/reportGenerator.ts`, modificacoes em `Projetos.tsx`, `Leads.tsx`, `Vendedores.tsx`
-
----
-
-### FASE 3 - Complementar
-
-#### 3.1 Audit Log / Historico de Atividades
-
-**Mudancas:**
-- Criar tabela `activity_logs` (user_id, action, entity_type, entity_id, details, created_at)
-- Trigger generico para INSERT/UPDATE/DELETE nas tabelas principais (projects, clients, finances, leads)
-- Criar pagina `src/pages/AtividadeLog.tsx` com listagem filtrada por entidade/usuario/data
-- Adicionar no sidebar em Configuracoes ou como pagina propria
-
-**Arquivos:** Migration SQL, `src/pages/AtividadeLog.tsx`, `src/App.tsx`, `src/components/app-sidebar.tsx`
-
-#### 3.2 Email Transacional
-
-**Mudancas:**
-- Usar Supabase Auth email hooks ou Edge Function para enviar emails via Resend/SMTP
-- Casos: convite de membro aceito, fatura criada, lead atribuido, lembrete de vencimento
-- Criar Edge Function `send-email` com templates HTML
-- Configurar secret `RESEND_API_KEY` ou similar
-
-**Arquivos:** `supabase/functions/send-email/index.ts`, migration para tabela `email_templates` (opcional)
-
-#### 3.3 Filtros e Busca Avancada Padronizados
-
-**Mudancas:**
-- Criar componente reutilizavel `FilterBar` com busca por texto, filtro por status, data e area
-- Aplicar em paginas que nao tem: Marketing, Documentos, Equipe
-- Padronizar o visual com as que ja tem (Leads, Financeiro)
-
-**Arquivos:** `src/components/ui/filter-bar.tsx`, modificacoes em paginas afetadas
-
-#### 3.4 Responsividade Mobile
-
-**Mudancas:**
-- Revisar todas as paginas para breakpoints mobile
-- Corrigir `Conversas.tsx` que usa `window.innerWidth` inline (trocar por hook `useMobile`)
-- Ajustar tabelas para layout card em mobile
-- Testar sidebar collapse em telas pequenas
-
-**Arquivos:** Multiplas paginas
-
----
-
-### Resumo de Esforco
-
-| Fase | Item | Complexidade |
-|------|------|-------------|
-| 1.1 | Envio WhatsApp | Media - 1 Edge Function + ajuste no frontend |
-| 1.2 | Dashboard Portal Cliente | Baixa - 1 pagina nova com queries |
-| 2.1 | Notificacoes Triggers | Media - Migration + realtime |
-| 2.2 | Relatorios | Media - Componente + jsPDF |
-| 3.1 | Audit Log | Media - Tabela + triggers + pagina |
-| 3.2 | Email Transacional | Alta - Edge Function + provider externo |
-| 3.3 | Filtros Padronizados | Baixa - Componente reutilizavel |
-| 3.4 | Responsividade | Baixa - Ajustes CSS |
-
-### Ordem recomendada de implementacao
-
-1. Envio WhatsApp (impacto direto no uso diario)
-2. Dashboard Portal Cliente (experiencia do cliente)
-3. Notificacoes automaticas (produtividade)
-4. Relatorios (gestao)
-5. Filtros padronizados (UX)
-6. Responsividade (acessibilidade)
-7. Audit log (compliance)
-8. Email transacional (automacao)
+### Arquivos afetados
+- **Novo**: `src/components/conversas/SupervisaoPanel.tsx`
+- **Novo**: `src/hooks/useAgentPresence.tsx`
+- **Editado**: `src/pages/Conversas.tsx` (lock logic + painel de supervisao + presenca)
+- **Migracao**: nova migracao para `agent_presence` + colunas lock em `conversations`
 
