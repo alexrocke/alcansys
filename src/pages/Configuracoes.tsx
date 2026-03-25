@@ -1,7 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, Users, Target, Building2, Globe, ShieldCheck, ArrowRightLeft, BarChart3 } from "lucide-react";
+import { Settings, Users, Target, Building2, Globe, ShieldCheck, ArrowRightLeft, BarChart3, ShoppingBag } from "lucide-react";
 import { AreasSettings } from "@/components/configuracoes/AreasSettings";
+import { ServicosSettings } from "@/components/configuracoes/ServicosSettings";
 import { MetasSettings } from "@/components/configuracoes/MetasSettings";
 import { UsuariosSettings } from "@/components/configuracoes/UsuariosSettings";
 import { GeralSettings } from "@/components/configuracoes/GeralSettings";
