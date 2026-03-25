@@ -31,7 +31,8 @@ export function ClientAutomationManager() {
         .select('*, workflow_templates:template_id(nome, categoria), whatsapp_instances:whatsapp_instance_id(status, phone_number)')
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data;
+      // Exclude internal automations (those belong to "Uso Interno" tab)
+      return (data || []).filter((a: any) => !(a.config as any)?.internal);
     },
   });
 
