@@ -1,34 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/hooks/useCompany';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Send, Bot, User, Phone, ArrowLeftRight, MessageSquare } from 'lucide-react';
-import { format } from 'date-fns';
-
-const statusLabels: Record<string, string> = {
-  aberta: 'Aberta',
-  em_atendimento: 'Em Atendimento',
-  aguardando: 'Aguardando',
-  resolvida: 'Resolvida',
-  arquivada: 'Arquivada',
-};
-
-const statusColors: Record<string, string> = {
-  aberta: 'bg-blue-500/10 text-blue-700 border-blue-200',
-  em_atendimento: 'bg-green-500/10 text-green-700 border-green-200',
-  aguardando: 'bg-yellow-500/10 text-yellow-700 border-yellow-200',
-  resolvida: 'bg-gray-500/10 text-gray-700 border-gray-200',
-  arquivada: 'bg-gray-500/10 text-gray-500 border-gray-200',
-};
+import { useAgentPresence } from '@/hooks/useAgentPresence';
+import { SupervisaoPanel } from '@/components/conversas/SupervisaoPanel';
+import { ConversationList } from '@/components/conversas/ConversationList';
+import { ChatArea } from '@/components/conversas/ChatArea';
+import { MessageSquare } from 'lucide-react';
 
 export default function Conversas() {
   const { currentCompany } = useCompany();
@@ -37,12 +18,15 @@ export default function Conversas() {
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
   const companyId = currentCompany?.id;
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const lockHeartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [selectedConversation, setSelectedConversation] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [newMessage, setNewMessage] = useState('');
+
+  // Agent presence heartbeat
+  useAgentPresence(companyId);
 
   const { data: conversations = [], isLoading } = useQuery({
     queryKey: ['conversations', companyId, statusFilter],
@@ -104,15 +88,105 @@ export default function Conversas() {
     return () => { supabase.removeChannel(channel); };
   }, [companyId, queryClient]);
 
+  // Lock heartbeat - refresh lock every 30s while conversation is open
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (!selectedConversation?.id || !user?.id) return;
+
+    lockHeartbeatRef.current = setInterval(async () => {
+      await supabase
+        .from('conversations')
+        .update({ locked_at: new Date().toISOString() } as any)
+        .eq('id', selectedConversation.id)
+        .eq('locked_by' as any, user.id);
+    }, 30000);
+
+    return () => {
+      if (lockHeartbeatRef.current) clearInterval(lockHeartbeatRef.current);
+    };
+  }, [selectedConversation?.id, user?.id]);
+
+  // Release lock on unmount
+  useEffect(() => {
+    return () => {
+      if (selectedConversation?.id && user?.id) {
+        supabase
+          .from('conversations')
+          .update({ locked_by: null, locked_at: null } as any)
+          .eq('id', selectedConversation.id)
+          .eq('locked_by' as any, user.id);
+      }
+    };
+  }, []);
+
+  const tryLockConversation = useCallback(async (conv: any) => {
+    if (!user?.id) return false;
+
+    // Try to acquire lock with conditional update
+    const { data, error } = await supabase
+      .from('conversations')
+      .update({ locked_by: user.id, locked_at: new Date().toISOString() } as any)
+      .eq('id', conv.id)
+      .or(`locked_by.is.null,locked_by.eq.${user.id},locked_at.lt.${new Date(Date.now() - 5 * 60 * 1000).toISOString()}`)
+      .select('id');
+
+    if (error || !data?.length) {
+      // Lock failed - find who has it
+      const { data: lockedConv } = await supabase
+        .from('conversations')
+        .select('locked_by')
+        .eq('id', conv.id)
+        .single();
+
+      if (lockedConv?.locked_by) {
+        const { data: locker } = await supabase
+          .from('profiles')
+          .select('nome')
+          .eq('id', lockedConv.locked_by as string)
+          .single();
+
+        toast({
+          title: 'Conversa bloqueada',
+          description: `Esta conversa está sendo atendida por ${locker?.nome || 'outro atendente'}`,
+          variant: 'destructive',
+        });
+      }
+      return false;
+    }
+    return true;
+  }, [user?.id, toast]);
+
+  const releaseLock = useCallback(async (convId: string) => {
+    if (!user?.id) return;
+    await supabase
+      .from('conversations')
+      .update({ locked_by: null, locked_at: null } as any)
+      .eq('id', convId)
+      .eq('locked_by' as any, user.id);
+  }, [user?.id]);
+
+  const handleSelectConversation = useCallback(async (conv: any) => {
+    // Release previous lock
+    if (selectedConversation?.id && selectedConversation.id !== conv.id) {
+      await releaseLock(selectedConversation.id);
+    }
+
+    const locked = await tryLockConversation(conv);
+    if (locked) {
+      setSelectedConversation(conv);
+    }
+  }, [selectedConversation?.id, tryLockConversation, releaseLock]);
+
+  const handleDeselectConversation = useCallback(async () => {
+    if (selectedConversation?.id) {
+      await releaseLock(selectedConversation.id);
+    }
+    setSelectedConversation(null);
+  }, [selectedConversation?.id, releaseLock]);
 
   const sendMessage = useMutation({
     mutationFn: async () => {
       if (!newMessage.trim() || !selectedConversation || !companyId) return;
 
-      // Try to send via WhatsApp if conversation has an instance
       if (selectedConversation.instance_id && selectedConversation.contato_telefone) {
         try {
           const { error: fnError } = await supabase.functions.invoke('send-whatsapp', {
@@ -141,7 +215,6 @@ export default function Conversas() {
       }]);
       if (error) throw error;
 
-      // Update conversation
       await supabase.from('conversations').update({
         ultima_mensagem: newMessage,
         ultima_mensagem_at: new Date().toISOString(),
@@ -187,166 +260,33 @@ export default function Conversas() {
 
   return (
     <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden">
-      {/* Sidebar - Conversation List */}
-      <div className={`w-full md:w-96 border-r border-border flex flex-col bg-background ${selectedConversation && isMobile ? 'hidden' : 'flex'}`}>
-        <div className="p-4 border-b border-border space-y-3">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold text-foreground">Conversas</h1>
-            <div className="flex gap-2">
-              <Badge variant="outline">{openCount} abertas</Badge>
-              <Badge variant="secondary" className="gap-1"><Bot className="h-3 w-3" />{iaCount} IA</Badge>
-            </div>
-          </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Buscar..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9" />
-          </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Filtrar" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              {Object.entries(statusLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
+      <ConversationList
+        conversations={filteredConversations}
+        selectedConversation={selectedConversation}
+        onSelectConversation={handleSelectConversation}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+        isLoading={isLoading}
+        openCount={openCount}
+        iaCount={iaCount}
+        isMobile={isMobile}
+        companyId={companyId}
+        userId={user?.id}
+      />
 
-        <ScrollArea className="flex-1">
-          {isLoading ? (
-            <p className="p-4 text-center text-muted-foreground">Carregando...</p>
-          ) : filteredConversations.length === 0 ? (
-            <div className="p-8 text-center">
-              <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-muted-foreground">Nenhuma conversa</p>
-            </div>
-          ) : (
-            filteredConversations.map((conv: any) => (
-              <div
-                key={conv.id}
-                onClick={() => setSelectedConversation(conv)}
-                className={`p-4 border-b border-border cursor-pointer hover:bg-muted/50 transition-colors ${selectedConversation?.id === conv.id ? 'bg-muted' : ''}`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-foreground truncate">{conv.contato_nome}</p>
-                      {conv.atendente_tipo === 'ia' ? (
-                        <Bot className="h-3.5 w-3.5 text-purple-500 shrink-0" />
-                      ) : (
-                        <User className="h-3.5 w-3.5 text-green-500 shrink-0" />
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">{conv.ultima_mensagem || 'Sem mensagens'}</p>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <Badge variant="outline" className={`text-[10px] ${statusColors[conv.status]}`}>
-                      {statusLabels[conv.status]}
-                    </Badge>
-                    {conv.ultima_mensagem_at && (
-                      <p className="text-[10px] text-muted-foreground mt-1">
-                        {format(new Date(conv.ultima_mensagem_at), 'HH:mm')}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </ScrollArea>
-      </div>
-
-      {/* Chat Area */}
-      <div className={`flex-1 flex flex-col ${!selectedConversation && isMobile ? 'hidden' : 'flex'}`}>
-        {selectedConversation ? (
-          <>
-            {/* Chat Header */}
-            <div className="p-4 border-b border-border flex items-center justify-between bg-background">
-              <div className="flex items-center gap-3">
-                <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setSelectedConversation(null)}>←</Button>
-                <div>
-                  <p className="font-semibold text-foreground">{selectedConversation.contato_nome}</p>
-                  <div className="flex items-center gap-2">
-                    {selectedConversation.contato_telefone && (
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Phone className="h-3 w-3" />{selectedConversation.contato_telefone}
-                      </span>
-                    )}
-                    <Badge variant="outline" className={statusColors[selectedConversation.status]}>
-                      {statusLabels[selectedConversation.status]}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={handleHandoff} className="gap-1">
-                  <ArrowLeftRight className="h-4 w-4" />
-                  {selectedConversation.atendente_tipo === 'ia' ? 'Assumir' : 'Passar p/ IA'}
-                </Button>
-              </div>
-            </div>
-
-            {/* Messages */}
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-3 max-w-3xl mx-auto">
-                {messages.map((msg: any) => (
-                  <div key={msg.id} className={`flex ${msg.direction === 'outgoing' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[75%] rounded-2xl px-4 py-2 ${
-                      msg.direction === 'outgoing'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-foreground'
-                    }`}>
-                      {msg.direction === 'outgoing' && msg.sender_type && (
-                        <div className="flex items-center gap-1 mb-1">
-                          {msg.sender_type === 'ia' ? <Bot className="h-3 w-3" /> : <User className="h-3 w-3" />}
-                          <span className="text-[10px] opacity-75">
-                            {msg.sender_type === 'ia' ? 'IA' : msg.sender?.nome || 'Agente'}
-                          </span>
-                        </div>
-                      )}
-                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                      <p className={`text-[10px] mt-1 ${msg.direction === 'outgoing' ? 'opacity-75' : 'text-muted-foreground'}`}>
-                        {format(new Date(msg.created_at), 'HH:mm')}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
-            </ScrollArea>
-
-            {/* Input */}
-            <div className="p-4 border-t border-border bg-background">
-              <div className="flex gap-2 max-w-3xl mx-auto">
-                <Textarea
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Digite sua mensagem..."
-                  rows={1}
-                  className="flex-1 min-h-[40px] max-h-[120px]"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      sendMessage.mutate();
-                    }
-                  }}
-                />
-                <Button onClick={() => sendMessage.mutate()} disabled={!newMessage.trim() || sendMessage.isPending} size="icon">
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <MessageSquare className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-foreground mb-2">Selecione uma conversa</h2>
-              <p className="text-muted-foreground">Escolha uma conversa na lista ao lado para começar</p>
-            </div>
-          </div>
-        )}
-      </div>
+      <ChatArea
+        selectedConversation={selectedConversation}
+        messages={messages}
+        newMessage={newMessage}
+        onNewMessageChange={setNewMessage}
+        onSendMessage={() => sendMessage.mutate()}
+        isSending={sendMessage.isPending}
+        onHandoff={handleHandoff}
+        onBack={handleDeselectConversation}
+        isMobile={isMobile}
+      />
     </div>
   );
 }
