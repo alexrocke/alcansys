@@ -1,34 +1,77 @@
 
 
-## Plano: Controles de tamanho dos Display Cards nas Configurações
+## Estado Atual e Pendencias do Projeto
 
-### O que muda
+Analisei todo o codebase. O sistema ja esta bastante completo. Aqui esta um resumo do que **ja funciona** e do que **ainda falta ou pode melhorar**:
 
-Adicionar controles de **padding vertical**, **padding horizontal** e **espaçamento entre cards** (translate offsets) no painel de edição da seção "Serviços" em Configurações > Landing Page. Os valores são salvos no JSONB `config` da seção `services` e aplicados dinamicamente nos cards.
+---
 
-### Arquivos
+### JA IMPLEMENTADO
+- Dashboard com metricas e graficos
+- Projetos (CRUD + detalhes + tarefas + cronograma)
+- Financeiro (CRUD + exportacao PDF)
+- Clientes (CRUD + visualizacao detalhada)
+- Leads & CRM (kanban + contatos)
+- Conversas (chat em tempo real)
+- Marketing (campanhas)
+- Automacoes (workflows + instancias UAZAP + webhook automatico)
+- WhatsApp (instancias + canais)
+- Documentos (CRUD + modelos de contrato com PDF)
+- Vendedores (comissoes)
+- Equipe (membros + convites)
+- Configuracoes (geral, areas, metas, permissoes, usuarios, integracoes marketing Google/Meta/UTM)
+- Portal do Cliente (servicos, automacoes, faturas, sistemas)
+- Portal do Vendedor (dashboard, leads, comissoes, clientes)
+- Landing page configuravel
+- Auth com roles (admin, gestor, financeiro, marketing, vendedor)
+- Multi-empresa (CompanyProvider)
 
-| Arquivo | Mudança |
-|---------|---------|
-| `src/components/configuracoes/LandingSettings.tsx` | Adicionar sliders/inputs numéricos no `ServicesEditor` para: `card_padding_x`, `card_padding_y`, `card_spacing_x`, `card_spacing_y` |
-| `src/components/landing/ServiceCards.tsx` | Ler os valores de spacing/padding do config e passar para o `DisplayCards` como props |
-| `src/components/ui/display-cards.tsx` | Aceitar props `paddingX`, `paddingY`, `spacingX`, `spacingY` e aplicar como inline styles em vez de classes fixas |
+---
 
-### Detalhes
+### O QUE FALTA / PODE MELHORAR
 
-**Novos campos no config JSONB de `services`:**
-```json
-{
-  "card_padding_x": 24,
-  "card_padding_y": 24,
-  "card_spacing_x": 80,
-  "card_spacing_y": 48
-}
-```
+#### 1. Notificacoes em tempo real (parcial)
+- O `NotificationBell` existe mas pode nao estar com realtime/push configurado. Verificar se alertas sao criados automaticamente por triggers.
 
-**No painel de configurações:** 4 sliders com label e valor em px, agrupados numa seção "Tamanho e Espaçamento dos Cards".
+#### 2. Relatorios e exportacoes
+- Financeiro tem exportacao PDF, mas falta relatorios de projetos, leads, vendas, performance de equipe.
 
-**No DisplayCards:** Cada card recebe `style={{ padding: \`${paddingY}px ${paddingX}px\` }}` e os translate offsets são calculados com `transform: translate(${i * spacingX}px, ${i * spacingY}px)` em vez de classes Tailwind fixas.
+#### 3. Dashboard do Portal do Cliente
+- O portal tem paginas de servicos, automacoes, faturas e sistemas, mas nao tem um **dashboard resumo** para o cliente.
 
-Valores padrão: padding 24px, spacing X=80px, Y=48px (equivalente ao atual `translate-x-20 translate-y-12` por step).
+#### 4. Historico de atividades / Audit log
+- Nao existe registro de quem fez o que (alteracoes em projetos, clientes, financeiro).
+
+#### 5. Envio de mensagens pelo sistema (WhatsApp)
+- O webhook recebe mensagens, mas o envio de mensagens pelo painel de Conversas para o WhatsApp via UAZAP nao esta implementado.
+
+#### 6. Disparo de campanhas de marketing
+- As campanhas sao registradas mas nao ha integracao real para disparo (ex: envio em massa via WhatsApp ou email).
+
+#### 7. Email transacional
+- Nao ha envio de emails automaticos (convite aceito, fatura vencendo, lead novo, etc).
+
+#### 8. Filtros e busca avancada nas listagens
+- Algumas paginas tem filtros, outras nao. Padronizar.
+
+#### 9. Responsividade
+- Verificar se todas as paginas funcionam bem em mobile.
+
+#### 10. Testes end-to-end
+- Nenhum teste automatizado existe.
+
+---
+
+### Recomendacao de prioridade
+
+| Prioridade | Item |
+|---|---|
+| Alta | Envio de mensagens WhatsApp pelo painel |
+| Alta | Dashboard resumo no Portal do Cliente |
+| Media | Notificacoes automaticas (triggers no banco) |
+| Media | Relatorios e exportacoes adicionais |
+| Baixa | Audit log / historico de atividades |
+| Baixa | Email transacional |
+
+Quer que eu implemente algum desses itens?
 
