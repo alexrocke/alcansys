@@ -6,10 +6,8 @@ import { useCompany } from '@/hooks/useCompany';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useAgentPresence } from '@/hooks/useAgentPresence';
-import { SupervisaoPanel } from '@/components/conversas/SupervisaoPanel';
 import { ConversationList } from '@/components/conversas/ConversationList';
 import { ChatArea } from '@/components/conversas/ChatArea';
-import { MessageSquare } from 'lucide-react';
 
 export default function Conversas() {
   const { currentCompany } = useCompany();
@@ -122,12 +120,13 @@ export default function Conversas() {
     if (!user?.id) return false;
 
     // Try to acquire lock with conditional update
-    const { data, error } = await supabase
-      .from('conversations')
-      .update({ locked_by: user.id, locked_at: new Date().toISOString() } as any)
-      .eq('id', conv.id)
-      .or(`locked_by.is.null,locked_by.eq.${user.id},locked_at.lt.${new Date(Date.now() - 5 * 60 * 1000).toISOString()}`)
-      .select('id');
+      const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      const { data, error } = await (supabase
+        .from('conversations')
+        .update({ locked_by: user.id, locked_at: new Date().toISOString() } as any)
+        .eq('id', conv.id) as any)
+        .or(`locked_by.is.null,locked_by.eq.${user.id},locked_at.lt.${fiveMinAgo}`)
+        .select('id');
 
     if (error || !data?.length) {
       // Lock failed - find who has it
