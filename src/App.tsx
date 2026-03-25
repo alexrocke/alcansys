@@ -29,6 +29,7 @@ import Conversas from "./pages/Conversas";
 import Tarefas from "./pages/Tarefas";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import AtividadeLog from "./pages/AtividadeLog";
 import PortalDashboard from "./pages/portal/PortalDashboard";
 import PortalServicos from "./pages/portal/PortalServicos";
 import PortalAutomacoes from "./pages/portal/PortalAutomacoes";
