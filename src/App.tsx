@@ -14,6 +14,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import Projetos from "./pages/Projetos";
+import ProjetoDetalhe from "./pages/ProjetoDetalhe";
 import Financeiro from "./pages/Financeiro";
 import Clientes from "./pages/Clientes";
 import ClienteDetalhe from "./pages/ClienteDetalhe";
@@ -55,6 +56,7 @@ function InternalLayout() {
             <Routes>
               <Route path="/dashboard" element={<Index />} />
               <Route path="/projetos" element={<Projetos />} />
+              <Route path="/projetos/:id" element={<ProjetoDetalhe />} />
               <Route path="/tarefas" element={<Tarefas />} />
               <Route path="/financeiro" element={<Financeiro />} />
               <Route path="/clientes" element={<Clientes />} />
