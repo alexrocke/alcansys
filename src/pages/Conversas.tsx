@@ -6,6 +6,7 @@ import { useCompany } from '@/hooks/useCompany';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useAgentPresence } from '@/hooks/useAgentPresence';
+import { useConversationNotifier } from '@/hooks/useConversationNotifier';
 import { ConversationList } from '@/components/conversas/ConversationList';
 import { ChatArea } from '@/components/conversas/ChatArea';
 
@@ -23,8 +24,8 @@ export default function Conversas() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [newMessage, setNewMessage] = useState('');
 
-  // Agent presence heartbeat
   useAgentPresence(companyId);
+  useConversationNotifier(companyId);
 
   const { data: conversations = [], isLoading } = useQuery({
     queryKey: ['conversations', companyId, statusFilter],

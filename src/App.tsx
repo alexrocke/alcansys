@@ -35,6 +35,7 @@ import PortalServicos from "./pages/portal/PortalServicos";
 import PortalAutomacoes from "./pages/portal/PortalAutomacoes";
 import PortalFaturas from "./pages/portal/PortalFaturas";
 import PortalSistemas from "./pages/portal/PortalSistemas";
+import PortalConversas from "./pages/portal/PortalConversas";
 import Vendedores from "./pages/Vendedores";
 import { VendedorSidebar } from "@/components/vendedor-portal/VendedorSidebar";
 import VendedorDashboard from "./pages/vendedor-portal/VendedorDashboard";
@@ -111,6 +112,7 @@ function PortalLayout() {
               <Route path="/portal/servicos" element={<PortalServicos />} />
               <Route path="/portal/automacoes" element={<PortalAutomacoes />} />
               <Route path="/portal/faturas" element={<PortalFaturas />} />
+              <Route path="/portal/conversas" element={<PortalConversas />} />
               <Route path="/portal/sistemas" element={<PortalSistemas />} />
               <Route path="*" element={<Navigate to="/portal" replace />} />
             </Routes>
