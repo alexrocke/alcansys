@@ -36,6 +36,7 @@ export default function Conversas() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
   const companyId = currentCompany?.id;
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
