@@ -95,7 +95,7 @@ export default function Conversas() {
         .from('conversations')
         .update({ locked_at: new Date().toISOString() } as any)
         .eq('id', selectedConversation.id)
-        .eq('locked_by' as any, user.id);
+        .eq('locked_by', user.id);
     }, 30000);
 
     return () => {
@@ -107,11 +107,11 @@ export default function Conversas() {
   useEffect(() => {
     return () => {
       if (selectedConversation?.id && user?.id) {
-        supabase
-          .from('conversations')
-          .update({ locked_by: null, locked_at: null } as any)
+        (supabase
+          .from('conversations') as any)
+          .update({ locked_by: null, locked_at: null })
           .eq('id', selectedConversation.id)
-          .eq('locked_by' as any, user.id);
+          .eq('locked_by', user.id);
       }
     };
   }, []);
@@ -120,13 +120,13 @@ export default function Conversas() {
     if (!user?.id) return false;
 
     // Try to acquire lock with conditional update
-      const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-      const { data, error } = await (supabase
-        .from('conversations')
-        .update({ locked_by: user.id, locked_at: new Date().toISOString() } as any)
-        .eq('id', conv.id) as any)
-        .or(`locked_by.is.null,locked_by.eq.${user.id},locked_at.lt.${fiveMinAgo}`)
-        .select('id');
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { data, error } = await (supabase
+      .from('conversations') as any)
+      .update({ locked_by: user.id, locked_at: new Date().toISOString() })
+      .eq('id', conv.id)
+      .or(`locked_by.is.null,locked_by.eq.${user.id},locked_at.lt.${fiveMinAgo}`)
+      .select('id');
 
     if (error || !data?.length) {
       // Lock failed - find who has it
