@@ -56,6 +56,10 @@ export default function Configuracoes() {
             <Globe className="h-4 w-4" />
             Landing Page
           </TabsTrigger>
+          <TabsTrigger value="servicos" className="flex items-center gap-2">
+            <ShoppingBag className="h-4 w-4" />
+            Serviços
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="geral">
@@ -166,6 +170,20 @@ export default function Configuracoes() {
             </CardHeader>
             <CardContent>
               <LandingSettings />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="servicos">
+          <Card>
+            <CardHeader>
+              <CardTitle>Catálogo de Serviços</CardTitle>
+              <CardDescription>
+                Gerencie os serviços oferecidos aos clientes no portal
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ServicosSettings />
             </CardContent>
           </Card>
         </TabsContent>
