@@ -1,4 +1,4 @@
-import { LayoutDashboard, ShoppingBag, Zap, Receipt, Monitor, LogOut } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Zap, Receipt, Monitor, MessageCircle, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,6 +22,7 @@ const portalItems = [
   { title: "Serviços", url: "/portal/servicos", icon: ShoppingBag },
   { title: "Automações", url: "/portal/automacoes", icon: Zap },
   { title: "Faturas", url: "/portal/faturas", icon: Receipt },
+  { title: "Conversas", url: "/portal/conversas", icon: MessageCircle },
   { title: "Sistemas", url: "/portal/sistemas", icon: Monitor },
 ];
 
