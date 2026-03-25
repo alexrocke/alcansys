@@ -69,7 +69,7 @@ export function ContractTemplateManager() {
     if (!selectedTemplate) return '';
     let content = selectedTemplate.conteudo as string;
     Object.entries(fieldValues).forEach(([key, value]) => {
-      content = content.replaceAll(`{{${key}}}`, value || `[${key}]`);
+      content = content.split(`{{${key}}}`).join(value || `[${key}]`);
     });
     return content;
   };
@@ -247,7 +247,7 @@ export function ContractTemplateManager() {
                     {tipoLabels[template.tipo] || template.tipo}
                   </Badge>
                   <span className="text-xs text-muted-foreground">
-                    {((template.campos as Campo[]) || []).length} campos
+                    {((template.campos as unknown as Campo[]) || []).length} campos
                   </span>
                 </div>
               </CardContent>
