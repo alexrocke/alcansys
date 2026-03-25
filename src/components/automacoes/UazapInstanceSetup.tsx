@@ -122,6 +122,21 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
         setPolling(false);
         setQrCode(null);
 
+        // Auto-configure webhook to point to our whatsapp-webhook Edge Function
+        try {
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const webhookUrl = `${supabaseUrl}/functions/v1/whatsapp-webhook`;
+          await callUazap('set-webhook', {
+            instance_id: uazapName,
+            instance_token: uazapToken,
+            webhook_url: webhookUrl,
+          });
+          console.log('Webhook configured automatically:', webhookUrl);
+        } catch (whErr: any) {
+          console.error('Failed to auto-set webhook:', whErr);
+          toast({ title: 'Aviso', description: 'Webhook não configurado automaticamente. Configure manualmente nas integrações.', variant: 'destructive' });
+        }
+
         const channelResult = await supabase.from('channels').insert([{
           company_id: companyId,
           nome: `WhatsApp - ${uazapName}`,
@@ -138,6 +153,7 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
             status: 'connected' as const,
             phone_number: result.phone_number || null,
             api_token: uazapToken,
+            webhook_url: `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/whatsapp-webhook`,
           }]).select().single();
 
           if (instanceResult.data) {
@@ -147,7 +163,7 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
           }
         }
 
-        toast({ title: 'WhatsApp conectado com sucesso!' });
+        toast({ title: 'WhatsApp conectado com sucesso!', description: 'Webhook configurado automaticamente.' });
         onConnected();
       }
     } catch (error) {
