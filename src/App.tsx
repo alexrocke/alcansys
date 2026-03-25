@@ -45,10 +45,13 @@ import VendedorClientes from "./pages/vendedor-portal/VendedorClientes";
 const queryClient = new QueryClient();
 
 function InternalLayout() {
+  const location = window.location.pathname;
+  const isPortalRoute = location.startsWith('/portal');
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
-        <AppSidebar />
+        {isPortalRoute ? <PortalSidebar /> : <AppSidebar />}
         <div className="flex-1 flex flex-col">
           <header className="h-14 border-b border-border bg-background flex items-center justify-between px-4">
             <SidebarTrigger />
