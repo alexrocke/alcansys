@@ -156,11 +156,11 @@ export default function Conversas() {
 
   const releaseLock = useCallback(async (convId: string) => {
     if (!user?.id) return;
-    await supabase
-      .from('conversations')
-      .update({ locked_by: null, locked_at: null } as any)
+    await (supabase
+      .from('conversations') as any)
+      .update({ locked_by: null, locked_at: null })
       .eq('id', convId)
-      .eq('locked_by' as any, user.id);
+      .eq('locked_by', user.id);
   }, [user?.id]);
 
   const handleSelectConversation = useCallback(async (conv: any) => {
