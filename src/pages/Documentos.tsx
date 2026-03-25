@@ -4,12 +4,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/hooks/useCompany';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Search, FileText, Upload, Tag, FolderOpen } from 'lucide-react';
+import { Plus, Search, FileText, Upload, Tag, FolderOpen, ScrollText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DocumentForm } from '@/components/documentos/DocumentForm';
 import { DocumentList } from '@/components/documentos/DocumentList';
+import { ContractTemplateManager } from '@/components/documentos/ContractTemplateManager';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Documentos() {
   const [isFormOpen, setIsFormOpen] = useState(false);
