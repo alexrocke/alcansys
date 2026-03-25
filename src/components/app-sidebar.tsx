@@ -13,7 +13,8 @@ import {
   MessageCircle,
   Contact,
   MessagesSquare,
-  BadgeDollarSign
+  BadgeDollarSign,
+  Activity
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import logoIcon from "@/assets/logo-icon.png";
@@ -62,6 +63,7 @@ const mainItems: MenuItem[] = [
 
 const settingsItems: MenuItem[] = [
   { title: "Configurações", url: "/configuracoes", pageKey: "configuracoes", icon: Settings },
+  { title: "Atividades", url: "/atividades", pageKey: "atividades", icon: Activity },
 ];
 
 export function AppSidebar() {

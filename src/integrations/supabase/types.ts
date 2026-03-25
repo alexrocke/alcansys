@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          action: string
+          company_id: string | null
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_name: string | null
+          entity_type: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          company_id?: string | null
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          company_id?: string | null
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_logs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       alerts: {
         Row: {
           company_id: string | null
@@ -631,6 +682,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      email_templates: {
+        Row: {
+          assunto: string
+          ativo: boolean
+          corpo_html: string
+          created_at: string
+          id: string
+          nome: string
+          slug: string
+          updated_at: string
+          variaveis: Json | null
+        }
+        Insert: {
+          assunto: string
+          ativo?: boolean
+          corpo_html: string
+          created_at?: string
+          id?: string
+          nome: string
+          slug: string
+          updated_at?: string
+          variaveis?: Json | null
+        }
+        Update: {
+          assunto?: string
+          ativo?: boolean
+          corpo_html?: string
+          created_at?: string
+          id?: string
+          nome?: string
+          slug?: string
+          updated_at?: string
+          variaveis?: Json | null
+        }
+        Relationships: []
       }
       finances: {
         Row: {

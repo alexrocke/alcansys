@@ -29,6 +29,7 @@ import Conversas from "./pages/Conversas";
 import Tarefas from "./pages/Tarefas";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import AtividadeLog from "./pages/AtividadeLog";
 import PortalDashboard from "./pages/portal/PortalDashboard";
 import PortalServicos from "./pages/portal/PortalServicos";
 import PortalAutomacoes from "./pages/portal/PortalAutomacoes";
@@ -70,6 +71,7 @@ function InternalLayout() {
               <Route path="/leads" element={<Leads />} />
               <Route path="/conversas" element={<Conversas />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
+              <Route path="/atividades" element={<AtividadeLog />} />
               <Route path="/vendedores" element={<Vendedores />} />
               {/* Admin can access portal and vendedor routes */}
               <Route path="/portal/servicos" element={<PortalServicos />} />

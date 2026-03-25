@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/hooks/useCompany';
@@ -7,7 +8,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -35,6 +35,7 @@ export default function Conversas() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
   const companyId = currentCompany?.id;
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -187,7 +188,7 @@ export default function Conversas() {
   return (
     <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden">
       {/* Sidebar - Conversation List */}
-      <div className="w-full md:w-96 border-r border-border flex flex-col bg-background" style={{ display: selectedConversation && window.innerWidth < 768 ? 'none' : 'flex' }}>
+      <div className={`w-full md:w-96 border-r border-border flex flex-col bg-background ${selectedConversation && isMobile ? 'hidden' : 'flex'}`}>
         <div className="p-4 border-b border-border space-y-3">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-foreground">Conversas</h1>
@@ -256,7 +257,7 @@ export default function Conversas() {
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col" style={{ display: !selectedConversation && window.innerWidth < 768 ? 'none' : 'flex' }}>
+      <div className={`flex-1 flex flex-col ${!selectedConversation && isMobile ? 'hidden' : 'flex'}`}>
         {selectedConversation ? (
           <>
             {/* Chat Header */}
