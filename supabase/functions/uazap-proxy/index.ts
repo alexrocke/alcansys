@@ -162,6 +162,28 @@ Deno.serve(async (req) => {
         break;
       }
 
+      case "set-webhook": {
+        const instanceToken = body.instance_token || UAZAP_API_TOKEN;
+        const webhookUrl = body.webhook_url;
+        if (!webhookUrl) {
+          throw new Error("webhook_url is required");
+        }
+        const response = await fetch(`${UAZAP_API_URL}/webhook`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "token": instanceToken,
+          },
+          body: JSON.stringify({ webhookURL: webhookUrl }),
+        });
+        result = await response.json();
+        console.log("UAZAP set-webhook response:", JSON.stringify(result));
+        if (!response.ok) {
+          throw new Error(`UAZAP set-webhook failed [${response.status}]: ${JSON.stringify(result)}`);
+        }
+        break;
+      }
+
       default:
         return new Response(JSON.stringify({ error: "Invalid action" }), {
           status: 400,
