@@ -55,7 +55,10 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
     const { data: company } = await supabase.from('companies').select('nome').eq('id', companyId).single();
     setErrorMsg(null);
     try {
-      const instanceName = `auto_${automationId.slice(0, 8)}_${Date.now()}`;
+      const companySlug = (company?.nome || 'empresa')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').substring(0, 30).toLowerCase();
+      const instanceName = `${companySlug}_${Date.now()}`;
       const result = await callUazap('create-instance', { instance_name: instanceName });
 
       const name = result.name || result.instance?.name || instanceName;
