@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SalespersonForm } from '@/components/vendedores/SalespersonForm';
 import { SalespersonList } from '@/components/vendedores/SalespersonList';
 import { CommissionList } from '@/components/vendedores/CommissionList';
-import { Plus, Users, DollarSign, Clock, CheckCircle } from 'lucide-react';
+import { Plus, Users, DollarSign, Clock, CheckCircle, FileDown } from 'lucide-react';
+import { generateSalesReport } from '@/lib/reportGenerator';
 
 const formatCurrency = (v: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
@@ -89,9 +90,14 @@ export default function Vendedores() {
           <h1 className="text-2xl md:text-3xl font-bold text-foreground">Vendedores</h1>
           <p className="text-sm text-muted-foreground">Gerencie sua equipe de vendas e comissões</p>
         </div>
-        <Button onClick={() => { setEditingSp(null); setIsFormOpen(true); }} className="gap-2 w-full md:w-auto">
-          <Plus className="h-4 w-4" /> Novo Vendedor
-        </Button>
+        <div className="flex gap-2 w-full md:w-auto">
+          <Button onClick={() => { setEditingSp(null); setIsFormOpen(true); }} className="gap-2 flex-1 md:flex-none">
+            <Plus className="h-4 w-4" /> Novo Vendedor
+          </Button>
+          <Button variant="outline" onClick={() => generateSalesReport(commissions, salespeople)} disabled={!commissions.length} className="gap-2 flex-1 md:flex-none">
+            <FileDown className="h-4 w-4" /> Exportar PDF
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

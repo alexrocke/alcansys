@@ -4,7 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/hooks/useCompany';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, FileDown } from 'lucide-react';
+import { generateProjectsReport } from '@/lib/reportGenerator';
 import { ProjectForm } from '@/components/projetos/ProjectForm';
 import { ProjectList } from '@/components/projetos/ProjectList';
 import { ProductList } from '@/components/projetos/ProductList';
@@ -105,6 +106,15 @@ export default function Projetos() {
         >
           <Plus className="h-4 w-4" />
           Novo Projeto
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => generateProjectsReport(projects || [], projectCosts || {})}
+          className="gap-2 w-full md:w-auto"
+          disabled={!projects?.length}
+        >
+          <FileDown className="h-4 w-4" />
+          Exportar PDF
         </Button>
       </div>
 

@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { LeadForm } from '@/components/leads/LeadForm';
 import { LeadDetail } from '@/components/leads/LeadDetail';
-import { Plus, Search, Users, TrendingUp, Target, DollarSign, UserPlus } from 'lucide-react';
+import { Plus, Search, Users, TrendingUp, Target, DollarSign, UserPlus, FileDown } from 'lucide-react';
+import { generateLeadsReport } from '@/lib/reportGenerator';
 import { format } from 'date-fns';
 
 const statusLabels: Record<string, string> = {
@@ -122,10 +123,16 @@ export default function Leads() {
           <h1 className="text-2xl md:text-3xl font-bold text-foreground">Leads & CRM</h1>
           <p className="text-sm md:text-base text-muted-foreground">Gerencie seu funil de vendas e leads</p>
         </div>
-        <Button onClick={() => setIsFormOpen(true)} className="gap-2 w-full md:w-auto">
-          <Plus className="h-4 w-4" />
-          Novo Lead
-        </Button>
+        <div className="flex gap-2 w-full md:w-auto">
+          <Button onClick={() => setIsFormOpen(true)} className="gap-2 flex-1 md:flex-none">
+            <Plus className="h-4 w-4" />
+            Novo Lead
+          </Button>
+          <Button variant="outline" onClick={() => generateLeadsReport(leads)} disabled={!leads.length} className="gap-2 flex-1 md:flex-none">
+            <FileDown className="h-4 w-4" />
+            Exportar PDF
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

@@ -114,7 +114,7 @@ export default function Conversas() {
       // Try to send via WhatsApp if conversation has an instance
       if (selectedConversation.instance_id && selectedConversation.contato_telefone) {
         try {
-          const { data: fnData, error: fnError } = await supabase.functions.invoke('send-whatsapp', {
+          const { error: fnError } = await supabase.functions.invoke('send-whatsapp', {
             body: {
               instance_id: selectedConversation.instance_id,
               phone: selectedConversation.contato_telefone,
