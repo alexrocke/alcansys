@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { Loader2, QrCode, Wifi, WifiOff, RefreshCw, Plus, CheckCircle2 } from 'lucide-react';
+import { Loader2, QrCode, Wifi, WifiOff, RefreshCw, Plus, CheckCircle2, Link2 } from 'lucide-react';
 
 interface Props {
   companyId: string;
@@ -13,17 +15,53 @@ interface Props {
   onConnected: () => void;
 }
 
-type Step = 'idle' | 'created' | 'qr';
+type Step = 'choose' | 'idle' | 'created' | 'qr';
 
 export function UazapInstanceSetup({ companyId, automationId, instanceId, onConnected }: Props) {
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState<Step>('idle');
+  const [step, setStep] = useState<Step>('choose');
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [status, setStatus] = useState<string>('disconnected');
   const [uazapName, setUazapName] = useState<string | null>(null);
   const [uazapToken, setUazapToken] = useState<string | null>(null);
   const [polling, setPolling] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [selectedExistingInstance, setSelectedExistingInstance] = useState('');
+
+  // Fetch existing connected instances for this company
+  const { data: existingInstances } = useQuery({
+    queryKey: ['company-whatsapp-instances', companyId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('whatsapp_instances')
+        .select('id, instance_name, phone_number, status')
+        .eq('company_id', companyId)
+        .eq('status', 'connected')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const hasExistingInstances = (existingInstances?.length || 0) > 0;
+
+  const handleLinkExisting = async () => {
+    if (!selectedExistingInstance) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('client_automations')
+        .update({ whatsapp_instance_id: selectedExistingInstance, status: 'ativa' as const })
+        .eq('id', automationId);
+      if (error) throw error;
+      toast({ title: 'Instância vinculada', description: 'A automação agora usa a instância WhatsApp existente.' });
+      onConnected();
+    } catch (err: any) {
+      toast({ title: 'Erro', description: err.message, variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const callUazap = async (action: string, extra: Record<string, any> = {}) => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -48,10 +86,8 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
     return res.json();
   };
 
-  // Step 1: Create instance only
   const handleCreateInstance = async () => {
     setLoading(true);
-    // Buscar nome da empresa para usar como identificador na UAZAP
     const { data: company } = await supabase.from('companies').select('nome').eq('id', companyId).single();
     setErrorMsg(null);
     try {
@@ -67,7 +103,6 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
       setUazapName(name);
       setUazapToken(token);
       setStep('created');
-
       toast({ title: 'Instância criada', description: `Instância "${name}" criada com sucesso.` });
     } catch (error: any) {
       setErrorMsg(error.message);
@@ -77,7 +112,6 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
     }
   };
 
-  // Step 2: Connect + generate QR
   const handleGenerateQr = async () => {
     if (!uazapName) return;
     setLoading(true);
@@ -122,7 +156,6 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
         setPolling(false);
         setQrCode(null);
 
-        // Auto-configure webhook to point to our whatsapp-webhook Edge Function
         try {
           const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
           const webhookUrl = `${supabaseUrl}/functions/v1/whatsapp-webhook`;
@@ -131,10 +164,8 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
             instance_token: uazapToken,
             webhook_url: webhookUrl,
           });
-          console.log('Webhook configured automatically:', webhookUrl);
         } catch (whErr: any) {
           console.error('Failed to auto-set webhook:', whErr);
-          toast({ title: 'Aviso', description: 'Webhook não configurado automaticamente. Configure manualmente nas integrações.', variant: 'destructive' });
         }
 
         const channelResult = await supabase.from('channels').insert([{
@@ -163,7 +194,7 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
           }
         }
 
-        toast({ title: 'WhatsApp conectado com sucesso!', description: 'Webhook configurado automaticamente.' });
+        toast({ title: 'WhatsApp conectado com sucesso!' });
         onConnected();
       }
     } catch (error) {
@@ -206,78 +237,138 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
           <QrCode className="h-5 w-5" />
-          Conectar WhatsApp via UAZAP
+          Conectar WhatsApp
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Progress Steps */}
-        <div className="flex items-center gap-2 text-sm">
-          <div className={`flex items-center gap-1.5 ${step !== 'idle' ? 'text-green-600' : 'text-muted-foreground'}`}>
-            {step !== 'idle' ? <CheckCircle2 className="h-4 w-4" /> : <span className="h-5 w-5 rounded-full border-2 border-current flex items-center justify-center text-xs font-bold">1</span>}
-            <span className="font-medium">Criar Instância</span>
-          </div>
-          <div className="h-px w-6 bg-border" />
-          <div className={`flex items-center gap-1.5 ${step === 'qr' ? 'text-green-600' : 'text-muted-foreground'}`}>
-            {step === 'qr' ? <CheckCircle2 className="h-4 w-4" /> : <span className="h-5 w-5 rounded-full border-2 border-current flex items-center justify-center text-xs font-bold">2</span>}
-            <span className="font-medium">Gerar QR Code</span>
-          </div>
-          <div className="h-px w-6 bg-border" />
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <span className="h-5 w-5 rounded-full border-2 border-current flex items-center justify-center text-xs font-bold">3</span>
-            <span className="font-medium">Conectar</span>
-          </div>
-        </div>
+        {/* Choose: use existing or create new */}
+        {step === 'choose' && (
+          <div className="space-y-4">
+            {hasExistingInstances && (
+              <div className="space-y-3 p-4 rounded-lg border bg-muted/30">
+                <p className="text-sm font-medium flex items-center gap-2">
+                  <Link2 className="h-4 w-4" />
+                  Usar instância existente
+                </p>
+                <Select value={selectedExistingInstance} onValueChange={setSelectedExistingInstance}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione uma instância conectada" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {existingInstances?.map((inst) => (
+                      <SelectItem key={inst.id} value={inst.id}>
+                        {inst.phone_number || inst.instance_name}
+                        {inst.phone_number && inst.instance_name ? ` (${inst.instance_name})` : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  onClick={handleLinkExisting}
+                  disabled={!selectedExistingInstance || loading}
+                  className="w-full gap-2"
+                >
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" />}
+                  Vincular Instância
+                </Button>
+              </div>
+            )}
 
-        {/* Error display */}
-        {errorMsg && (
-          <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-sm text-destructive">
-            {errorMsg}
-          </div>
-        )}
+            {hasExistingInstances && (
+              <div className="relative flex items-center gap-3">
+                <div className="flex-1 h-px bg-border" />
+                <span className="text-xs text-muted-foreground">ou</span>
+                <div className="flex-1 h-px bg-border" />
+              </div>
+            )}
 
-        {/* Step 1: Create */}
-        {step === 'idle' && (
-          <Button onClick={handleCreateInstance} disabled={loading} className="gap-2 w-full">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-            Criar Instância
-          </Button>
-        )}
-
-        {/* Step 2: Generate QR */}
-        {step === 'created' && !qrCode && (
-          <div className="space-y-3">
-            <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-sm text-green-700 dark:text-green-400 flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 shrink-0" />
-              Instância <strong>{uazapName}</strong> criada com sucesso.
-            </div>
-            <Button onClick={handleGenerateQr} disabled={loading} className="gap-2 w-full">
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <QrCode className="h-4 w-4" />}
-              Gerar QR Code
+            <Button
+              variant={hasExistingInstances ? 'outline' : 'default'}
+              onClick={() => setStep('idle')}
+              className="w-full gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Criar Nova Instância
             </Button>
           </div>
         )}
 
-        {/* Step 3: QR Code display */}
-        {qrCode && (
-          <div className="flex flex-col items-center space-y-4">
-            <div className="p-4 bg-background rounded-xl border">
-              <img
-                src={qrCode.startsWith('data:') ? qrCode : `data:image/png;base64,${qrCode}`}
-                alt="QR Code WhatsApp"
-                className="w-64 h-64 object-contain"
-              />
+        {/* Create new instance flow */}
+        {step !== 'choose' && (
+          <>
+            {/* Progress Steps */}
+            <div className="flex items-center gap-2 text-sm">
+              <div className={`flex items-center gap-1.5 ${step !== 'idle' ? 'text-green-600' : 'text-muted-foreground'}`}>
+                {step !== 'idle' ? <CheckCircle2 className="h-4 w-4" /> : <span className="h-5 w-5 rounded-full border-2 border-current flex items-center justify-center text-xs font-bold">1</span>}
+                <span className="font-medium">Criar Instância</span>
+              </div>
+              <div className="h-px w-6 bg-border" />
+              <div className={`flex items-center gap-1.5 ${step === 'qr' ? 'text-green-600' : 'text-muted-foreground'}`}>
+                {step === 'qr' ? <CheckCircle2 className="h-4 w-4" /> : <span className="h-5 w-5 rounded-full border-2 border-current flex items-center justify-center text-xs font-bold">2</span>}
+                <span className="font-medium">Gerar QR Code</span>
+              </div>
+              <div className="h-px w-6 bg-border" />
+              <div className="flex items-center gap-1.5 text-muted-foreground">
+                <span className="h-5 w-5 rounded-full border-2 border-current flex items-center justify-center text-xs font-bold">3</span>
+                <span className="font-medium">Conectar</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Aguardando escaneamento...
-            </div>
-            <Button variant="outline" size="sm" onClick={refreshQr} disabled={loading} className="gap-2">
-              <RefreshCw className="h-3 w-3" /> Atualizar QR Code
-            </Button>
-          </div>
+
+            {errorMsg && (
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-sm text-destructive">
+                {errorMsg}
+              </div>
+            )}
+
+            {step === 'idle' && (
+              <div className="space-y-3">
+                <Button onClick={handleCreateInstance} disabled={loading} className="gap-2 w-full">
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                  Criar Instância
+                </Button>
+                {hasExistingInstances && (
+                  <Button variant="ghost" size="sm" onClick={() => setStep('choose')} className="w-full text-muted-foreground">
+                    ← Voltar para seleção
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {step === 'created' && !qrCode && (
+              <div className="space-y-3">
+                <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-sm text-green-700 dark:text-green-400 flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  Instância <strong>{uazapName}</strong> criada com sucesso.
+                </div>
+                <Button onClick={handleGenerateQr} disabled={loading} className="gap-2 w-full">
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <QrCode className="h-4 w-4" />}
+                  Gerar QR Code
+                </Button>
+              </div>
+            )}
+
+            {qrCode && (
+              <div className="flex flex-col items-center space-y-4">
+                <div className="p-4 bg-background rounded-xl border">
+                  <img
+                    src={qrCode.startsWith('data:') ? qrCode : `data:image/png;base64,${qrCode}`}
+                    alt="QR Code WhatsApp"
+                    className="w-64 h-64 object-contain"
+                  />
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Aguardando escaneamento...
+                </div>
+                <Button variant="outline" size="sm" onClick={refreshQr} disabled={loading} className="gap-2">
+                  <RefreshCw className="h-3 w-3" /> Atualizar QR Code
+                </Button>
+              </div>
+            )}
+          </>
         )}
 
-        {instanceId && (
+        {instanceId && step === 'choose' && (
           <div className="flex items-center gap-2 pt-2">
             <WifiOff className="h-4 w-4 text-destructive" />
             <Badge variant="outline" className="text-destructive">Desconectado</Badge>
