@@ -159,7 +159,7 @@ export default function Landing() {
             <Button
               size="lg"
               onClick={() => navigate("/auth")}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2"
+              className="bg-[hsl(217,91%,60%)] text-white hover:bg-[hsl(217,91%,50%)] gap-2"
             >
               {ctaConfig.button_text} <ArrowRight className="w-4 h-4" />
             </Button>
