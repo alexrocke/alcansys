@@ -99,11 +99,9 @@ function ensurePositions(steps: WorkflowStep[]): WorkflowStep[] {
 function ConnectionLine({
   from,
   to,
-  nodes,
 }: {
   from: WorkflowStep;
   to: WorkflowStep;
-  nodes: WorkflowStep[];
 }) {
   const fromPos = from.position!;
   const toPos = to.position!;
