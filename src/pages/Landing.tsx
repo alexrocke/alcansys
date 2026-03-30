@@ -103,15 +103,13 @@ export default function Landing() {
               </div>
 
               {/* Right content — 3D Robot */}
-              <div className="flex-1 relative h-[300px] md:h-auto">
-                <div className="absolute inset-0 md:inset-y-0 md:-right-8 md:left-0 flex items-end md:items-center justify-center">
-                  <SplineScene
-                    scene={heroConfig.spline_url}
-                    className="w-full h-full"
-                  />
-                </div>
+              <div className="flex-1 relative h-[300px] md:h-full min-h-[300px]">
+                <SplineScene
+                  scene={heroConfig.spline_url}
+                  className="w-full h-full"
+                />
                 {/* Gradient fade at the bottom to ground the robot */}
-                <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[hsl(222,47%,11%)] to-transparent pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[hsl(222,47%,11%)] to-transparent pointer-events-none z-10" />
               </div>
             </div>
           </div>

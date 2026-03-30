@@ -16,7 +16,7 @@ export function LandingHeader() {
           <a href="#contato" className="hover:text-white transition-colors">Contato</a>
         </nav>
         <Link to="/auth">
-          <Button variant="secondary" size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button size="sm" className="bg-[hsl(217,91%,60%)] text-white hover:bg-[hsl(217,91%,50%)]">
             Entrar
           </Button>
         </Link>
