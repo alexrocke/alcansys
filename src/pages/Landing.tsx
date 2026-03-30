@@ -91,10 +91,10 @@ export default function Landing() {
                   >
                     {heroConfig.cta_primary} <ArrowRight className="w-4 h-4" />
                   </Button>
-                  <Button
+                    <Button
                     size="lg"
                     variant="outline"
-                    className="border-white/20 text-white hover:bg-white/10 hover:text-white"
+                    className="!border-white/30 !text-white hover:!bg-white/10 hover:!text-white bg-transparent"
                     onClick={() => document.getElementById("servicos")?.scrollIntoView({ behavior: "smooth" })}
                   >
                     {heroConfig.cta_secondary}
