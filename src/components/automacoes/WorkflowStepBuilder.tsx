@@ -331,7 +331,6 @@ export function WorkflowStepBuilder({ steps: rawSteps, onChange }: Props) {
                     key={i}
                     from={c.from}
                     to={c.to}
-                    nodes={steps}
                   />
                 ))}
               </svg>
