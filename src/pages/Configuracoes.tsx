@@ -13,11 +13,11 @@ import { MarketingIntegracoesSettings } from "@/components/configuracoes/Marketi
 
 export default function Configuracoes() {
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-4 md:p-6 lg:p-8 space-y-6 max-w-full overflow-x-hidden">
+      <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Configurações</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Configurações</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Gerencie as configurações do sistema
           </p>
         </div>
