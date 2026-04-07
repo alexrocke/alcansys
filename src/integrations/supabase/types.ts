@@ -289,6 +289,13 @@ export type Database = {
             referencedRelation: "whatsapp_instances"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "client_automations_whatsapp_instance_id_fkey"
+            columns: ["whatsapp_instance_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_instances_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       client_systems: {
@@ -652,6 +659,13 @@ export type Database = {
             columns: ["instance_id"]
             isOneToOne: false
             referencedRelation: "whatsapp_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_instance_id_fkey"
+            columns: ["instance_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_instances_safe"
             referencedColumns: ["id"]
           },
           {
@@ -1587,6 +1601,13 @@ export type Database = {
             referencedRelation: "whatsapp_instances"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "webhook_relay_configs_whatsapp_instance_id_fkey"
+            columns: ["whatsapp_instance_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_instances_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       whatsapp_instances: {
@@ -1607,6 +1628,7 @@ export type Database = {
           status: Database["public"]["Enums"]["channel_status"]
           uazap_instance_id: string | null
           updated_at: string
+          webhook_secret: string | null
           webhook_url: string | null
         }
         Insert: {
@@ -1626,6 +1648,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["channel_status"]
           uazap_instance_id?: string | null
           updated_at?: string
+          webhook_secret?: string | null
           webhook_url?: string | null
         }
         Update: {
@@ -1645,6 +1668,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["channel_status"]
           uazap_instance_id?: string | null
           updated_at?: string
+          webhook_secret?: string | null
           webhook_url?: string | null
         }
         Relationships: [
@@ -1711,7 +1735,69 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      whatsapp_instances_safe: {
+        Row: {
+          channel_id: string | null
+          company_id: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string | null
+          instance_name: string | null
+          last_sync: string | null
+          messages_received: number | null
+          messages_sent: number | null
+          phone_number: string | null
+          status: Database["public"]["Enums"]["channel_status"] | null
+          uazap_instance_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          channel_id?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string | null
+          instance_name?: string | null
+          last_sync?: string | null
+          messages_received?: number | null
+          messages_sent?: number | null
+          phone_number?: string | null
+          status?: Database["public"]["Enums"]["channel_status"] | null
+          uazap_instance_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          channel_id?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string | null
+          instance_name?: string | null
+          last_sync?: string | null
+          messages_received?: number | null
+          messages_sent?: number | null
+          phone_number?: string | null
+          status?: Database["public"]["Enums"]["channel_status"] | null
+          uazap_instance_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_instances_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_instances_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       get_user_company_ids: { Args: { _user_id: string }; Returns: string[] }
