@@ -80,15 +80,15 @@ export default function WhatsApp() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-4 md:p-6 lg:p-8 space-y-6 max-w-full overflow-x-hidden">
+      <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">WhatsApp</h1>
-          <p className="text-muted-foreground">Gerencie canais, instâncias e conexões</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">WhatsApp</h1>
+          <p className="text-sm md:text-base text-muted-foreground">Gerencie canais, instâncias e conexões</p>
         </div>
         <Dialog open={channelDialogOpen} onOpenChange={setChannelDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="w-full md:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Novo Canal
             </Button>
