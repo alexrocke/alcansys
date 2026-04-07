@@ -27,16 +27,16 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const userId = claimsData.claims.sub;
 
-    const { instance_id, phone, message } = await req.json();
+    const body = await req.json();
+    const { instance_id, phone, message } = body;
 
     if (!instance_id || !phone || !message) {
       return new Response(JSON.stringify({ error: "instance_id, phone, and message are required" }), {
@@ -45,10 +45,24 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Get instance details
+    // Validate input lengths
+    if (typeof message !== "string" || message.length > 10000) {
+      return new Response(JSON.stringify({ error: "Message too long (max 10000 chars)" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (typeof phone !== "string" || phone.length > 30) {
+      return new Response(JSON.stringify({ error: "Invalid phone number" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Get instance details (use service role - sensitive fields needed server-side)
     const { data: instance, error: instanceError } = await supabase
       .from("whatsapp_instances")
-      .select("instance_name, api_token, company_id")
+      .select("instance_name, api_token, company_id, messages_sent")
       .eq("id", instance_id)
       .single();
 
@@ -61,11 +75,11 @@ Deno.serve(async (req) => {
 
     // Verify user access
     const { data: belongs } = await supabase.rpc("user_belongs_to_company", {
-      _user_id: userId,
+      _user_id: user.id,
       _company_id: instance.company_id,
     });
     const { data: isAdmin } = await supabase.rpc("has_role", {
-      _user_id: userId,
+      _user_id: user.id,
       _role: "admin",
     });
 
@@ -105,7 +119,7 @@ Deno.serve(async (req) => {
     // Update message count
     await supabase
       .from("whatsapp_instances")
-      .update({ messages_sent: instance.messages_sent + 1 || 1 })
+      .update({ messages_sent: (instance.messages_sent || 0) + 1 })
       .eq("id", instance_id);
 
     return new Response(JSON.stringify({ success: true, result }), {
@@ -115,7 +129,7 @@ Deno.serve(async (req) => {
   } catch (error: unknown) {
     console.error("send-whatsapp error:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
-    return new Response(JSON.stringify({ error: message }), {
+    return new Response(JSON.stringify({ error: "Failed to send message" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
