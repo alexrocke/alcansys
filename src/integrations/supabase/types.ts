@@ -1127,6 +1127,132 @@ export type Database = {
           },
         ]
       }
+      payment_logs: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          mp_id: string | null
+          payment_id: string | null
+          raw_data: Json | null
+          subscription_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          mp_id?: string | null
+          payment_id?: string | null
+          raw_data?: Json | null
+          subscription_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          mp_id?: string | null
+          payment_id?: string | null
+          raw_data?: Json | null
+          subscription_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_logs_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_logs_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          boleto_url: string | null
+          company_id: string
+          created_at: string
+          descricao: string
+          external_reference: string | null
+          id: string
+          invoice_id: string | null
+          metadata: Json | null
+          method: string | null
+          mp_payment_id: string | null
+          mp_preference_id: string | null
+          paid_at: string | null
+          payer_email: string | null
+          payer_name: string | null
+          pix_qr_code: string | null
+          pix_qr_code_base64: string | null
+          status: string
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          boleto_url?: string | null
+          company_id: string
+          created_at?: string
+          descricao: string
+          external_reference?: string | null
+          id?: string
+          invoice_id?: string | null
+          metadata?: Json | null
+          method?: string | null
+          mp_payment_id?: string | null
+          mp_preference_id?: string | null
+          paid_at?: string | null
+          payer_email?: string | null
+          payer_name?: string | null
+          pix_qr_code?: string | null
+          pix_qr_code_base64?: string | null
+          status?: string
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          boleto_url?: string | null
+          company_id?: string
+          created_at?: string
+          descricao?: string
+          external_reference?: string | null
+          id?: string
+          invoice_id?: string | null
+          metadata?: Json | null
+          method?: string | null
+          mp_payment_id?: string | null
+          mp_preference_id?: string | null
+          paid_at?: string | null
+          payer_email?: string | null
+          payer_name?: string | null
+          pix_qr_code?: string | null
+          pix_qr_code_base64?: string | null
+          status?: string
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           ativo: boolean
@@ -1513,6 +1639,71 @@ export type Database = {
           valor?: Json
         }
         Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          company_id: string
+          created_at: string
+          end_date: string | null
+          external_reference: string | null
+          frequency: string
+          id: string
+          init_point: string | null
+          metadata: Json | null
+          mp_preapproval_id: string | null
+          payer_email: string | null
+          payer_name: string | null
+          plan_name: string
+          start_date: string | null
+          status: string
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          end_date?: string | null
+          external_reference?: string | null
+          frequency?: string
+          id?: string
+          init_point?: string | null
+          metadata?: Json | null
+          mp_preapproval_id?: string | null
+          payer_email?: string | null
+          payer_name?: string | null
+          plan_name: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          end_date?: string | null
+          external_reference?: string | null
+          frequency?: string
+          id?: string
+          init_point?: string | null
+          metadata?: Json | null
+          mp_preapproval_id?: string | null
+          payer_email?: string | null
+          payer_name?: string | null
+          plan_name?: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
