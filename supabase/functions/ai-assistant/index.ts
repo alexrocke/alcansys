@@ -1,5 +1,4 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -30,12 +29,34 @@ async function getModelFromSettings(): Promise<string> {
   return "gpt-4o-mini";
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Validate JWT
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Missing authorization" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
     if (!OPENAI_API_KEY) {
       throw new Error("OPENAI_API_KEY is not configured");
@@ -46,18 +67,13 @@ serve(async (req) => {
     let clientContext = "";
     if (type === "workflow" && clientId) {
       try {
-        const supabaseUrl = Deno.env.get("SUPABASE_URL");
-        const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-        if (supabaseUrl && serviceRoleKey) {
-          const sb = createClient(supabaseUrl, serviceRoleKey);
-          const { data: clientData } = await sb
-            .from("clients")
-            .select("nome, email, telefone, area, plano, status")
-            .eq("id", clientId)
-            .maybeSingle();
-          if (clientData) {
-            clientContext = `\n\nDados do cliente atribuído:\n- Nome: ${clientData.nome}\n- Email: ${clientData.email || 'N/A'}\n- Telefone: ${clientData.telefone || 'N/A'}\n- Segmento: ${clientData.area || 'N/A'}\n- Plano: ${clientData.plano || 'N/A'}\n- Status: ${clientData.status}`;
-          }
+        const { data: clientData } = await supabase
+          .from("clients")
+          .select("nome, email, telefone, area, plano, status")
+          .eq("id", clientId)
+          .maybeSingle();
+        if (clientData) {
+          clientContext = `\n\nDados do cliente atribuído:\n- Nome: ${clientData.nome}\n- Email: ${clientData.email || 'N/A'}\n- Telefone: ${clientData.telefone || 'N/A'}\n- Segmento: ${clientData.area || 'N/A'}\n- Plano: ${clientData.plano || 'N/A'}\n- Status: ${clientData.status}`;
         }
       } catch (e) {
         console.error("Failed to fetch client data:", e);
@@ -103,7 +119,7 @@ serve(async (req) => {
       }
 
       return new Response(
-        JSON.stringify({ error: `OpenAI error [${response.status}]: ${errorText}` }),
+        JSON.stringify({ error: `OpenAI error [${response.status}]` }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -114,7 +130,7 @@ serve(async (req) => {
   } catch (e) {
     console.error("ai-assistant error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
+      JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
