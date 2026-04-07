@@ -37,23 +37,23 @@ export default function PortalFaturas() {
   const totalPago = invoices?.filter((i) => i.status === 'pago').reduce((s, i) => s + Number(i.valor), 0) || 0;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-6 max-w-full overflow-x-hidden">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Faturas</h1>
-        <p className="text-muted-foreground">Acompanhe seus pagamentos e faturas.</p>
+        <h1 className="text-xl md:text-2xl font-bold text-foreground">Faturas</h1>
+        <p className="text-sm text-muted-foreground">Acompanhe seus pagamentos e faturas.</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 grid-cols-2">
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">Total Pendente</p>
-            <p className="text-2xl font-bold text-yellow-600">R$ {totalPendente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+            <p className="text-lg md:text-2xl font-bold text-yellow-600">R$ {totalPendente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">Total Pago</p>
-            <p className="text-2xl font-bold text-green-600">R$ {totalPago.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+            <p className="text-lg md:text-2xl font-bold text-green-600">R$ {totalPago.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
           </CardContent>
         </Card>
       </div>
@@ -70,33 +70,58 @@ export default function PortalFaturas() {
           </CardContent>
         </Card>
       ) : (
-        <Card>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Descrição</TableHead>
-                <TableHead>Valor</TableHead>
-                <TableHead>Vencimento</TableHead>
-                <TableHead>Pagamento</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invoices.map((inv) => {
-                const cfg = statusConfig[inv.status] || statusConfig.pendente;
-                return (
-                  <TableRow key={inv.id}>
-                    <TableCell className="font-medium">{inv.descricao}</TableCell>
-                    <TableCell>R$ {Number(inv.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
-                    <TableCell>{format(new Date(inv.data_vencimento), "dd/MM/yyyy", { locale: ptBR })}</TableCell>
-                    <TableCell>{inv.data_pagamento ? format(new Date(inv.data_pagamento), "dd/MM/yyyy", { locale: ptBR }) : '—'}</TableCell>
-                    <TableCell><Badge variant={cfg.variant}>{cfg.label}</Badge></TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </Card>
+        <>
+          {/* Desktop table */}
+          <Card className="hidden md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Descrição</TableHead>
+                  <TableHead>Valor</TableHead>
+                  <TableHead>Vencimento</TableHead>
+                  <TableHead>Pagamento</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {invoices.map((inv) => {
+                  const cfg = statusConfig[inv.status] || statusConfig.pendente;
+                  return (
+                    <TableRow key={inv.id}>
+                      <TableCell className="font-medium">{inv.descricao}</TableCell>
+                      <TableCell>R$ {Number(inv.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
+                      <TableCell>{format(new Date(inv.data_vencimento), "dd/MM/yyyy", { locale: ptBR })}</TableCell>
+                      <TableCell>{inv.data_pagamento ? format(new Date(inv.data_pagamento), "dd/MM/yyyy", { locale: ptBR }) : '—'}</TableCell>
+                      <TableCell><Badge variant={cfg.variant}>{cfg.label}</Badge></TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </Card>
+
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-3">
+            {invoices.map((inv) => {
+              const cfg = statusConfig[inv.status] || statusConfig.pendente;
+              return (
+                <Card key={inv.id}>
+                  <CardContent className="p-4 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-medium text-sm text-foreground">{inv.descricao}</p>
+                      <Badge variant={cfg.variant} className="shrink-0">{cfg.label}</Badge>
+                    </div>
+                    <p className="text-lg font-bold text-foreground">R$ {Number(inv.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                    <div className="flex gap-4 text-xs text-muted-foreground">
+                      <span>Venc: {format(new Date(inv.data_vencimento), "dd/MM/yyyy", { locale: ptBR })}</span>
+                      {inv.data_pagamento && <span>Pago: {format(new Date(inv.data_pagamento), "dd/MM/yyyy", { locale: ptBR })}</span>}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );

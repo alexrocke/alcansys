@@ -24,9 +24,9 @@ export default function PortalServicos() {
   }, {});
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-6 max-w-full overflow-x-hidden">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Nossos Serviços</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-foreground">Nossos Serviços</h1>
         <p className="text-muted-foreground">Conheça os serviços que oferecemos e solicite um orçamento.</p>
       </div>
 
@@ -49,7 +49,7 @@ export default function PortalServicos() {
                 <h2 className="text-lg font-semibold text-foreground">{categoria}</h2>
                 <Badge variant="outline">{items.length}</Badge>
               </div>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {items.map((service) => (
                   <Card key={service.id} className="flex flex-col">
                     <CardHeader>
