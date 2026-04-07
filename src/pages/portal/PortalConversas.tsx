@@ -188,7 +188,7 @@ export default function PortalConversas() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden">
+    <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden max-w-full">
       <ConversationList
         conversations={filteredConversations} selectedConversation={selectedConversation}
         onSelectConversation={handleSelectConversation} searchQuery={searchQuery}

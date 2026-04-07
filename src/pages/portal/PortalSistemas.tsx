@@ -39,9 +39,9 @@ export default function PortalSistemas() {
   });
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-6 max-w-full overflow-x-hidden">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Sistemas Contratados</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-foreground">Sistemas Contratados</h1>
         <p className="text-muted-foreground">Acesse os sistemas e plataformas desenvolvidos para você.</p>
       </div>
 
@@ -57,7 +57,7 @@ export default function PortalSistemas() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {systems.map((sys) => {
             const st = statusConfig[sys.status] || statusConfig.ativo;
             return (
