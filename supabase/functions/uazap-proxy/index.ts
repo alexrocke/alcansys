@@ -17,7 +17,6 @@ Deno.serve(async (req) => {
       throw new Error("UAZAP_API_TOKEN is not configured");
     }
 
-    // URL base - ex: https://free.uazapi.com ou https://seudominio.uazapi.com
     const UAZAP_API_URL = Deno.env.get("UAZAP_API_URL") || "https://free.uazapi.com";
 
     // Validate auth
@@ -45,6 +44,23 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { action, instance_name, instance_id, company_id } = body;
 
+    // Validate action
+    const validActions = ["create-instance", "connect-instance", "get-qrcode", "get-status", "restart", "set-webhook"];
+    if (!action || !validActions.includes(action)) {
+      return new Response(JSON.stringify({ error: "Invalid action" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Validate input lengths
+    if (instance_name && (typeof instance_name !== "string" || instance_name.length > 100)) {
+      return new Response(JSON.stringify({ error: "Invalid instance_name" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Verify user belongs to company
     if (company_id) {
       const { data: belongs } = await supabase.rpc("user_belongs_to_company", {
@@ -69,7 +85,12 @@ Deno.serve(async (req) => {
 
     switch (action) {
       case "create-instance": {
-        // Endpoint admin: usa header 'admintoken'
+        if (!instance_name) {
+          return new Response(JSON.stringify({ error: "instance_name is required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
         const response = await fetch(`${UAZAP_API_URL}/instance/create`, {
           method: "POST",
           headers: {
@@ -87,17 +108,24 @@ Deno.serve(async (req) => {
       }
 
       case "connect-instance": {
-        // Conectar instância (gera QR code) - usa header 'token' da instância
         const instanceToken = body.instance_token || UAZAP_API_TOKEN;
+        const targetInstance = instance_id || instance_name;
+        if (!targetInstance) {
+          return new Response(JSON.stringify({ error: "instance_id or instance_name is required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
         const response = await fetch(`${UAZAP_API_URL}/instance/connect`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "token": instanceToken,
           },
-          body: JSON.stringify({ instanceName: instance_id || instance_name }),
+          body: JSON.stringify({ instanceName: targetInstance }),
         });
         result = await response.json();
+        console.log("UAZAP connect-instance response:", JSON.stringify(result));
         if (!response.ok) {
           throw new Error(`UAZAP connect failed [${response.status}]: ${JSON.stringify(result)}`);
         }
@@ -105,20 +133,23 @@ Deno.serve(async (req) => {
       }
 
       case "get-qrcode": {
-        // Busca QR code da instância
         const instanceToken = body.instance_token || UAZAP_API_TOKEN;
-        const response = await fetch(
-          `${UAZAP_API_URL}/instance/qrcode`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "token": instanceToken,
-            },
-            body: JSON.stringify({ instanceName: instance_id }),
-          }
-        );
+        if (!instance_id) {
+          return new Response(JSON.stringify({ error: "instance_id is required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const response = await fetch(`${UAZAP_API_URL}/instance/qrcode`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "token": instanceToken,
+          },
+          body: JSON.stringify({ instanceName: instance_id }),
+        });
         result = await response.json();
+        console.log("UAZAP get-qrcode response:", JSON.stringify(result));
         if (!response.ok) {
           throw new Error(`UAZAP get-qrcode failed [${response.status}]: ${JSON.stringify(result)}`);
         }
@@ -127,18 +158,22 @@ Deno.serve(async (req) => {
 
       case "get-status": {
         const instanceToken = body.instance_token || UAZAP_API_TOKEN;
-        const response = await fetch(
-          `${UAZAP_API_URL}/instance/status`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "token": instanceToken,
-            },
-            body: JSON.stringify({ instanceName: instance_id }),
-          }
-        );
+        if (!instance_id) {
+          return new Response(JSON.stringify({ error: "instance_id is required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const response = await fetch(`${UAZAP_API_URL}/instance/status`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "token": instanceToken,
+          },
+          body: JSON.stringify({ instanceName: instance_id }),
+        });
         result = await response.json();
+        console.log("UAZAP get-status response:", JSON.stringify(result));
         if (!response.ok) {
           throw new Error(`UAZAP get-status failed [${response.status}]: ${JSON.stringify(result)}`);
         }
@@ -147,6 +182,12 @@ Deno.serve(async (req) => {
 
       case "restart": {
         const instanceToken = body.instance_token || UAZAP_API_TOKEN;
+        if (!instance_id) {
+          return new Response(JSON.stringify({ error: "instance_id is required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
         const response = await fetch(`${UAZAP_API_URL}/instance/restart`, {
           method: "POST",
           headers: {
@@ -166,7 +207,19 @@ Deno.serve(async (req) => {
         const instanceToken = body.instance_token || UAZAP_API_TOKEN;
         const webhookUrl = body.webhook_url;
         if (!webhookUrl) {
-          throw new Error("webhook_url is required");
+          return new Response(JSON.stringify({ error: "webhook_url is required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        // Validate webhook_url is a valid URL
+        try {
+          new URL(webhookUrl);
+        } catch {
+          return new Response(JSON.stringify({ error: "Invalid webhook_url" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
         }
         const response = await fetch(`${UAZAP_API_URL}/webhook`, {
           method: "POST",
