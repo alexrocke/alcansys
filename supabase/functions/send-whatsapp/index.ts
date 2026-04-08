@@ -11,127 +11,94 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const UAZAP_API_URL = Deno.env.get("UAZAP_API_URL") || "https://free.uazapi.com";
+  const json = (data: unknown, status = 200) =>
+    new Response(JSON.stringify(data), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
 
+  try {
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Missing authorization" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    if (!authHeader) return json({ error: "Missing authorization" }, 401);
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const adminClient = createClient(supabaseUrl, serviceKey);
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const { data: { user }, error: authError } = await adminClient.auth.getUser(token);
+    if (authError || !user) return json({ error: "Unauthorized" }, 401);
 
     const body = await req.json();
     const { instance_id, phone, message } = body;
 
     if (!instance_id || !phone || !message) {
-      return new Response(JSON.stringify({ error: "instance_id, phone, and message are required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ error: "instance_id, phone, and message are required" }, 400);
     }
-
-    // Validate input lengths
     if (typeof message !== "string" || message.length > 10000) {
-      return new Response(JSON.stringify({ error: "Message too long (max 10000 chars)" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ error: "Message too long (max 10000 chars)" }, 400);
     }
     if (typeof phone !== "string" || phone.length > 30) {
-      return new Response(JSON.stringify({ error: "Invalid phone number" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ error: "Invalid phone number" }, 400);
     }
 
-    // Get instance details (use service role - sensitive fields needed server-side)
-    const { data: instance, error: instanceError } = await supabase
+    // Get instance details (server-side only - sensitive fields)
+    const { data: instance, error: instanceError } = await adminClient
       .from("whatsapp_instances")
-      .select("instance_name, api_token, company_id, messages_sent")
+      .select("instance_name, instance_token, server_url, company_id, messages_sent")
       .eq("id", instance_id)
       .single();
 
-    if (instanceError || !instance) {
-      return new Response(JSON.stringify({ error: "Instance not found" }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    if (instanceError || !instance) return json({ error: "Instance not found" }, 404);
 
     // Verify user access
-    const { data: belongs } = await supabase.rpc("user_belongs_to_company", {
+    const { data: belongs } = await adminClient.rpc("user_belongs_to_company", {
       _user_id: user.id,
       _company_id: instance.company_id,
     });
-    const { data: isAdmin } = await supabase.rpc("has_role", {
+    const { data: isAdmin } = await adminClient.rpc("has_role", {
       _user_id: user.id,
       _role: "admin",
     });
 
-    if (!belongs && !isAdmin) {
-      return new Response(JSON.stringify({ error: "Forbidden" }), {
-        status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    if (!belongs && !isAdmin) return json({ error: "Forbidden" }, 403);
 
-    // Send via UAZAP API
-    const instanceToken = instance.api_token || Deno.env.get("UAZAP_API_TOKEN")!;
-    
-    // Format phone: remove non-digits, ensure @s.whatsapp.net
+    // Send via WhatsApi.my API
     const cleanPhone = phone.replace(/\D/g, "");
     const chatId = cleanPhone.includes("@") ? cleanPhone : `${cleanPhone}@s.whatsapp.net`;
 
-    const response = await fetch(`${UAZAP_API_URL}/message/send-text`, {
+    const instanceToken = instance.instance_token || Deno.env.get("WHATSAPI_TOKEN")!;
+    const serverUrl = instance.server_url;
+
+    if (!serverUrl || !instanceToken) {
+      return json({ error: "Instance not properly configured" }, 500);
+    }
+
+    const response = await fetch(`${serverUrl}/message/send-text`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "token": instanceToken,
       },
-      body: JSON.stringify({
-        phone: chatId,
-        message: message,
-      }),
+      body: JSON.stringify({ phone: chatId, message }),
     });
 
     const result = await response.json();
-    console.log("UAZAP send-text response:", JSON.stringify(result));
+    console.log("WhatsApi send-text response:", JSON.stringify(result).slice(0, 300));
 
     if (!response.ok) {
-      throw new Error(`UAZAP send failed [${response.status}]: ${JSON.stringify(result)}`);
+      throw new Error(`WhatsApi send failed [${response.status}]`);
     }
 
     // Update message count
-    await supabase
+    await adminClient
       .from("whatsapp_instances")
       .update({ messages_sent: (instance.messages_sent || 0) + 1 })
       .eq("id", instance_id);
 
-    return new Response(JSON.stringify({ success: true, result }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ success: true, result });
   } catch (error: unknown) {
     console.error("send-whatsapp error:", error);
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return new Response(JSON.stringify({ error: "Failed to send message" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Failed to send message" }, 500);
   }
 });

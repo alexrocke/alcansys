@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+    "authorization, x-client-info, apikey, content-type, x-webhook-secret, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 Deno.serve(async (req) => {
@@ -13,8 +13,8 @@ Deno.serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const adminClient = createClient(supabaseUrl, serviceKey);
 
     // Verify webhook secret if configured
     const webhookSecret = req.headers.get("x-webhook-secret");
@@ -27,102 +27,105 @@ Deno.serve(async (req) => {
       });
     }
 
-    const payload = await req.json();
-    console.log("Webhook received:", JSON.stringify(payload).slice(0, 500));
+    const url = new URL(req.url);
+    const userId = url.searchParams.get("user_id");
+    const body = await req.json().catch(() => ({}));
 
-    // Extract instance info from UAZAP payload
-    const instanceName = payload.instanceName || payload.instance_name || payload.instance || null;
-    const phoneReceiver = payload.to || payload.phone || payload.number || null;
-    const phoneSender = payload.from || payload.sender || null;
+    console.log("Webhook received:", JSON.stringify(body).slice(0, 500), "user_id:", userId);
 
-    // Find matching relay configs by instance_name OR phone_number
-    let query = supabase
+    // ── Per-user connection status updates (WhatsApi.my) ──
+    if (userId) {
+      const isConnected =
+        body.event === "connection" ||
+        body.status === "CONNECTED" ||
+        body.connected === true;
+
+      const isDisconnected =
+        body.event === "disconnected" ||
+        body.status === "DISCONNECTED" ||
+        body.connected === false;
+
+      if (isConnected) {
+        await adminClient
+          .from("whatsapp_instances")
+          .update({
+            status: "connected",
+            is_connected: true,
+            last_connection_at: new Date().toISOString(),
+          })
+          .eq("user_id", userId);
+        console.log("Instance connected for user:", userId);
+      } else if (isDisconnected) {
+        await adminClient
+          .from("whatsapp_instances")
+          .update({ status: "disconnected", is_connected: false })
+          .eq("user_id", userId);
+        console.log("Instance disconnected for user:", userId);
+      }
+    }
+
+    // ── Relay + message processing (company-level instances) ──
+    const instanceName = body.instanceName || body.instance_name || body.instance || null;
+    const phoneReceiver = body.to || body.phone || body.number || null;
+    const phoneSender = body.from || body.sender || null;
+
+    // Find matching relay configs
+    const { data: allConfigs } = await adminClient
       .from("webhook_relay_configs")
       .select("*")
       .eq("ativo", true);
 
-    const { data: allConfigs, error: configError } = await query;
-    if (configError) {
-      console.error("Error fetching relay configs:", configError);
-      throw configError;
-    }
-
-    // Match by instance_name or phone_number
     const matchedConfigs = (allConfigs || []).filter((config) => {
-      if (config.instance_name && instanceName && config.instance_name === instanceName) {
-        return true;
-      }
+      if (config.instance_name && instanceName && config.instance_name === instanceName) return true;
       if (config.phone_number) {
-        const normalizedConfigPhone = config.phone_number.replace(/\D/g, "");
-        if (phoneReceiver && phoneReceiver.replace(/\D/g, "").includes(normalizedConfigPhone)) {
-          return true;
-        }
-        if (phoneSender && phoneSender.replace(/\D/g, "").includes(normalizedConfigPhone)) {
-          return true;
-        }
+        const norm = config.phone_number.replace(/\D/g, "");
+        if (phoneReceiver && phoneReceiver.replace(/\D/g, "").includes(norm)) return true;
+        if (phoneSender && phoneSender.replace(/\D/g, "").includes(norm)) return true;
       }
       return false;
     });
 
-    console.log(`Found ${matchedConfigs.length} matching relay config(s) for instance=${instanceName}, phone=${phoneReceiver || phoneSender}`);
-
-    // Relay to all matched endpoints
+    // Relay to matched endpoints
     const relayResults = await Promise.allSettled(
       matchedConfigs.map(async (config) => {
-        const headers: Record<string, string> = {
-          "Content-Type": "application/json",
-        };
-
-        // Add relay secret if configured
-        if (config.relay_secret) {
-          headers["x-relay-secret"] = config.relay_secret;
-        }
-
-        // Add custom headers
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        if (config.relay_secret) headers["x-relay-secret"] = config.relay_secret;
         if (config.relay_headers && typeof config.relay_headers === "object") {
           Object.entries(config.relay_headers as Record<string, string>).forEach(([k, v]) => {
             headers[k] = v;
           });
         }
-
-        console.log(`Relaying to ${config.relay_url} (config: ${config.descricao || config.id})`);
-
         const response = await fetch(config.relay_url, {
           method: "POST",
           headers,
-          body: JSON.stringify(payload),
+          body: JSON.stringify(body),
         });
-
-        const status = response.status;
-        const body = await response.text().catch(() => "");
-        console.log(`Relay response from ${config.relay_url}: ${status} - ${body.slice(0, 200)}`);
-
-        return { config_id: config.id, status, ok: response.ok };
+        const text = await response.text().catch(() => "");
+        return { config_id: config.id, status: response.status, ok: response.ok };
       })
     );
 
-    // Also store the message locally if it's an incoming message
-    if (payload.event === "messages.upsert" || payload.message || payload.text) {
-      // Try to find the whatsapp_instance by instance_name
+    // Store incoming messages locally
+    if (body.event === "messages.upsert" || body.message || body.text) {
       if (instanceName) {
-        const { data: instance } = await supabase
+        const { data: instance } = await adminClient
           .from("whatsapp_instances")
           .select("id, company_id, channel_id")
           .eq("instance_name", instanceName)
           .maybeSingle();
 
         if (instance) {
-          const messageContent = payload.message?.conversation || 
-                                 payload.message?.extendedTextMessage?.text ||
-                                 payload.text || 
-                                 payload.body || 
-                                 "";
+          const messageContent =
+            body.message?.conversation ||
+            body.message?.extendedTextMessage?.text ||
+            body.text ||
+            body.body ||
+            "";
           const senderPhone = phoneSender?.replace(/\D/g, "") || "";
-          const senderName = payload.pushName || payload.senderName || senderPhone;
+          const senderName = body.pushName || body.senderName || senderPhone;
 
           if (messageContent) {
-            // Find or create conversation
-            let { data: conversation } = await supabase
+            let { data: conversation } = await adminClient
               .from("conversations")
               .select("id")
               .eq("instance_id", instance.id)
@@ -131,7 +134,7 @@ Deno.serve(async (req) => {
               .maybeSingle();
 
             if (!conversation) {
-              const { data: newConv } = await supabase
+              const { data: newConv } = await adminClient
                 .from("conversations")
                 .insert({
                   company_id: instance.company_id,
@@ -148,18 +151,17 @@ Deno.serve(async (req) => {
                 .single();
               conversation = newConv;
             } else {
-              await supabase
+              await adminClient
                 .from("conversations")
                 .update({
                   ultima_mensagem: messageContent,
                   ultima_mensagem_at: new Date().toISOString(),
-                  mensagens_count: undefined, // Will use trigger if available
                 })
                 .eq("id", conversation.id);
             }
 
             if (conversation) {
-              await supabase.from("messages").insert({
+              await adminClient.from("messages").insert({
                 company_id: instance.company_id,
                 conversation_id: conversation.id,
                 content: messageContent,
@@ -169,13 +171,9 @@ Deno.serve(async (req) => {
             }
           }
 
-          // Update instance stats
-          await supabase
+          await adminClient
             .from("whatsapp_instances")
-            .update({
-              messages_received: instance.id ? undefined : 0, // increment via trigger if available
-              last_sync: new Date().toISOString(),
-            })
+            .update({ last_sync: new Date().toISOString() })
             .eq("id", instance.id);
         }
       }
@@ -193,8 +191,7 @@ Deno.serve(async (req) => {
     );
   } catch (error: unknown) {
     console.error("Webhook error:", error);
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return new Response(JSON.stringify({ error: message }), {
+    return new Response(JSON.stringify({ error: "Internal error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

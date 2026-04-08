@@ -1952,46 +1952,58 @@ export type Database = {
           channel_id: string | null
           company_id: string | null
           created_at: string | null
+          device_name: string | null
           error_message: string | null
           id: string | null
           instance_name: string | null
+          is_connected: boolean | null
+          last_connection_at: string | null
           last_sync: string | null
           messages_received: number | null
           messages_sent: number | null
           phone_number: string | null
           status: Database["public"]["Enums"]["channel_status"] | null
-          uazap_instance_id: string | null
           updated_at: string | null
+          user_id: string | null
+          webhook_url: string | null
         }
         Insert: {
           channel_id?: string | null
           company_id?: string | null
           created_at?: string | null
+          device_name?: string | null
           error_message?: string | null
           id?: string | null
           instance_name?: string | null
+          is_connected?: boolean | null
+          last_connection_at?: string | null
           last_sync?: string | null
           messages_received?: number | null
           messages_sent?: number | null
           phone_number?: string | null
           status?: Database["public"]["Enums"]["channel_status"] | null
-          uazap_instance_id?: string | null
           updated_at?: string | null
+          user_id?: string | null
+          webhook_url?: string | null
         }
         Update: {
           channel_id?: string | null
           company_id?: string | null
           created_at?: string | null
+          device_name?: string | null
           error_message?: string | null
           id?: string | null
           instance_name?: string | null
+          is_connected?: boolean | null
+          last_connection_at?: string | null
           last_sync?: string | null
           messages_received?: number | null
           messages_sent?: number | null
           phone_number?: string | null
           status?: Database["public"]["Enums"]["channel_status"] | null
-          uazap_instance_id?: string | null
           updated_at?: string | null
+          user_id?: string | null
+          webhook_url?: string | null
         }
         Relationships: [
           {

@@ -1,232 +1,296 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useCompany } from "@/hooks/useCompany";
-import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ChannelForm } from "@/components/whatsapp/ChannelForm";
-import { InstanceCard } from "@/components/whatsapp/InstanceCard";
-import { InstanceForm } from "@/components/whatsapp/InstanceForm";
-import { Plus, Radio, Smartphone, MessageSquare, AlertTriangle } from "lucide-react";
+import {
+  Smartphone,
+  QrCode,
+  Wifi,
+  WifiOff,
+  RefreshCw,
+  Trash2,
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
+
+interface InstanceData {
+  id: string;
+  instance_name: string;
+  device_name: string;
+  server_url: string;
+  status: string;
+  is_connected: boolean;
+  phone_number: string | null;
+  webhook_url: string | null;
+  last_connection_at: string | null;
+  created_at: string;
+}
 
 export default function WhatsApp() {
-  const { currentCompany } = useCompany();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [channelDialogOpen, setChannelDialogOpen] = useState(false);
-  const [instanceDialogOpen, setInstanceDialogOpen] = useState(false);
-  const [selectedChannelId, setSelectedChannelId] = useState<string | null>(null);
+  const { user } = useAuth();
+  const [instance, setInstance] = useState<InstanceData | null>(null);
+  const [qrCode, setQrCode] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [error, setError] = useState<string>("");
+  const lockRef = useRef(false);
 
-  const { data: channels = [], isLoading: loadingChannels } = useQuery({
-    queryKey: ["channels", currentCompany?.id],
-    queryFn: async () => {
-      if (!currentCompany?.id) return [];
-      const { data, error } = await supabase
-        .from("channels")
-        .select("*")
-        .eq("company_id", currentCompany.id)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!currentCompany?.id,
-  });
+  const callManageFunction = useCallback(async (action: string) => {
+    const { data, error } = await supabase.functions.invoke("whatsapp-manage", {
+      body: { action },
+    });
+    if (error) throw new Error(error.message || "Erro na comunicação");
+    if (data?.error) throw new Error(data.error);
+    return data;
+  }, []);
 
-  const { data: instances = [], isLoading: loadingInstances } = useQuery({
-    queryKey: ["whatsapp_instances", currentCompany?.id],
-    queryFn: async () => {
-      if (!currentCompany?.id) return [];
-      const { data, error } = await supabase
-        .from("whatsapp_instances")
-        .select("*, channels(nome)")
-        .eq("company_id", currentCompany.id)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!currentCompany?.id,
-  });
+  const loadInstance = useCallback(async () => {
+    if (lockRef.current) return;
+    lockRef.current = true;
+    try {
+      setError("");
+      const data = await callManageFunction("get-or-create");
+      setInstance(data.instance);
+      if (data.is_new) {
+        toast.success("Instância WhatsApp criada!");
+      }
+      // Auto-fetch QR if not connected
+      if (data.instance && !data.instance.is_connected) {
+        await fetchQrCode();
+      }
+    } catch (e: any) {
+      setError(e.message);
+      console.error("loadInstance error:", e);
+    } finally {
+      setLoading(false);
+      lockRef.current = false;
+    }
+  }, [callManageFunction]);
 
-  const connectedCount = instances.filter((i) => i.status === "connected").length;
-  const errorCount = instances.filter((i) => i.status === "error").length;
-  const totalMessages = instances.reduce((sum, i) => sum + (i.messages_sent || 0) + (i.messages_received || 0), 0);
-
-  const handleChannelCreated = () => {
-    setChannelDialogOpen(false);
-    queryClient.invalidateQueries({ queryKey: ["channels"] });
-    toast({ title: "Canal criado com sucesso" });
+  const fetchQrCode = async () => {
+    setQrLoading(true);
+    try {
+      const data = await callManageFunction("qrcode");
+      if (data.connected) {
+        setInstance((prev) => prev ? { ...prev, status: "connected", is_connected: true } : prev);
+        setQrCode("");
+        toast.success("WhatsApp Conectado!");
+      } else if (data.qrcode) {
+        setQrCode(data.qrcode);
+      }
+    } catch (e: any) {
+      console.error("fetchQrCode error:", e);
+    } finally {
+      setQrLoading(false);
+    }
   };
 
-  const handleInstanceCreated = () => {
-    setInstanceDialogOpen(false);
-    queryClient.invalidateQueries({ queryKey: ["whatsapp_instances"] });
-    toast({ title: "Instância criada com sucesso" });
+  const handleDisconnect = async () => {
+    setActionLoading(true);
+    try {
+      await callManageFunction("disconnect");
+      setInstance((prev) => prev ? { ...prev, status: "disconnected", is_connected: false } : prev);
+      setQrCode("");
+      toast.info("Instância desconectada");
+      // Fetch new QR
+      await fetchQrCode();
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
-  const openInstanceDialog = (channelId: string) => {
-    setSelectedChannelId(channelId);
-    setInstanceDialogOpen(true);
+  const handleDelete = async () => {
+    if (!confirm("Tem certeza que deseja remover a instância? Isso é irreversível.")) return;
+    setActionLoading(true);
+    try {
+      await callManageFunction("delete");
+      setInstance(null);
+      setQrCode("");
+      toast.success("Instância removida");
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
-  if (!currentCompany) {
+  // Load on mount
+  useEffect(() => {
+    if (user) loadInstance();
+  }, [user, loadInstance]);
+
+  // Polling every 15s when not connected
+  useEffect(() => {
+    if (!instance || instance.is_connected) return;
+    const interval = setInterval(async () => {
+      try {
+        const data = await callManageFunction("get-or-create");
+        if (data?.instance?.is_connected) {
+          setInstance(data.instance);
+          setQrCode("");
+          toast.success("WhatsApp Conectado!");
+        }
+      } catch (e) {
+        // Silent fail on polling
+      }
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [instance, callManageFunction]);
+
+  if (!user) {
     return (
       <div className="p-6 flex items-center justify-center h-full">
-        <p className="text-muted-foreground">Selecione uma empresa para gerenciar canais WhatsApp.</p>
+        <p className="text-muted-foreground">Faça login para gerenciar seu WhatsApp.</p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-6 max-w-full overflow-x-hidden">
-      <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">WhatsApp</h1>
-          <p className="text-sm md:text-base text-muted-foreground">Gerencie canais, instâncias e conexões</p>
-        </div>
-        <Dialog open={channelDialogOpen} onOpenChange={setChannelDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="w-full md:w-auto">
-              <Plus className="h-4 w-4 mr-2" />
-              Novo Canal
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Criar Canal</DialogTitle>
-            </DialogHeader>
-            <ChannelForm companyId={currentCompany.id} onSuccess={handleChannelCreated} />
-          </DialogContent>
-        </Dialog>
+    <div className="p-4 md:p-6 lg:p-8 space-y-6 max-w-2xl mx-auto">
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground">WhatsApp</h1>
+        <p className="text-sm text-muted-foreground">Gerencie sua conexão WhatsApp</p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {loading ? (
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Radio className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{channels.length}</p>
-                <p className="text-sm text-muted-foreground">Canais</p>
-              </div>
-            </div>
+          <CardContent className="py-12 flex flex-col items-center gap-4">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <p className="text-muted-foreground">Carregando instância...</p>
           </CardContent>
         </Card>
+      ) : error ? (
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-green-500/10">
-                <Smartphone className="h-5 w-5 text-green-500" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{connectedCount}</p>
-                <p className="text-sm text-muted-foreground">Conectados</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-500/10">
-                <MessageSquare className="h-5 w-5 text-blue-500" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{totalMessages}</p>
-                <p className="text-sm text-muted-foreground">Mensagens</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-destructive/10">
-                <AlertTriangle className="h-5 w-5 text-destructive" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{errorCount}</p>
-                <p className="text-sm text-muted-foreground">Com Erro</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Channels & Instances */}
-      {loadingChannels ? (
-        <p className="text-muted-foreground">Carregando canais...</p>
-      ) : channels.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <Radio className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum canal cadastrado</h3>
-            <p className="text-muted-foreground mb-4">Crie seu primeiro canal WhatsApp para começar.</p>
-            <Button onClick={() => setChannelDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Criar Canal
+          <CardContent className="py-12 flex flex-col items-center gap-4">
+            <AlertCircle className="h-10 w-10 text-destructive" />
+            <p className="text-destructive font-medium">{error}</p>
+            <Button onClick={() => { setLoading(true); setError(""); loadInstance(); }}>
+              Tentar novamente
             </Button>
+          </CardContent>
+        </Card>
+      ) : !instance ? (
+        <Card>
+          <CardContent className="py-12 flex flex-col items-center gap-4">
+            <Smartphone className="h-12 w-12 text-muted-foreground" />
+            <p className="text-muted-foreground">Nenhuma instância encontrada.</p>
+            <Button onClick={() => { setLoading(true); loadInstance(); }}>
+              Criar Instância
+            </Button>
+          </CardContent>
+        </Card>
+      ) : instance.is_connected ? (
+        /* ── CONNECTED STATE ── */
+        <Card className="border-green-500/30 bg-green-500/5">
+          <CardContent className="py-8 space-y-6">
+            <div className="flex flex-col items-center gap-3">
+              <div className="p-4 rounded-full bg-green-500/10">
+                <CheckCircle2 className="h-12 w-12 text-green-500" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground">WhatsApp Conectado!</h2>
+              <Badge variant="default" className="bg-green-500 hover:bg-green-600">
+                <Wifi className="h-3 w-3 mr-1" />
+                Conectado
+              </Badge>
+            </div>
+
+            <div className="space-y-2 text-sm text-muted-foreground text-center">
+              <p>Instância: <span className="font-mono text-foreground">{instance.instance_name}</span></p>
+              {instance.phone_number && (
+                <p>Número: <span className="text-foreground">{instance.phone_number}</span></p>
+              )}
+              {instance.last_connection_at && (
+                <p>Última conexão: {new Date(instance.last_connection_at).toLocaleString("pt-BR")}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button
+                variant="outline"
+                onClick={handleDisconnect}
+                disabled={actionLoading}
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${actionLoading ? "animate-spin" : ""}`} />
+                Reconectar
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={actionLoading}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Remover Instância
+              </Button>
+            </div>
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-6">
-          {channels.map((channel) => {
-            const channelInstances = instances.filter((i) => i.channel_id === channel.id);
-            return (
-              <Card key={channel.id}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                  <div className="flex items-center gap-3">
-                    <CardTitle className="text-lg">{channel.nome}</CardTitle>
-                    <Badge variant={channel.ativo ? "default" : "secondary"}>
-                      {channel.ativo ? "Ativo" : "Inativo"}
-                    </Badge>
-                    <Badge variant="outline">{channel.tipo}</Badge>
-                  </div>
-                  <Button size="sm" variant="outline" onClick={() => openInstanceDialog(channel.id)}>
-                    <Plus className="h-4 w-4 mr-1" />
-                    Nova Instância
-                  </Button>
-                </CardHeader>
-                <CardContent>
-                  {channel.descricao && (
-                    <p className="text-sm text-muted-foreground mb-4">{channel.descricao}</p>
-                  )}
-                  {channelInstances.length === 0 ? (
-                    <p className="text-sm text-muted-foreground italic">Nenhuma instância neste canal.</p>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                      {channelInstances.map((instance) => (
-                        <InstanceCard key={instance.id} instance={instance} />
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+        /* ── QR CODE STATE ── */
+        <Card>
+          <CardContent className="py-8 space-y-6">
+            <div className="flex flex-col items-center gap-3">
+              <div className="p-3 rounded-full bg-primary/10">
+                <QrCode className="h-10 w-10 text-primary" />
+              </div>
+              <h2 className="text-lg font-bold text-foreground">Escaneie o QR Code</h2>
+              <Badge variant="secondary">
+                <WifiOff className="h-3 w-3 mr-1" />
+                Desconectado
+              </Badge>
+            </div>
 
-      {/* Instance Dialog */}
-      <Dialog open={instanceDialogOpen} onOpenChange={setInstanceDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Nova Instância WhatsApp</DialogTitle>
-          </DialogHeader>
-          {selectedChannelId && currentCompany && (
-            <InstanceForm
-              channelId={selectedChannelId}
-              companyId={currentCompany.id}
-              onSuccess={handleInstanceCreated}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+            <div className="flex justify-center">
+              {qrLoading ? (
+                <div className="w-64 h-64 bg-muted rounded-lg flex items-center justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : qrCode ? (
+                <img
+                  src={qrCode}
+                  alt="QR Code WhatsApp"
+                  className="w-64 h-64 rounded-lg border border-border"
+                />
+              ) : (
+                <div className="w-64 h-64 bg-muted rounded-lg flex items-center justify-center">
+                  <p className="text-muted-foreground text-sm text-center px-4">
+                    Clique em "Atualizar QR" para gerar o código
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <p className="text-xs text-muted-foreground text-center">
+              Abra o WhatsApp no celular → Dispositivos conectados → Conectar dispositivo → Escaneie o código
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button onClick={fetchQrCode} disabled={qrLoading}>
+                <RefreshCw className={`h-4 w-4 mr-2 ${qrLoading ? "animate-spin" : ""}`} />
+                Atualizar QR
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={actionLoading}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Remover
+              </Button>
+            </div>
+
+            <p className="text-xs text-muted-foreground text-center italic">
+              O status é verificado automaticamente a cada 15 segundos...
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
