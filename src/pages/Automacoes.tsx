@@ -53,15 +53,15 @@ export default function Automacoes() {
       </div>
 
       <Tabs defaultValue="templates">
-        <TabsList>
-          <TabsTrigger value="templates" className="gap-2">
-            <Zap className="h-4 w-4" /> Templates
+        <TabsList className="w-full md:w-auto flex overflow-x-auto">
+          <TabsTrigger value="templates" className="gap-1.5 flex-1 md:flex-initial text-xs sm:text-sm">
+            <Zap className="h-4 w-4 shrink-0" /> <span className="truncate">Templates</span>
           </TabsTrigger>
-          <TabsTrigger value="interno" className="gap-2">
-            <Building2 className="h-4 w-4" /> Uso Interno
+          <TabsTrigger value="interno" className="gap-1.5 flex-1 md:flex-initial text-xs sm:text-sm">
+            <Building2 className="h-4 w-4 shrink-0" /> <span className="truncate">Uso Interno</span>
           </TabsTrigger>
-          <TabsTrigger value="clientes" className="gap-2">
-            <Users className="h-4 w-4" /> Clientes Ativos
+          <TabsTrigger value="clientes" className="gap-1.5 flex-1 md:flex-initial text-xs sm:text-sm">
+            <Users className="h-4 w-4 shrink-0" /> <span className="truncate">Clientes Ativos</span>
           </TabsTrigger>
         </TabsList>
 
