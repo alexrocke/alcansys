@@ -180,8 +180,6 @@ Deno.serve(async (req) => {
           instance_name: instanceName,
           device_name: "Alcansys",
           server_url: serverUrl,
-          instance_token: instanceToken,
-          token: generalToken || whatsapiToken,
           webhook_url: webhookUrl,
           status: "disconnected",
           is_connected: false,
@@ -193,6 +191,15 @@ Deno.serve(async (req) => {
         console.error("DB insert error:", insertError);
         return json({ error: "Erro ao salvar instância" }, 500);
       }
+
+      // Store sensitive tokens in separate secrets table
+      await adminClient
+        .from("whatsapp_instance_secrets")
+        .insert({
+          instance_id: newInstance!.id,
+          token: generalToken || whatsapiToken,
+          instance_token: instanceToken,
+        });
 
       return json({ instance: newInstance, is_new: true });
     }
