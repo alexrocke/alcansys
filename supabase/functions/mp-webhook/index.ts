@@ -11,12 +11,34 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const body = await req.json();
-    console.log("MP webhook received:", JSON.stringify(body));
+    const rawBody = await req.text();
+    let body: Record<string, unknown>;
+    try {
+      body = JSON.parse(rawBody);
+    } catch {
+      console.warn("MP webhook: invalid JSON body");
+      return new Response("Bad Request", { status: 400 });
+    }
 
-    const { type, data, action } = body;
+    console.log("MP webhook received:", JSON.stringify(body).slice(0, 500));
+
+    const { type, data, action } = body as { type?: string; data?: { id?: string | number }; action?: string };
 
     if (!type || !data?.id) {
+      return new Response("OK", { status: 200 });
+    }
+
+    // Validate type is one of expected MP event types
+    const validTypes = ["payment", "subscription_preapproval", "subscription_authorized_payment", "plan", "subscription", "invoice", "point_integration_wh"];
+    if (!validTypes.includes(type)) {
+      console.warn(`MP webhook: unexpected event type: ${type}`);
+      return new Response("OK", { status: 200 });
+    }
+
+    // Validate data.id format (MP uses numeric IDs)
+    const dataId = String(data.id);
+    if (!/^\d{1,20}$/.test(dataId)) {
+      console.warn(`MP webhook: invalid data.id format: ${dataId}`);
       return new Response("OK", { status: 200 });
     }
 
@@ -26,19 +48,25 @@ Deno.serve(async (req) => {
       return new Response("OK", { status: 200 });
     }
 
-    // Handle payment events
+    // Handle payment events - always verify with MP API (prevents spoofed webhooks)
     if (type === "payment") {
-      const mpRes = await fetch(`https://api.mercadopago.com/v1/payments/${data.id}`, {
+      const mpRes = await fetch(`https://api.mercadopago.com/v1/payments/${dataId}`, {
         headers: { Authorization: `Bearer ${MP_TOKEN}` },
       });
 
       if (!mpRes.ok) {
-        console.error("Failed to fetch MP payment:", mpRes.status);
+        const errText = await mpRes.text();
+        console.error(`Failed to fetch MP payment ${dataId}: ${mpRes.status} - ${errText.slice(0, 200)}`);
         return new Response("OK", { status: 200 });
       }
 
       const mpPayment = await mpRes.json();
       const extRef = mpPayment.external_reference;
+
+      if (!extRef || typeof extRef !== "string" || !extRef.startsWith("pay_")) {
+        console.warn(`MP webhook: unrecognized external_reference: ${extRef}`);
+        return new Response("OK", { status: 200 });
+      }
 
       // Map MP status to our status
       const statusMap: Record<string, string> = {
@@ -58,7 +86,7 @@ Deno.serve(async (req) => {
         .from("payments")
         .update({
           status: newStatus,
-          mp_payment_id: String(data.id),
+          mp_payment_id: dataId,
           paid_at: mpPayment.status === "approved" ? new Date().toISOString() : null,
           method: mpPayment.payment_method_id || null,
           metadata: mpPayment,
@@ -70,7 +98,7 @@ Deno.serve(async (req) => {
       // Log
       await supabaseAdmin.from("payment_logs").insert({
         event_type: `payment.${mpPayment.status}`,
-        mp_id: String(data.id),
+        mp_id: dataId,
         raw_data: mpPayment,
       });
     }
@@ -78,8 +106,8 @@ Deno.serve(async (req) => {
     // Handle subscription/preapproval events
     if (type === "subscription_preapproval" || type === "subscription_authorized_payment") {
       const endpoint = type === "subscription_preapproval"
-        ? `https://api.mercadopago.com/preapproval/${data.id}`
-        : `https://api.mercadopago.com/authorized_payments/${data.id}`;
+        ? `https://api.mercadopago.com/preapproval/${dataId}`
+        : `https://api.mercadopago.com/authorized_payments/${dataId}`;
 
       const mpRes = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${MP_TOKEN}` },
@@ -89,7 +117,7 @@ Deno.serve(async (req) => {
         const mpData = await mpRes.json();
         const extRef = mpData.external_reference;
 
-        if (type === "subscription_preapproval") {
+        if (type === "subscription_preapproval" && extRef && typeof extRef === "string" && extRef.startsWith("sub_")) {
           await supabaseAdmin
             .from("subscriptions")
             .update({
@@ -101,9 +129,12 @@ Deno.serve(async (req) => {
 
         await supabaseAdmin.from("payment_logs").insert({
           event_type: `${type}.${action || mpData.status}`,
-          mp_id: String(data.id),
+          mp_id: dataId,
           raw_data: mpData,
         });
+      } else {
+        const errText = await mpRes.text();
+        console.error(`Failed to fetch MP ${type} ${dataId}: ${mpRes.status} - ${errText.slice(0, 200)}`);
       }
     }
 
