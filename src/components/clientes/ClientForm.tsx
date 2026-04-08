@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/hooks/useCompany';
 import { useQuery } from '@tanstack/react-query';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useEffect } from 'react';
 
 const clientSchema = z.object({
   nome: z.string().trim().min(1, 'Nome é obrigatório').max(100, 'Nome muito longo'),
@@ -21,6 +22,19 @@ const clientSchema = z.object({
 });
 
 type ClientFormData = z.infer<typeof clientSchema>;
+
+function generatePortalEmail(nome: string): string {
+  if (!nome.trim()) return '';
+  const slug = nome
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, '.')
+    .replace(/\.+/g, '.');
+  return slug ? `${slug}@portal.alcansys.com` : '';
+}
 
 interface ClientFormProps {
   client?: any;
@@ -65,6 +79,15 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
   const areas = (settings?.valor as any as string[]) || [];
   const selectedArea = watch('area');
   const selectedStatus = watch('status');
+  const watchedNome = watch('nome');
+  
+
+  // Auto-generate portal email from client name (only when creating new client or field is empty/auto-generated)
+  useEffect(() => {
+    if (client) return; // Don't auto-generate when editing
+    const generated = generatePortalEmail(watchedNome);
+    setValue('email_portal', generated);
+  }, [watchedNome, client, setValue]);
 
   const onSubmit = async (data: ClientFormData) => {
     try {
