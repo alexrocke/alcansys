@@ -392,23 +392,21 @@ function PaymentForm({ companyId, onSuccess, onPixGenerated }: {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {items.length > 0 && (
-        <div>
-          <Label className="flex items-center gap-1.5"><Package className="h-3.5 w-3.5" />Selecionar Item</Label>
-          <Select onValueChange={handleItemSelect}>
-            <SelectTrigger><SelectValue placeholder="Escolha um item do catálogo..." /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="custom">Personalizado</SelectItem>
-              {items.map((item) => (
-                <SelectItem key={item.id} value={item.id}>
-                  {item.label}{item.price ? ` — R$ ${Number(item.price).toFixed(2)}` : ""}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Separator className="mt-3" />
-        </div>
-      )}
+      <div>
+        <Label className="flex items-center gap-1.5 mb-1.5"><Package className="h-3.5 w-3.5" />Selecionar Item</Label>
+        <Select onValueChange={handleItemSelect}>
+          <SelectTrigger><SelectValue placeholder="Escolha um item do catálogo..." /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="custom">Personalizado</SelectItem>
+            {items.map((item) => (
+              <SelectItem key={item.id} value={item.id}>
+                {item.label}{item.price ? ` — R$ ${Number(item.price).toFixed(2)}` : ""}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Separator className="mt-3" />
+      </div>
       <div><Label>Descrição *</Label><Input value={descricao} onChange={(e) => setDescricao(e.target.value)} required /></div>
       <div><Label>Valor (R$) *</Label><Input type="number" step="0.01" min="1" value={valor} onChange={(e) => setValor(e.target.value)} required /></div>
       <div>
@@ -488,23 +486,21 @@ function SubscriptionForm({ companyId, onSuccess }: { companyId: string; onSucce
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {items.length > 0 && (
-        <div>
-          <Label className="flex items-center gap-1.5"><Package className="h-3.5 w-3.5" />Selecionar Item</Label>
-          <Select onValueChange={handleItemSelect}>
-            <SelectTrigger><SelectValue placeholder="Escolha um item do catálogo..." /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="custom">Personalizado</SelectItem>
-              {items.map((item) => (
-                <SelectItem key={item.id} value={item.id}>
-                  {item.label}{item.price ? ` — R$ ${Number(item.price).toFixed(2)}` : ""}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Separator className="mt-3" />
-        </div>
-      )}
+      <div>
+        <Label className="flex items-center gap-1.5 mb-1.5"><Package className="h-3.5 w-3.5" />Selecionar Item</Label>
+        <Select onValueChange={handleItemSelect}>
+          <SelectTrigger><SelectValue placeholder="Escolha um item do catálogo..." /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="custom">Personalizado</SelectItem>
+            {items.map((item) => (
+              <SelectItem key={item.id} value={item.id}>
+                {item.label}{item.price ? ` — R$ ${Number(item.price).toFixed(2)}` : ""}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Separator className="mt-3" />
+      </div>
       <div><Label>Nome do Plano *</Label><Input value={planName} onChange={(e) => setPlanName(e.target.value)} required /></div>
       <div><Label>Valor (R$) *</Label><Input type="number" step="0.01" min="1" value={valor} onChange={(e) => setValor(e.target.value)} required /></div>
       <div>
