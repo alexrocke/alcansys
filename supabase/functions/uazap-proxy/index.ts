@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
       throw new Error("UAZAP_API_TOKEN is not configured");
     }
 
-    const UAZAP_API_URL = Deno.env.get("UAZAP_API_URL") || "https://free.uazapi.com";
+    const UAZAP_API_URL = Deno.env.get("UAZAP_API_URL") || "https://ipazua.uazapi.com";
 
     // Validate auth
     const authHeader = req.headers.get("Authorization");
