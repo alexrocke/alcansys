@@ -14,7 +14,8 @@ import {
   Contact,
   MessagesSquare,
   BadgeDollarSign,
-  Activity
+  Activity,
+  CreditCard
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import logoIcon from "@/assets/logo-icon.png";
@@ -59,6 +60,7 @@ const mainItems: MenuItem[] = [
   { title: "Documentos", url: "/documentos", pageKey: "documentos", icon: FileText },
   { title: "Vendedores", url: "/vendedores", pageKey: "vendedores", icon: BadgeDollarSign },
   { title: "Equipe", url: "/equipe", pageKey: "equipe", icon: UsersRound },
+  { title: "Checkout", url: "/checkout", pageKey: "financeiro", icon: CreditCard },
 ];
 
 const settingsItems: MenuItem[] = [
