@@ -285,10 +285,10 @@ function useItemsCatalog(companyId: string) {
     enabled: !!companyId,
   });
 
-  const { data: automations = [] } = useQuery({
-    queryKey: ["automations-catalog", companyId],
+  const { data: templates = [] } = useQuery({
+    queryKey: ["templates-catalog", companyId],
     queryFn: async () => {
-      const { data } = await supabase.from("automations").select("id, nome, custo, tipo").eq("status", "ativa");
+      const { data } = await supabase.from("workflow_templates").select("id, nome, preco, categoria").eq("ativo", true);
       return data || [];
     },
     enabled: !!companyId,
@@ -316,7 +316,7 @@ function useItemsCatalog(companyId: string) {
     })),
     ...products.map((p: any) => ({ id: p.id, label: p.nome, price: p.preco, group: "Produto", sub: p.categoria })),
     ...services.map((s: any) => ({ id: s.id, label: s.nome, price: s.preco_base, group: "Serviço", sub: s.categoria })),
-    ...automations.map((a: any) => ({ id: a.id, label: a.nome, price: a.custo, group: "Automação", sub: a.tipo })),
+    ...templates.map((t: any) => ({ id: t.id, label: `⚡ ${t.nome}`, price: t.preco, group: "Automação", sub: t.categoria })),
   ];
 
   return allItems;
