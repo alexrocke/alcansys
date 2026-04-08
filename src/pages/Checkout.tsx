@@ -11,8 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
-import { CreditCard, QrCode, Plus, RefreshCw, ExternalLink, Copy, FileText } from "lucide-react";
+import { CreditCard, QrCode, Plus, RefreshCw, ExternalLink, Copy, FileText, Package } from "lucide-react";
 import { format } from "date-fns";
 
 const statusColors: Record<string, string> = {
