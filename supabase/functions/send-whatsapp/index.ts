@@ -76,8 +76,7 @@ Deno.serve(async (req) => {
     const cleanPhone = phone.replace(/\D/g, "");
     const chatId = cleanPhone.includes("@") ? cleanPhone : `${cleanPhone}@s.whatsapp.net`;
 
-    const instanceToken = instance.instance_token || Deno.env.get("WHATSAPI_TOKEN")!;
-    const serverUrl = instance.server_url;
+    const instanceToken = secrets?.instance_token || Deno.env.get("WHATSAPI_TOKEN")!;
 
     if (!serverUrl || !instanceToken) {
       return json({ error: "Instance not properly configured" }, 500);
