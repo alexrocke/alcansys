@@ -208,13 +208,22 @@ Deno.serve(async (req) => {
     if (action === "qrcode") {
       const { data: inst } = await adminClient
         .from("whatsapp_instances")
-        .select("id, server_url, instance_token, status, is_connected")
+        .select("id, server_url, status, is_connected")
         .eq("user_id", userId)
         .maybeSingle();
 
       if (!inst) {
         return json({ error: "Instância não encontrada" }, 404);
       }
+
+      // Get token from secrets table
+      const { data: secrets } = await adminClient
+        .from("whatsapp_instance_secrets")
+        .select("instance_token")
+        .eq("instance_id", inst.id)
+        .single();
+
+      const instToken = secrets?.instance_token;
 
       const qrRes = await fetch(`${inst.server_url}/instance/connect`, {
         method: "POST",
