@@ -91,16 +91,28 @@ Deno.serve(async (req) => {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
-        const response = await fetch(`${UAZAP_API_URL}/instance/create`, {
+        const CREATE_URL = Deno.env.get("WHATSAPI_CREATE_URL");
+        const WHATSAPI_TOKEN = Deno.env.get("WHATSAPI_TOKEN");
+        if (!CREATE_URL || !WHATSAPI_TOKEN) {
+          throw new Error("WHATSAPI_CREATE_URL or WHATSAPI_TOKEN not configured");
+        }
+        const response = await fetch(CREATE_URL, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "admintoken": UAZAP_API_TOKEN,
-          },
-          body: JSON.stringify({ Name: instance_name }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: WHATSAPI_TOKEN,
+            name: instance_name,
+            deviceName: "Alcansys",
+            systemName: "Alcansys",
+            system_name: "Alcansys",
+            system: "Alcansys",
+            profileName: "Alcansys",
+            browser: "chrome",
+            fingerprintProfile: "chrome",
+          }),
         });
         result = await response.json();
-        console.log("UAZAP create-instance response:", JSON.stringify(result));
+        console.log("UAZAP create-instance response:", JSON.stringify(result).slice(0, 500));
         if (!response.ok) {
           throw new Error(`UAZAP create-instance failed [${response.status}]: ${JSON.stringify(result)}`);
         }
