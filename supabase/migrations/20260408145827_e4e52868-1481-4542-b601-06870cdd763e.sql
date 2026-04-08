@@ -1,0 +1,1 @@
+ALTER VIEW public.whatsapp_instances_safe SET (security_invoker = on);
