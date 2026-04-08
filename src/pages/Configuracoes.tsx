@@ -193,6 +193,20 @@ export default function Configuracoes() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="combos">
+          <Card>
+            <CardHeader>
+              <CardTitle>Combos de Automações</CardTitle>
+              <CardDescription>
+                Crie pacotes de automações com desconto para oferecer aos clientes
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <CombosSettings />
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
