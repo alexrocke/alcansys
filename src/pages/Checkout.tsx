@@ -309,14 +309,13 @@ function useItemsCatalog(companyId: string) {
   const allItems = [
     ...combos.map((c: any) => ({
       id: c.id,
-      label: `🎁 ${c.nome}`,
+      label: c.nome,
       price: c.preco_combo,
       group: "Combo",
-      sub: c.descricao || `De R$ ${Number(c.preco_original).toFixed(2)} por R$ ${Number(c.preco_combo).toFixed(2)}`,
     })),
-    ...products.map((p: any) => ({ id: p.id, label: p.nome, price: p.preco, group: "Produto", sub: p.categoria })),
-    ...services.map((s: any) => ({ id: s.id, label: s.nome, price: s.preco_base, group: "Serviço", sub: s.categoria })),
-    ...templates.map((t: any) => ({ id: t.id, label: `⚡ ${t.nome}`, price: t.preco, group: "Automação", sub: t.categoria })),
+    ...products.map((p: any) => ({ id: p.id, label: p.nome, price: p.preco, group: "Produto" })),
+    ...services.map((s: any) => ({ id: s.id, label: s.nome, price: s.preco_base, group: "Serviço" })),
+    ...templates.map((t: any) => ({ id: t.id, label: t.nome, price: t.preco, group: "Automação" })),
   ];
 
   return allItems;
@@ -397,12 +396,12 @@ function PaymentForm({ companyId, onSuccess, onPixGenerated }: {
         <div>
           <Label className="flex items-center gap-1.5"><Package className="h-3.5 w-3.5" />Selecionar Item</Label>
           <Select onValueChange={handleItemSelect}>
-            <SelectTrigger><SelectValue placeholder="Escolha um produto, serviço ou automação..." /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Escolha um item do catálogo..." /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="custom">✏️ Personalizado</SelectItem>
+              <SelectItem value="custom">Personalizado</SelectItem>
               {items.map((item) => (
                 <SelectItem key={item.id} value={item.id}>
-                  [{item.group}] {item.label} {item.price ? `— R$ ${Number(item.price).toFixed(2)}` : ""}
+                  {item.label}{item.price ? ` — R$ ${Number(item.price).toFixed(2)}` : ""}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -493,12 +492,12 @@ function SubscriptionForm({ companyId, onSuccess }: { companyId: string; onSucce
         <div>
           <Label className="flex items-center gap-1.5"><Package className="h-3.5 w-3.5" />Selecionar Item</Label>
           <Select onValueChange={handleItemSelect}>
-            <SelectTrigger><SelectValue placeholder="Escolha um produto, serviço ou automação..." /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Escolha um item do catálogo..." /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="custom">✏️ Personalizado</SelectItem>
+              <SelectItem value="custom">Personalizado</SelectItem>
               {items.map((item) => (
                 <SelectItem key={item.id} value={item.id}>
-                  [{item.group}] {item.label} {item.price ? `— R$ ${Number(item.price).toFixed(2)}` : ""}
+                  {item.label}{item.price ? ` — R$ ${Number(item.price).toFixed(2)}` : ""}
                 </SelectItem>
               ))}
             </SelectContent>
