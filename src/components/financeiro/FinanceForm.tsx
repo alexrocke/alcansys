@@ -64,16 +64,15 @@ export function FinanceForm({ finance, onSuccess, onCancel }: FinanceFormProps) 
   });
 
   const { data: areas } = useQuery({
-    queryKey: ['areas-finance'],
+    queryKey: ['settings', 'areas'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('settings')
         .select('valor')
-        .eq('chave', 'areas_ativas')
-        .single();
+        .eq('chave', 'areas')
+        .maybeSingle();
       if (error) throw error;
-      const areasValue = data?.valor as { areas?: string[] } | null;
-      return areasValue?.areas || ['Desenvolvimento', 'Marketing', 'Design', 'Consultoria'];
+      return (data?.valor as string[]) || ['Desenvolvimento', 'Marketing', 'Design', 'Consultoria'];
     },
   });
 
