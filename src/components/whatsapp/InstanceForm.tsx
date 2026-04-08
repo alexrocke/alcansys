@@ -13,8 +13,6 @@ interface InstanceFormProps {
 export function InstanceForm({ channelId, companyId, onSuccess }: InstanceFormProps) {
   const [instanceName, setInstanceName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [webhookUrl, setWebhookUrl] = useState("");
-  const [apiToken, setApiToken] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,8 +23,6 @@ export function InstanceForm({ channelId, companyId, onSuccess }: InstanceFormPr
       company_id: companyId,
       instance_name: instanceName,
       phone_number: phoneNumber || null,
-      webhook_url: webhookUrl || null,
-      api_token: apiToken || null,
     });
     setLoading(false);
     if (error) return;
@@ -42,14 +38,6 @@ export function InstanceForm({ channelId, companyId, onSuccess }: InstanceFormPr
       <div className="space-y-2">
         <Label htmlFor="phone">Número (opcional)</Label>
         <Input id="phone" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="+55 11 99999-9999" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="webhook">Webhook URL (opcional)</Label>
-        <Input id="webhook" value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} placeholder="https://..." />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="token">API Token (opcional)</Label>
-        <Input id="token" type="password" value={apiToken} onChange={(e) => setApiToken(e.target.value)} placeholder="Token da API externa" />
       </div>
       <Button type="submit" disabled={loading || !instanceName} className="w-full">
         {loading ? "Criando..." : "Criar Instância"}

@@ -45,7 +45,7 @@ export function WebhookRelayConfig() {
     queryKey: ['whatsapp-instances', selectedCompany],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('whatsapp_instances')
+        .from('whatsapp_instances_safe')
         .select('id, instance_name, phone_number, status')
         .eq('company_id', selectedCompany!);
       if (error) throw error;

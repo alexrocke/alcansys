@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useCompany } from '@/hooks/useCompany';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,13 +8,22 @@ import { ShoppingBag } from 'lucide-react';
 import { QuoteRequestForm } from '@/components/portal/QuoteRequestForm';
 
 export default function PortalServicos() {
+  const { currentCompany } = useCompany();
   const { data: services, isLoading } = useQuery({
-    queryKey: ['portal-services'],
+    queryKey: ['portal-services', currentCompany?.id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('services').select('*').eq('ativo', true).order('categoria').order('nome');
+      if (!currentCompany?.id) return [];
+      const { data, error } = await supabase
+        .from('services')
+        .select('*')
+        .eq('company_id', currentCompany.id)
+        .eq('ativo', true)
+        .order('categoria')
+        .order('nome');
       if (error) throw error;
       return data;
     },
+    enabled: !!currentCompany?.id,
   });
 
   const grouped = services?.reduce<Record<string, typeof services>>((acc, s) => {

@@ -25,7 +25,6 @@ interface InstanceData {
   status: string;
   is_connected: boolean;
   phone_number: string | null;
-  webhook_url: string | null;
   last_connection_at: string | null;
   created_at: string;
 }

@@ -270,7 +270,7 @@ function useItemsCatalog(companyId: string) {
   const { data: products = [] } = useQuery({
     queryKey: ["products-catalog", companyId],
     queryFn: async () => {
-      const { data } = await supabase.from("products").select("id, nome, preco, categoria").eq("ativo", true);
+      const { data } = await supabase.from("products").select("id, nome, preco, categoria").eq("company_id", companyId).eq("ativo", true);
       return data || [];
     },
     enabled: !!companyId,
@@ -279,7 +279,7 @@ function useItemsCatalog(companyId: string) {
   const { data: services = [] } = useQuery({
     queryKey: ["services-catalog", companyId],
     queryFn: async () => {
-      const { data } = await supabase.from("services").select("id, nome, preco_base, categoria").eq("ativo", true);
+      const { data } = await supabase.from("services").select("id, nome, preco_base, categoria").eq("company_id", companyId).eq("ativo", true);
       return data || [];
     },
     enabled: !!companyId,
@@ -300,6 +300,7 @@ function useItemsCatalog(companyId: string) {
       const { data } = await supabase
         .from("automation_combos")
         .select("id, nome, preco_original, preco_combo, descricao")
+        .eq("company_id", companyId)
         .eq("ativo", true);
       return data || [];
     },
