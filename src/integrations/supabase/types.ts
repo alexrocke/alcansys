@@ -1881,6 +1881,48 @@ export type Database = {
           },
         ]
       }
+      whatsapp_instance_secrets: {
+        Row: {
+          created_at: string | null
+          id: string
+          instance_id: string
+          instance_token: string | null
+          token: string | null
+          webhook_secret: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          instance_id: string
+          instance_token?: string | null
+          token?: string | null
+          webhook_secret?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          instance_id?: string
+          instance_token?: string | null
+          token?: string | null
+          webhook_secret?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_instance_secrets_instance_id_fkey"
+            columns: ["instance_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_instance_secrets_instance_id_fkey"
+            columns: ["instance_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_instances_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       whatsapp_instances: {
         Row: {
           api_token: string | null
@@ -1891,7 +1933,6 @@ export type Database = {
           error_message: string | null
           id: string
           instance_name: string
-          instance_token: string | null
           is_connected: boolean | null
           last_connection_at: string | null
           last_sync: string | null
@@ -1902,11 +1943,9 @@ export type Database = {
           qr_code: string | null
           server_url: string | null
           status: Database["public"]["Enums"]["channel_status"]
-          token: string | null
           uazap_instance_id: string | null
           updated_at: string
           user_id: string | null
-          webhook_secret: string | null
           webhook_url: string | null
         }
         Insert: {
@@ -1918,7 +1957,6 @@ export type Database = {
           error_message?: string | null
           id?: string
           instance_name: string
-          instance_token?: string | null
           is_connected?: boolean | null
           last_connection_at?: string | null
           last_sync?: string | null
@@ -1929,11 +1967,9 @@ export type Database = {
           qr_code?: string | null
           server_url?: string | null
           status?: Database["public"]["Enums"]["channel_status"]
-          token?: string | null
           uazap_instance_id?: string | null
           updated_at?: string
           user_id?: string | null
-          webhook_secret?: string | null
           webhook_url?: string | null
         }
         Update: {
@@ -1945,7 +1981,6 @@ export type Database = {
           error_message?: string | null
           id?: string
           instance_name?: string
-          instance_token?: string | null
           is_connected?: boolean | null
           last_connection_at?: string | null
           last_sync?: string | null
@@ -1956,11 +1991,9 @@ export type Database = {
           qr_code?: string | null
           server_url?: string | null
           status?: Database["public"]["Enums"]["channel_status"]
-          token?: string | null
           uazap_instance_id?: string | null
           updated_at?: string
           user_id?: string | null
-          webhook_secret?: string | null
           webhook_url?: string | null
         }
         Relationships: [
