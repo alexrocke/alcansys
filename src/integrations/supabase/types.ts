@@ -142,6 +142,86 @@ export type Database = {
           },
         ]
       }
+      automation_combo_items: {
+        Row: {
+          combo_id: string
+          created_at: string
+          id: string
+          template_id: string
+        }
+        Insert: {
+          combo_id: string
+          created_at?: string
+          id?: string
+          template_id: string
+        }
+        Update: {
+          combo_id?: string
+          created_at?: string
+          id?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_combo_items_combo_id_fkey"
+            columns: ["combo_id"]
+            isOneToOne: false
+            referencedRelation: "automation_combos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "automation_combo_items_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      automation_combos: {
+        Row: {
+          ativo: boolean
+          company_id: string | null
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          preco_combo: number
+          preco_original: number
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          company_id?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          preco_combo?: number
+          preco_original?: number
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          company_id?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          preco_combo?: number
+          preco_original?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_combos_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       automations: {
         Row: {
           company_id: string | null

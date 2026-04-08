@@ -294,10 +294,29 @@ function useItemsCatalog(companyId: string) {
     enabled: !!companyId,
   });
 
+  const { data: combos = [] } = useQuery({
+    queryKey: ["combos-catalog", companyId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("automation_combos")
+        .select("id, nome, preco_original, preco_combo, descricao")
+        .eq("ativo", true);
+      return data || [];
+    },
+    enabled: !!companyId,
+  });
+
   const allItems = [
-    ...products.map((p) => ({ id: p.id, label: p.nome, price: p.preco, group: "Produto", sub: p.categoria })),
-    ...services.map((s) => ({ id: s.id, label: s.nome, price: s.preco_base, group: "Serviço", sub: s.categoria })),
-    ...automations.map((a) => ({ id: a.id, label: a.nome, price: a.custo, group: "Automação", sub: a.tipo })),
+    ...combos.map((c: any) => ({
+      id: c.id,
+      label: `🎁 ${c.nome}`,
+      price: c.preco_combo,
+      group: "Combo",
+      sub: c.descricao || `De R$ ${Number(c.preco_original).toFixed(2)} por R$ ${Number(c.preco_combo).toFixed(2)}`,
+    })),
+    ...products.map((p: any) => ({ id: p.id, label: p.nome, price: p.preco, group: "Produto", sub: p.categoria })),
+    ...services.map((s: any) => ({ id: s.id, label: s.nome, price: s.preco_base, group: "Serviço", sub: s.categoria })),
+    ...automations.map((a: any) => ({ id: a.id, label: a.nome, price: a.custo, group: "Automação", sub: a.tipo })),
   ];
 
   return allItems;
