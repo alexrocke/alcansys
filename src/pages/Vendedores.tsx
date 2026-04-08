@@ -106,7 +106,7 @@ export default function Vendedores() {
             <CardTitle className="text-sm font-medium text-muted-foreground">Vendedores Ativos</CardTitle>
             <Users className="h-5 w-5 text-primary" />
           </CardHeader>
-          <CardContent><div className="text-3xl font-bold">{totalSalespeople}</div></CardContent>
+          <CardContent><div className="text-2xl md:text-3xl font-bold">{totalSalespeople}</div></CardContent>
         </Card>
         <Card className="border-2 rounded-2xl shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -120,14 +120,14 @@ export default function Vendedores() {
             <CardTitle className="text-sm font-medium text-muted-foreground">Comissões Pendentes</CardTitle>
             <Clock className="h-5 w-5 text-yellow-500" />
           </CardHeader>
-          <CardContent><div className="text-3xl font-bold text-yellow-600">{formatCurrency(pendingCommissions)}</div></CardContent>
+          <CardContent><div className="text-2xl md:text-3xl font-bold text-yellow-600">{formatCurrency(pendingCommissions)}</div></CardContent>
         </Card>
         <Card className="border-2 rounded-2xl shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Comissões Pagas</CardTitle>
             <CheckCircle className="h-5 w-5 text-green-500" />
           </CardHeader>
-          <CardContent><div className="text-3xl font-bold text-green-600">{formatCurrency(paidCommissions)}</div></CardContent>
+          <CardContent><div className="text-2xl md:text-3xl font-bold text-green-600">{formatCurrency(paidCommissions)}</div></CardContent>
         </Card>
       </div>
 
@@ -137,8 +137,8 @@ export default function Vendedores() {
           <TabsTrigger value="comissoes">Comissões</TabsTrigger>
         </TabsList>
         <TabsContent value="vendedores">
-          <Card className="border-2 rounded-2xl shadow-sm">
-            <CardContent className="p-0">
+          <Card className="border-2 rounded-2xl shadow-sm overflow-x-auto">
+            <CardContent className="p-0 min-w-0">
               <SalespersonList
                 salespeople={salespeople}
                 isLoading={spLoading}
@@ -149,8 +149,8 @@ export default function Vendedores() {
           </Card>
         </TabsContent>
         <TabsContent value="comissoes">
-          <Card className="border-2 rounded-2xl shadow-sm">
-            <CardContent className="p-4">
+          <Card className="border-2 rounded-2xl shadow-sm overflow-x-auto">
+            <CardContent className="p-4 min-w-0">
               <CommissionList
                 commissions={commissions}
                 isLoading={comLoading}
