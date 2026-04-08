@@ -80,7 +80,7 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
   const selectedArea = watch('area');
   const selectedStatus = watch('status');
   const watchedNome = watch('nome');
-  const watchedEmailPortal = watch('email_portal');
+  
 
   // Auto-generate portal email from client name (only when creating new client or field is empty/auto-generated)
   useEffect(() => {
