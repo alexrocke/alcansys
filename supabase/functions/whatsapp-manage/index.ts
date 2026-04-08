@@ -63,18 +63,12 @@ Deno.serve(async (req) => {
         return json({ instance: existing, is_new: false });
       }
 
-      // Create new instance via WhatsApi
+      // Create new instance via WhatsApi create-instance-url endpoint
       const instanceName = `whatsapi-${userId.substring(0, 8)}`;
       const createPayload = {
         token: whatsapiToken,
         name: instanceName,
         deviceName: "Alcansys",
-        systemName: "Alcansys",
-        system_name: "Alcansys",
-        system: "Alcansys",
-        profileName: "Alcansys",
-        browser: "chrome",
-        fingerprintProfile: "chrome",
       };
 
       console.log("Creating WhatsApi instance:", instanceName);
