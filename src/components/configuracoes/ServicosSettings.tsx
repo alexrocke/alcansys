@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useCompany } from '@/hooks/useCompany';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -27,6 +28,7 @@ interface ServiceForm {
 const emptyForm: ServiceForm = { nome: '', descricao: '', categoria: '', preco_base: '', ativo: true };
 
 export function ServicosSettings() {
+  const { currentCompany } = useCompany();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<ServiceForm>(emptyForm);
   const [search, setSearch] = useState('');
@@ -34,17 +36,24 @@ export function ServicosSettings() {
   const queryClient = useQueryClient();
 
   const { data: services, isLoading } = useQuery({
-    queryKey: ['admin-services'],
+    queryKey: ['admin-services', currentCompany?.id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('services').select('*').order('nome');
+      if (!currentCompany?.id) return [];
+      const { data, error } = await supabase
+        .from('services')
+        .select('*')
+        .eq('company_id', currentCompany.id)
+        .order('nome');
       if (error) throw error;
       return data;
     },
+    enabled: !!currentCompany?.id,
   });
 
   const upsert = useMutation({
     mutationFn: async (s: ServiceForm) => {
       const payload = {
+        company_id: currentCompany?.id,
         nome: s.nome,
         descricao: s.descricao || null,
         categoria: s.categoria || null,
@@ -52,7 +61,7 @@ export function ServicosSettings() {
         ativo: s.ativo,
       };
       if (s.id) {
-        const { error } = await supabase.from('services').update(payload).eq('id', s.id);
+        const { error } = await supabase.from('services').update(payload).eq('id', s.id).eq('company_id', currentCompany!.id);
         if (error) throw error;
       } else {
         const { error } = await supabase.from('services').insert(payload);
@@ -70,7 +79,7 @@ export function ServicosSettings() {
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('services').delete().eq('id', id);
+      const { error } = await supabase.from('services').delete().eq('id', id).eq('company_id', currentCompany!.id);
       if (error) throw error;
     },
     onSuccess: () => {

@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
     const { action, instance_name, instance_id, company_id } = body;
 
     // Validate action
-    const validActions = ["create-instance", "connect-instance", "get-qrcode", "get-status", "restart", "set-webhook"];
+    const validActions = ["create-instance", "connect-instance", "get-qrcode", "get-status", "restart", "set-webhook", "register-instance"];
     if (!action || !validActions.includes(action)) {
       return new Response(JSON.stringify({ error: "Invalid action" }), {
         status: 400,
@@ -212,6 +212,80 @@ Deno.serve(async (req) => {
         if (!response.ok) {
           throw new Error(`UAZAP restart failed [${response.status}]: ${JSON.stringify(result)}`);
         }
+        break;
+      }
+
+      case "register-instance": {
+        if (!instance_name || !company_id) {
+          return new Response(JSON.stringify({ error: "instance_name and company_id are required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        let channelId = body.channel_id as string | undefined;
+
+        if (!channelId) {
+          const { data: channel } = await supabase
+            .from("channels")
+            .select("id")
+            .eq("company_id", company_id)
+            .eq("tipo", "whatsapp")
+            .limit(1)
+            .maybeSingle();
+
+          channelId = channel?.id;
+
+          if (!channelId) {
+            const { data: newChannel, error: channelError } = await supabase
+              .from("channels")
+              .insert({
+                company_id,
+                nome: `WhatsApp - ${instance_name}`,
+                tipo: "whatsapp",
+                status: "connected",
+                ativo: true,
+              })
+              .select("id")
+              .single();
+
+            if (channelError || !newChannel) {
+              throw new Error(channelError?.message || "Failed to create channel");
+            }
+
+            channelId = newChannel.id;
+          }
+        }
+
+        const { data: newInstance, error: instanceError } = await supabase
+          .from("whatsapp_instances")
+          .insert({
+            company_id,
+            channel_id: channelId,
+            user_id: user.id,
+            instance_name,
+            uazap_instance_id: body.instance_id || instance_name,
+            status: "connected",
+            is_connected: true,
+            phone_number: body.phone_number || null,
+            last_connection_at: new Date().toISOString(),
+          })
+          .select("id, instance_name, phone_number, status, is_connected")
+          .single();
+
+        if (instanceError || !newInstance) {
+          throw new Error(instanceError?.message || "Failed to create instance");
+        }
+
+        await supabase
+          .from("whatsapp_instance_secrets")
+          .upsert({
+            instance_id: newInstance.id,
+            token: Deno.env.get("WHATSAPI_TOKEN") || UAZAP_API_TOKEN,
+            instance_token: body.instance_token || null,
+          }, { onConflict: "instance_id" });
+
+        result = { instance: newInstance };
         break;
       }
 

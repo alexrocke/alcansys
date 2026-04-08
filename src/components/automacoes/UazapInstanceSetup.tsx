@@ -33,7 +33,7 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
     queryKey: ['company-whatsapp-instances', companyId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('whatsapp_instances')
+        .from('whatsapp_instances_safe')
         .select('id, instance_name, phone_number, status')
         .eq('company_id', companyId)
         .eq('status', 'connected')
@@ -168,30 +168,17 @@ export function UazapInstanceSetup({ companyId, automationId, instanceId, onConn
           console.error('Failed to auto-set webhook:', whErr);
         }
 
-        const channelResult = await supabase.from('channels').insert([{
-          company_id: companyId,
-          nome: `WhatsApp - ${uazapName}`,
-          tipo: 'whatsapp' as const,
-          status: 'connected' as const,
-        }]).select().single();
+        const registerResult = await callUazap('register-instance', {
+          instance_name: uazapName,
+          instance_token: uazapToken,
+          phone_number: result.phone_number || null,
+          webhook_url: `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/whatsapp-webhook`,
+        });
 
-        if (channelResult.data) {
-          const instanceResult = await supabase.from('whatsapp_instances').insert([{
-            company_id: companyId,
-            channel_id: channelResult.data.id,
-            instance_name: uazapName,
-            uazap_instance_id: uazapName,
-            status: 'connected' as const,
-            phone_number: result.phone_number || null,
-            api_token: uazapToken,
-            webhook_url: `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/whatsapp-webhook`,
-          }]).select().single();
-
-          if (instanceResult.data) {
-            await supabase.from('client_automations')
-              .update({ whatsapp_instance_id: instanceResult.data.id, status: 'ativa' as const })
-              .eq('id', automationId);
-          }
+        if (registerResult?.instance?.id) {
+          await supabase.from('client_automations')
+            .update({ whatsapp_instance_id: registerResult.instance.id, status: 'ativa' as const })
+            .eq('id', automationId);
         }
 
         toast({ title: 'WhatsApp conectado com sucesso!' });

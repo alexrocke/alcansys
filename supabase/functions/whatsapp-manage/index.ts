@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
     if (action === "get-or-create") {
       const { data: existing } = await adminClient
         .from("whatsapp_instances")
-        .select("id, instance_name, device_name, server_url, status, is_connected, phone_number, webhook_url, last_connection_at, created_at")
+        .select("id, instance_name, device_name, server_url, status, is_connected, phone_number, last_connection_at, created_at")
         .eq("user_id", userId)
         .maybeSingle();
 
@@ -180,11 +180,10 @@ Deno.serve(async (req) => {
           instance_name: instanceName,
           device_name: "Alcansys",
           server_url: serverUrl,
-          webhook_url: webhookUrl,
           status: "disconnected",
           is_connected: false,
         })
-        .select("id, instance_name, device_name, server_url, status, is_connected, phone_number, webhook_url, last_connection_at, created_at")
+        .select("id, instance_name, device_name, server_url, status, is_connected, phone_number, last_connection_at, created_at")
         .single();
 
       if (insertError) {
@@ -251,7 +250,7 @@ Deno.serve(async (req) => {
       if (qrcode) {
         await adminClient
           .from("whatsapp_instances")
-          .update({ status: "connecting", qr_code: qrcode })
+          .update({ status: "connecting" })
           .eq("id", inst.id);
       }
 
