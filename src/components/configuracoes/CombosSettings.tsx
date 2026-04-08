@@ -205,16 +205,15 @@ function ComboForm({ combo, onSuccess }: { combo?: any; onSuccess: () => void })
   });
 
   const toggleTemplate = (id: string) => {
-    setSelectedTemplates((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
-    );
-  };
-
-  const recalcOriginal = () => {
-    const total = templates
-      .filter((t: any) => selectedTemplates.includes(t.id))
-      .reduce((sum: number, t: any) => sum + (t.preco || 0), 0);
-    setPrecoOriginal(total.toFixed(2));
+    setSelectedTemplates((prev) => {
+      const next = prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id];
+      // Auto-calculate original price
+      const total = templates
+        .filter((t: any) => next.includes(t.id))
+        .reduce((sum: number, t: any) => sum + (t.preco || 0), 0);
+      setPrecoOriginal(total.toFixed(2));
+      return next;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
