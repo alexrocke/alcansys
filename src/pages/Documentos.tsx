@@ -117,12 +117,12 @@ export default function Documentos() {
       </div>
 
       <Tabs defaultValue="documentos">
-        <TabsList>
-          <TabsTrigger value="documentos" className="gap-2">
-            <FileText className="h-4 w-4" /> Documentos
+        <TabsList className="w-full md:w-auto">
+          <TabsTrigger value="documentos" className="gap-1.5 flex-1 md:flex-initial text-xs sm:text-sm">
+            <FileText className="h-4 w-4 shrink-0" /> <span className="truncate">Documentos</span>
           </TabsTrigger>
-          <TabsTrigger value="modelos" className="gap-2">
-            <ScrollText className="h-4 w-4" /> Modelos de Contrato
+          <TabsTrigger value="modelos" className="gap-1.5 flex-1 md:flex-initial text-xs sm:text-sm">
+            <ScrollText className="h-4 w-4 shrink-0" /> <span className="truncate">Modelos</span>
           </TabsTrigger>
         </TabsList>
 
@@ -135,7 +135,7 @@ export default function Documentos() {
             </Button>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
             <Card className="border-2 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total</CardTitle>
