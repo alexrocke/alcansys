@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, Users, Target, Building2, Globe, ShieldCheck, ArrowRightLeft, BarChart3, ShoppingBag } from "lucide-react";
+import { Settings, Users, Target, Building2, Globe, ShieldCheck, ArrowRightLeft, BarChart3, ShoppingBag, Package } from "lucide-react";
 import { AreasSettings } from "@/components/configuracoes/AreasSettings";
 import { ServicosSettings } from "@/components/configuracoes/ServicosSettings";
 import { MetasSettings } from "@/components/configuracoes/MetasSettings";
@@ -10,6 +10,7 @@ import { LandingSettings } from "@/components/configuracoes/LandingSettings";
 import { PermissoesSettings } from "@/components/configuracoes/PermissoesSettings";
 import { IntegracoesSettings } from "@/components/configuracoes/IntegracoesSettings";
 import { MarketingIntegracoesSettings } from "@/components/configuracoes/MarketingIntegracoesSettings";
+import { CombosSettings } from "@/components/configuracoes/CombosSettings";
 
 export default function Configuracoes() {
   return (
@@ -60,6 +61,10 @@ export default function Configuracoes() {
           <TabsTrigger value="servicos" className="flex items-center gap-2">
             <ShoppingBag className="h-4 w-4" />
             Serviços
+          </TabsTrigger>
+          <TabsTrigger value="combos" className="flex items-center gap-2">
+            <Package className="h-4 w-4" />
+            Combos
           </TabsTrigger>
         </TabsList>
 
