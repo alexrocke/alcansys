@@ -42,11 +42,20 @@ Deno.serve(async (req) => {
       return json({ error: "Invalid phone number" }, 400);
     }
 
-    // Get instance details (server-side only - sensitive fields)
+    // Get instance details (non-sensitive fields)
     const { data: instance, error: instanceError } = await adminClient
       .from("whatsapp_instances")
-      .select("instance_name, instance_token, server_url, company_id, messages_sent")
+      .select("instance_name, server_url, company_id, messages_sent")
       .eq("id", instance_id)
+      .single();
+
+    if (instanceError || !instance) return json({ error: "Instance not found" }, 404);
+
+    // Get sensitive token from secrets table
+    const { data: secrets } = await adminClient
+      .from("whatsapp_instance_secrets")
+      .select("instance_token")
+      .eq("instance_id", instance_id)
       .single();
 
     if (instanceError || !instance) return json({ error: "Instance not found" }, 404);
