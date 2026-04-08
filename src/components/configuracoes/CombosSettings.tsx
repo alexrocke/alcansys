@@ -281,9 +281,9 @@ function ComboForm({ combo, onSuccess }: { combo?: any; onSuccess: () => void })
           ))}
         </div>
         {selectedTemplates.length > 0 && (
-          <Button type="button" variant="link" size="sm" className="mt-1 p-0 h-auto" onClick={recalcOriginal}>
-            Recalcular preço original ({selectedTemplates.length} selecionados)
-          </Button>
+          <p className="text-xs text-muted-foreground mt-1">
+            {selectedTemplates.length} selecionados — Total: R$ {precoOriginal || "0.00"}
+          </p>
         )}
       </div>
 
