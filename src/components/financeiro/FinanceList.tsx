@@ -81,7 +81,7 @@ export function FinanceList({ finances, isLoading, onEdit, onRefetch }: FinanceL
   };
 
   const formatDate = (date: string) => {
-    return format(new Date(date), "dd 'de' MMMM, yyyy", { locale: ptBR });
+    return format(new Date(date), 'dd/MM/yy', { locale: ptBR });
   };
 
   if (isLoading) {
@@ -102,16 +102,16 @@ export function FinanceList({ finances, isLoading, onEdit, onRefetch }: FinanceL
 
   return (
     <>
-      <div className="border rounded-2xl overflow-hidden">
+      <div className="border rounded-2xl overflow-hidden overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
-              <TableHead>Data</TableHead>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Natureza</TableHead>
               <TableHead>Descrição</TableHead>
-              <TableHead>Área</TableHead>
-              <TableHead>Projeto</TableHead>
+              <TableHead>Tipo</TableHead>
+              <TableHead className="hidden md:table-cell">Natureza</TableHead>
+              <TableHead className="hidden lg:table-cell">Área</TableHead>
+              <TableHead className="hidden lg:table-cell">Projeto</TableHead>
+              <TableHead className="hidden md:table-cell">Data</TableHead>
               <TableHead className="text-right">Valor</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
@@ -119,23 +119,23 @@ export function FinanceList({ finances, isLoading, onEdit, onRefetch }: FinanceL
           <TableBody>
             {finances.map((finance) => (
               <TableRow key={finance.id}>
-                <TableCell className="font-medium">
-                  {formatDate(finance.data)}
+                <TableCell className="font-medium max-w-[150px] truncate">
+                  {finance.descricao}
                 </TableCell>
                 <TableCell>
                   {finance.tipo === 'receita' ? (
                     <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 gap-1">
                       <TrendingUp className="h-3 w-3" />
-                      Receita
+                      <span className="hidden sm:inline">Receita</span>
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20 gap-1">
                       <TrendingDown className="h-3 w-3" />
-                      Despesa
+                      <span className="hidden sm:inline">Despesa</span>
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                   <Badge variant="outline" className={
                     finance.natureza === 'fixo'
                       ? 'bg-blue-500/10 text-blue-500 border-blue-500/20'
@@ -144,12 +144,12 @@ export function FinanceList({ finances, isLoading, onEdit, onRefetch }: FinanceL
                     {finance.natureza === 'fixo' ? 'Fixo' : 'Variável'}
                   </Badge>
                 </TableCell>
-                <TableCell className="max-w-xs truncate">
-                  {finance.descricao}
+                <TableCell className="hidden lg:table-cell">{finance.area || '-'}</TableCell>
+                <TableCell className="hidden lg:table-cell">{finance.project?.nome || '-'}</TableCell>
+                <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                  {formatDate(finance.data)}
                 </TableCell>
-                <TableCell>{finance.area || '-'}</TableCell>
-                <TableCell>{finance.project?.nome || '-'}</TableCell>
-                <TableCell className={`text-right font-semibold ${
+                <TableCell className={`text-right font-semibold whitespace-nowrap ${
                   finance.tipo === 'receita' ? 'text-green-500' : 'text-red-500'
                 }`}>
                   {finance.tipo === 'receita' ? '+' : '-'} {formatCurrency(Number(finance.valor))}

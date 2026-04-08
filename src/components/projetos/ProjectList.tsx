@@ -110,19 +110,19 @@ export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefet
 
   return (
     <>
-      <div className="border rounded-2xl overflow-hidden">
+      <div className="border rounded-2xl overflow-hidden overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
               <TableHead>Projeto</TableHead>
-              <TableHead>Cliente</TableHead>
-              <TableHead>Área</TableHead>
+              <TableHead className="hidden md:table-cell">Cliente</TableHead>
+              <TableHead className="hidden lg:table-cell">Área</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Gestor</TableHead>
-              <TableHead>Orçamento</TableHead>
-              <TableHead>Custo Real</TableHead>
-              <TableHead>Início</TableHead>
-              <TableHead>Fim</TableHead>
+              <TableHead className="hidden lg:table-cell">Gestor</TableHead>
+              <TableHead className="hidden md:table-cell">Orçamento</TableHead>
+              <TableHead className="hidden lg:table-cell">Custo Real</TableHead>
+              <TableHead className="hidden xl:table-cell">Início</TableHead>
+              <TableHead className="hidden xl:table-cell">Fim</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
@@ -130,16 +130,16 @@ export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefet
             {projects.map((project) => (
               <TableRow key={project.id}>
                 <TableCell className="font-medium">{project.nome}</TableCell>
-                <TableCell>{project.client?.nome || '-'}</TableCell>
-                <TableCell>{project.area}</TableCell>
+                <TableCell className="hidden md:table-cell">{project.client?.nome || '-'}</TableCell>
+                <TableCell className="hidden lg:table-cell">{project.area}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className={statusColors[project.status as keyof typeof statusColors]}>
                     {statusLabels[project.status as keyof typeof statusLabels]}
                   </Badge>
                 </TableCell>
-                <TableCell>{project.gestor?.nome || '-'}</TableCell>
-                <TableCell>{formatCurrency(project.orcamento)}</TableCell>
-                <TableCell>
+                <TableCell className="hidden lg:table-cell">{project.gestor?.nome || '-'}</TableCell>
+                <TableCell className="hidden md:table-cell">{formatCurrency(project.orcamento)}</TableCell>
+                <TableCell className="hidden lg:table-cell">
                   {(() => {
                     const cost = projectCosts?.[project.id] || 0;
                     const budget = project.orcamento || 0;
@@ -151,8 +151,8 @@ export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefet
                     );
                   })()}
                 </TableCell>
-                <TableCell>{formatDate(project.data_inicio)}</TableCell>
-                <TableCell>{formatDate(project.data_fim)}</TableCell>
+                <TableCell className="hidden xl:table-cell">{formatDate(project.data_inicio)}</TableCell>
+                <TableCell className="hidden xl:table-cell">{formatDate(project.data_fim)}</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -195,7 +195,6 @@ export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefet
         </Table>
       </div>
 
-      {/* Tasks Dialog */}
       <Dialog open={!!tasksProject} onOpenChange={() => setTasksProject(null)}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
@@ -229,7 +228,6 @@ export function ProjectList({ projects, projectCosts, isLoading, onEdit, onRefet
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Convert to Product Dialog */}
       <Dialog open={!!convertProject} onOpenChange={() => setConvertProject(null)}>
         <DialogContent className="max-w-lg">
           <DialogHeader>

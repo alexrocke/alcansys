@@ -31,7 +31,7 @@ export function CommissionList({ commissions, isLoading, statusFilter, onStatusF
     <div className="space-y-4">
       <div className="flex gap-4">
         <Select value={statusFilter} onValueChange={onStatusFilterChange}>
-          <SelectTrigger className="w-[200px]"><SelectValue placeholder="Filtrar status" /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-[200px]"><SelectValue placeholder="Filtrar status" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos</SelectItem>
             <SelectItem value="pendente">Pendente</SelectItem>
@@ -40,55 +40,57 @@ export function CommissionList({ commissions, isLoading, statusFilter, onStatusF
           </SelectContent>
         </Select>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Vendedor</TableHead>
-            <TableHead>Descrição</TableHead>
-            <TableHead>Valor Venda</TableHead>
-            <TableHead>%</TableHead>
-            <TableHead>Comissão</TableHead>
-            <TableHead>Data</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Ações</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isLoading ? (
-            <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Carregando...</TableCell></TableRow>
-          ) : filtered.length === 0 ? (
-            <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Nenhuma comissão</TableCell></TableRow>
-          ) : (
-            filtered.map((c) => (
-              <TableRow key={c.id}>
-                <TableCell className="font-medium">{c.salespeople?.nome || '-'}</TableCell>
-                <TableCell className="text-muted-foreground">{c.descricao}</TableCell>
-                <TableCell>{formatCurrency(Number(c.valor_venda))}</TableCell>
-                <TableCell>{c.percentual}%</TableCell>
-                <TableCell className="font-semibold">{formatCurrency(Number(c.valor_comissao))}</TableCell>
-                <TableCell className="text-muted-foreground">{format(new Date(c.data_venda), 'dd/MM/yyyy')}</TableCell>
-                <TableCell>
-                  <Badge variant="outline" className={statusColors[c.status]}>{statusLabels[c.status]}</Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex gap-1 justify-end">
-                    {c.status === 'pendente' && (
-                      <Button size="sm" variant="outline" onClick={() => onApprove(c.id)} className="gap-1">
-                        <CheckCircle className="h-3 w-3" /> Aprovar
-                      </Button>
-                    )}
-                    {c.status === 'aprovada' && (
-                      <Button size="sm" variant="outline" onClick={() => onMarkPaid(c.id)} className="gap-1">
-                        <DollarSign className="h-3 w-3" /> Pagar
-                      </Button>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Vendedor</TableHead>
+              <TableHead className="hidden md:table-cell">Descrição</TableHead>
+              <TableHead className="hidden lg:table-cell">Valor Venda</TableHead>
+              <TableHead className="hidden lg:table-cell">%</TableHead>
+              <TableHead>Comissão</TableHead>
+              <TableHead className="hidden md:table-cell">Data</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Carregando...</TableCell></TableRow>
+            ) : filtered.length === 0 ? (
+              <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Nenhuma comissão</TableCell></TableRow>
+            ) : (
+              filtered.map((c) => (
+                <TableRow key={c.id}>
+                  <TableCell className="font-medium">{c.salespeople?.nome || '-'}</TableCell>
+                  <TableCell className="hidden md:table-cell text-muted-foreground max-w-[150px] truncate">{c.descricao}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{formatCurrency(Number(c.valor_venda))}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{c.percentual}%</TableCell>
+                  <TableCell className="font-semibold whitespace-nowrap">{formatCurrency(Number(c.valor_comissao))}</TableCell>
+                  <TableCell className="hidden md:table-cell text-muted-foreground">{format(new Date(c.data_venda), 'dd/MM/yyyy')}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={statusColors[c.status]}>{statusLabels[c.status]}</Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex gap-1 justify-end">
+                      {c.status === 'pendente' && (
+                        <Button size="sm" variant="outline" onClick={() => onApprove(c.id)} className="gap-1 text-xs px-2">
+                          <CheckCircle className="h-3 w-3" /> <span className="hidden sm:inline">Aprovar</span>
+                        </Button>
+                      )}
+                      {c.status === 'aprovada' && (
+                        <Button size="sm" variant="outline" onClick={() => onMarkPaid(c.id)} className="gap-1 text-xs px-2">
+                          <DollarSign className="h-3 w-3" /> <span className="hidden sm:inline">Pagar</span>
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

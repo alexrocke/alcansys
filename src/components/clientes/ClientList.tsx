@@ -86,7 +86,7 @@ export function ClientList({ clients, isLoading, onEdit, onRefetch }: ClientList
   };
 
   const formatDate = (date: string) => {
-    return format(new Date(date), "dd 'de' MMMM, yyyy", { locale: ptBR });
+    return format(new Date(date), 'dd/MM/yy', { locale: ptBR });
   };
 
   if (isLoading) {
@@ -113,7 +113,7 @@ export function ClientList({ clients, isLoading, onEdit, onRefetch }: ClientList
             <TableRow>
               <TableHead>Nome</TableHead>
               <TableHead className="hidden md:table-cell">Contato</TableHead>
-              <TableHead>Área</TableHead>
+              <TableHead className="hidden sm:table-cell">Área</TableHead>
               <TableHead className="hidden lg:table-cell">Plano</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="hidden lg:table-cell">Cadastro</TableHead>
@@ -142,7 +142,7 @@ export function ClientList({ clients, isLoading, onEdit, onRefetch }: ClientList
                     )}
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden sm:table-cell">
                   <Badge variant="outline" className="bg-primary/10">
                     {client.area}
                   </Badge>
