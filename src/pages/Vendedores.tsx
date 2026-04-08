@@ -113,7 +113,7 @@ export default function Vendedores() {
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Vendas</CardTitle>
             <DollarSign className="h-5 w-5 text-primary" />
           </CardHeader>
-          <CardContent><div className="text-3xl font-bold">{formatCurrency(totalSales)}</div></CardContent>
+          <CardContent><div className="text-2xl md:text-3xl font-bold">{formatCurrency(totalSales)}</div></CardContent>
         </Card>
         <Card className="border-2 rounded-2xl shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
