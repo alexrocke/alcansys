@@ -20,9 +20,9 @@ export function SalespersonList({ salespeople, isLoading, onEdit, onDelete }: Pr
         <TableRow>
           <TableHead>Nome</TableHead>
           <TableHead className="hidden md:table-cell">Email</TableHead>
-          <TableHead className="hidden md:table-cell">Telefone</TableHead>
-          <TableHead>Meta Mensal</TableHead>
-          <TableHead>Comissão %</TableHead>
+          <TableHead className="hidden lg:table-cell">Telefone</TableHead>
+          <TableHead className="hidden md:table-cell">Meta</TableHead>
+          <TableHead className="hidden md:table-cell">Comissão</TableHead>
           <TableHead>Status</TableHead>
           <TableHead className="text-right">Ações</TableHead>
         </TableRow>
@@ -37,9 +37,9 @@ export function SalespersonList({ salespeople, isLoading, onEdit, onDelete }: Pr
             <TableRow key={sp.id}>
               <TableCell className="font-medium">{sp.nome}</TableCell>
               <TableCell className="hidden md:table-cell text-muted-foreground">{sp.email || '-'}</TableCell>
-              <TableCell className="hidden md:table-cell text-muted-foreground">{sp.telefone || '-'}</TableCell>
-              <TableCell>{formatCurrency(Number(sp.meta_mensal) || 0)}</TableCell>
-              <TableCell>{sp.percentual_comissao}%</TableCell>
+              <TableCell className="hidden lg:table-cell text-muted-foreground">{sp.telefone || '-'}</TableCell>
+              <TableCell className="hidden md:table-cell">{formatCurrency(Number(sp.meta_mensal) || 0)}</TableCell>
+              <TableCell className="hidden md:table-cell">{sp.percentual_comissao}%</TableCell>
               <TableCell>
                 <Badge variant={sp.status === 'ativo' ? 'default' : 'secondary'}>
                   {sp.status === 'ativo' ? 'Ativo' : 'Inativo'}
