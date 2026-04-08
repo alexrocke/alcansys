@@ -1807,18 +1807,25 @@ export type Database = {
           channel_id: string
           company_id: string
           created_at: string
+          device_name: string | null
           error_message: string | null
           id: string
           instance_name: string
+          instance_token: string | null
+          is_connected: boolean | null
+          last_connection_at: string | null
           last_sync: string | null
           messages_received: number
           messages_sent: number
           metadata: Json | null
           phone_number: string | null
           qr_code: string | null
+          server_url: string | null
           status: Database["public"]["Enums"]["channel_status"]
+          token: string | null
           uazap_instance_id: string | null
           updated_at: string
+          user_id: string | null
           webhook_secret: string | null
           webhook_url: string | null
         }
@@ -1827,18 +1834,25 @@ export type Database = {
           channel_id: string
           company_id: string
           created_at?: string
+          device_name?: string | null
           error_message?: string | null
           id?: string
           instance_name: string
+          instance_token?: string | null
+          is_connected?: boolean | null
+          last_connection_at?: string | null
           last_sync?: string | null
           messages_received?: number
           messages_sent?: number
           metadata?: Json | null
           phone_number?: string | null
           qr_code?: string | null
+          server_url?: string | null
           status?: Database["public"]["Enums"]["channel_status"]
+          token?: string | null
           uazap_instance_id?: string | null
           updated_at?: string
+          user_id?: string | null
           webhook_secret?: string | null
           webhook_url?: string | null
         }
@@ -1847,18 +1861,25 @@ export type Database = {
           channel_id?: string
           company_id?: string
           created_at?: string
+          device_name?: string | null
           error_message?: string | null
           id?: string
           instance_name?: string
+          instance_token?: string | null
+          is_connected?: boolean | null
+          last_connection_at?: string | null
           last_sync?: string | null
           messages_received?: number
           messages_sent?: number
           metadata?: Json | null
           phone_number?: string | null
           qr_code?: string | null
+          server_url?: string | null
           status?: Database["public"]["Enums"]["channel_status"]
+          token?: string | null
           uazap_instance_id?: string | null
           updated_at?: string
+          user_id?: string | null
           webhook_secret?: string | null
           webhook_url?: string | null
         }
