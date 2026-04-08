@@ -266,6 +266,43 @@ export default function Checkout() {
   );
 }
 
+function useItemsCatalog(companyId: string) {
+  const { data: products = [] } = useQuery({
+    queryKey: ["products-catalog", companyId],
+    queryFn: async () => {
+      const { data } = await supabase.from("products").select("id, nome, preco, categoria").eq("ativo", true);
+      return data || [];
+    },
+    enabled: !!companyId,
+  });
+
+  const { data: services = [] } = useQuery({
+    queryKey: ["services-catalog", companyId],
+    queryFn: async () => {
+      const { data } = await supabase.from("services").select("id, nome, preco_base, categoria").eq("ativo", true);
+      return data || [];
+    },
+    enabled: !!companyId,
+  });
+
+  const { data: automations = [] } = useQuery({
+    queryKey: ["automations-catalog", companyId],
+    queryFn: async () => {
+      const { data } = await supabase.from("automations").select("id, nome, custo, tipo").eq("status", "ativa");
+      return data || [];
+    },
+    enabled: !!companyId,
+  });
+
+  const allItems = [
+    ...products.map((p) => ({ id: p.id, label: p.nome, price: p.preco, group: "Produto", sub: p.categoria })),
+    ...services.map((s) => ({ id: s.id, label: s.nome, price: s.preco_base, group: "Serviço", sub: s.categoria })),
+    ...automations.map((a) => ({ id: a.id, label: a.nome, price: a.custo, group: "Automação", sub: a.tipo })),
+  ];
+
+  return allItems;
+}
+
 function PaymentForm({ companyId, onSuccess, onPixGenerated }: {
   companyId: string;
   onSuccess: () => void;
@@ -277,6 +314,20 @@ function PaymentForm({ companyId, onSuccess, onPixGenerated }: {
   const [payerEmail, setPayerEmail] = useState("");
   const [payerName, setPayerName] = useState("");
   const [loading, setLoading] = useState(false);
+  const items = useItemsCatalog(companyId);
+
+  const handleItemSelect = (itemId: string) => {
+    if (itemId === "custom") {
+      setDescricao("");
+      setValor("");
+      return;
+    }
+    const item = items.find((i) => i.id === itemId);
+    if (item) {
+      setDescricao(item.label);
+      setValor(item.price ? String(item.price) : "");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -323,6 +374,23 @@ function PaymentForm({ companyId, onSuccess, onPixGenerated }: {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {items.length > 0 && (
+        <div>
+          <Label className="flex items-center gap-1.5"><Package className="h-3.5 w-3.5" />Selecionar Item</Label>
+          <Select onValueChange={handleItemSelect}>
+            <SelectTrigger><SelectValue placeholder="Escolha um produto, serviço ou automação..." /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="custom">✏️ Personalizado</SelectItem>
+              {items.map((item) => (
+                <SelectItem key={item.id} value={item.id}>
+                  [{item.group}] {item.label} {item.price ? `— R$ ${Number(item.price).toFixed(2)}` : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Separator className="mt-3" />
+        </div>
+      )}
       <div><Label>Descrição *</Label><Input value={descricao} onChange={(e) => setDescricao(e.target.value)} required /></div>
       <div><Label>Valor (R$) *</Label><Input type="number" step="0.01" min="1" value={valor} onChange={(e) => setValor(e.target.value)} required /></div>
       <div>
@@ -352,6 +420,20 @@ function SubscriptionForm({ companyId, onSuccess }: { companyId: string; onSucce
   const [payerEmail, setPayerEmail] = useState("");
   const [payerName, setPayerName] = useState("");
   const [loading, setLoading] = useState(false);
+  const items = useItemsCatalog(companyId);
+
+  const handleItemSelect = (itemId: string) => {
+    if (itemId === "custom") {
+      setPlanName("");
+      setValor("");
+      return;
+    }
+    const item = items.find((i) => i.id === itemId);
+    if (item) {
+      setPlanName(item.label);
+      setValor(item.price ? String(item.price) : "");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -388,6 +470,23 @@ function SubscriptionForm({ companyId, onSuccess }: { companyId: string; onSucce
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {items.length > 0 && (
+        <div>
+          <Label className="flex items-center gap-1.5"><Package className="h-3.5 w-3.5" />Selecionar Item</Label>
+          <Select onValueChange={handleItemSelect}>
+            <SelectTrigger><SelectValue placeholder="Escolha um produto, serviço ou automação..." /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="custom">✏️ Personalizado</SelectItem>
+              {items.map((item) => (
+                <SelectItem key={item.id} value={item.id}>
+                  [{item.group}] {item.label} {item.price ? `— R$ ${Number(item.price).toFixed(2)}` : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Separator className="mt-3" />
+        </div>
+      )}
       <div><Label>Nome do Plano *</Label><Input value={planName} onChange={(e) => setPlanName(e.target.value)} required /></div>
       <div><Label>Valor (R$) *</Label><Input type="number" step="0.01" min="1" value={valor} onChange={(e) => setValor(e.target.value)} required /></div>
       <div>
