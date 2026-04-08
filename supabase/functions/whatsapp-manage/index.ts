@@ -69,6 +69,12 @@ Deno.serve(async (req) => {
         token: whatsapiToken,
         name: instanceName,
         deviceName: "Alcansys",
+        systemName: "Alcansys",
+        system_name: "Alcansys",
+        system: "Alcansys",
+        profileName: "Alcansys",
+        browser: "chrome",
+        fingerprintProfile: "chrome",
       };
 
       console.log("Creating WhatsApi instance:", instanceName);
