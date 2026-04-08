@@ -229,7 +229,7 @@ Deno.serve(async (req) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "token": inst.instance_token,
+          "token": instToken || "",
         },
         body: "{}",
       });
@@ -275,19 +275,34 @@ Deno.serve(async (req) => {
     if (action === "delete") {
       const { data: inst } = await adminClient
         .from("whatsapp_instances")
-        .select("server_url, instance_token")
+        .select("id, server_url")
         .eq("user_id", userId)
         .maybeSingle();
 
-      if (inst?.server_url && inst?.instance_token) {
-        try {
-          await fetch(`${inst.server_url}/instance`, {
-            method: "DELETE",
-            headers: { "token": inst.instance_token },
-          });
-        } catch (e) {
-          console.error("WhatsApi delete failed (continuing):", e);
+      if (inst) {
+        // Get token from secrets table
+        const { data: secrets } = await adminClient
+          .from("whatsapp_instance_secrets")
+          .select("instance_token")
+          .eq("instance_id", inst.id)
+          .single();
+
+        if (inst.server_url && secrets?.instance_token) {
+          try {
+            await fetch(`${inst.server_url}/instance`, {
+              method: "DELETE",
+              headers: { "token": secrets.instance_token },
+            });
+          } catch (e) {
+            console.error("WhatsApi delete failed (continuing):", e);
+          }
         }
+
+        // Delete secrets first (FK), then instance
+        await adminClient
+          .from("whatsapp_instance_secrets")
+          .delete()
+          .eq("instance_id", inst.id);
       }
 
       await adminClient
