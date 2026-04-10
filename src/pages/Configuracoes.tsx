@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Settings, Users, Target, Building2, Globe, ShieldCheck, ArrowRightLeft, BarChart3, ShoppingBag, Package } from "lucide-react";
@@ -12,7 +14,17 @@ import { IntegracoesSettings } from "@/components/configuracoes/IntegracoesSetti
 import { MarketingIntegracoesSettings } from "@/components/configuracoes/MarketingIntegracoesSettings";
 import { CombosSettings } from "@/components/configuracoes/CombosSettings";
 
+const VALID_TABS = ["geral", "areas", "metas", "usuarios", "permissoes", "integracoes", "marketing-integracoes", "landing", "servicos", "combos"];
+
 export default function Configuracoes() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get("tab");
+  const activeTab = tabFromUrl && VALID_TABS.includes(tabFromUrl) ? tabFromUrl : "geral";
+
+  const handleTabChange = (value: string) => {
+    setSearchParams({ tab: value }, { replace: true });
+  };
+
   return (
     <div className="p-4 md:p-6 lg:p-8 space-y-6 max-w-full overflow-x-hidden">
       <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
@@ -24,7 +36,7 @@ export default function Configuracoes() {
         </div>
       </div>
 
-      <Tabs defaultValue="geral" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="flex flex-wrap h-auto gap-1">
           <TabsTrigger value="geral" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
