@@ -1,4 +1,3 @@
-import DisplayCards from "@/components/ui/display-cards";
 import { useLandingSection } from "@/hooks/useLandingConfig";
 import { getLucideIcon } from "@/lib/lucide-icon-map";
 
@@ -19,42 +18,39 @@ export function ServiceCards() {
   const config = section?.config as Record<string, any> | undefined;
   const cards = (config?.cards as any[]) || defaultCards;
 
-  const paddingX = config?.card_padding_x ?? 24;
-  const paddingY = config?.card_padding_y ?? 24;
-  const spacingX = config?.card_spacing_x ?? 80;
-  const spacingY = config?.card_spacing_y ?? 48;
-
-  const displayCards = cards.map((card: any) => {
-    const Icon = getLucideIcon(card.icon);
-    return {
-      icon: <Icon className="size-5 text-primary" />,
-      title: card.title,
-      description: card.description,
-      date: card.subtitle,
-      iconClassName: "text-primary",
-      titleClassName: "text-primary",
-    };
-  });
-
   return (
-    <section className="py-24 px-6 md:px-12">
+    <section className="py-20 md:py-28 px-4 sm:px-6 md:px-12">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-4">
           {config?.title || defaultTexts.title}
         </h2>
-        <p className="text-white/50 text-center mb-16 max-w-2xl mx-auto">
+        <p className="text-muted-foreground text-center mb-12 md:mb-16 max-w-2xl mx-auto">
           {config?.subtitle || defaultTexts.subtitle}
         </p>
-        <div className="flex min-h-[450px] w-full items-center justify-center">
-          <div className="w-full max-w-4xl">
-            <DisplayCards
-              cards={displayCards}
-              paddingX={paddingX}
-              paddingY={paddingY}
-              spacingX={spacingX}
-              spacingY={spacingY}
-            />
-          </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          {cards.map((card: any, index: number) => {
+            const Icon = getLucideIcon(card.icon);
+            return (
+              <div
+                key={index}
+                className="group relative rounded-2xl border border-border/40 bg-card/60 backdrop-blur-sm p-6 flex flex-col gap-4 transition-all duration-300 hover:border-primary/40 hover:bg-card/80 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1"
+              >
+                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
+                  <Icon className="size-6" />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <h3 className="text-lg font-semibold text-foreground">{card.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{card.description}</p>
+                </div>
+                {card.subtitle && (
+                  <span className="text-xs text-primary/70 font-medium mt-auto pt-2 border-t border-border/30">
+                    {card.subtitle}
+                  </span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
