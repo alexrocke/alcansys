@@ -74,6 +74,7 @@ export function MarketingIntegracoesSettings() {
       if (error) throw error;
       return (data?.valor as unknown as MarketingConfig) || defaultConfig;
     },
+    refetchOnWindowFocus: false,
   });
 
   const [form, setForm] = useState<MarketingConfig | null>(null);
