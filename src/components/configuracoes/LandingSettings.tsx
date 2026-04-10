@@ -34,6 +34,7 @@ export function LandingSettings() {
       if (error) throw error;
       return data as LandingSection[];
     },
+    refetchOnWindowFocus: false,
   });
 
   const updateMutation = useMutation({

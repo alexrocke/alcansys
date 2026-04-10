@@ -48,6 +48,7 @@ export function GeralSettings() {
       
       return data;
     },
+    refetchOnWindowFocus: false,
   });
 
   const saveMutation = useMutation({

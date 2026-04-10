@@ -33,6 +33,7 @@ export function MetasSettings() {
       
       return data;
     },
+    refetchOnWindowFocus: false,
   });
 
   const saveMutation = useMutation({
