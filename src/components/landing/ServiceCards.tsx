@@ -2,10 +2,10 @@ import { useLandingSection } from "@/hooks/useLandingConfig";
 import { getLucideIcon } from "@/lib/lucide-icon-map";
 
 const defaultCards = [
-  { icon: "Code", title: "Sistemas Personalizados", description: "Desenvolvemos sistemas sob medida para o seu negócio, do zero ao deploy", subtitle: "100% customizado" },
+  { icon: "Code", title: "Sistemas Personalizados", description: "Desenvolvemos sistemas sob medida para o seu negócio, do planejamento à entrega final", subtitle: "100% customizado" },
   { icon: "Zap", title: "Automação com IA", description: "Chatbots inteligentes, fluxos automatizados e integração com WhatsApp", subtitle: "Resultados 24/7" },
-  { icon: "Globe", title: "Landing Pages", description: "Páginas de alta conversão para captar leads e vender seus serviços", subtitle: "Design profissional" },
-  { icon: "MessageCircle", title: "Atendimento WhatsApp", description: "Múltiplas instâncias, chatbot IA e gestão centralizada de conversas", subtitle: "Atendimento escalável" },
+  { icon: "Globe", title: "Landing Pages", description: "Páginas de alta conversão para captar clientes e vender seus serviços", subtitle: "Design profissional" },
+  { icon: "MessageCircle", title: "Atendimento WhatsApp", description: "Múltiplas linhas, chatbot inteligente e gestão centralizada de conversas", subtitle: "Atendimento escalável" },
 ];
 
 const defaultTexts = {
