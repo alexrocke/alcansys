@@ -1925,7 +1925,6 @@ export type Database = {
       }
       whatsapp_instances: {
         Row: {
-          api_token: string | null
           channel_id: string
           company_id: string
           created_at: string
@@ -1949,7 +1948,6 @@ export type Database = {
           webhook_url: string | null
         }
         Insert: {
-          api_token?: string | null
           channel_id: string
           company_id: string
           created_at?: string
@@ -1973,7 +1971,6 @@ export type Database = {
           webhook_url?: string | null
         }
         Update: {
-          api_token?: string | null
           channel_id?: string
           company_id?: string
           created_at?: string
