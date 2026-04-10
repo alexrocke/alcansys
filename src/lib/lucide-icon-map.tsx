@@ -2,6 +2,7 @@ import {
   Zap, FolderKanban, TrendingUp, MessageCircle,
   Users, BarChart3, Sparkles, Settings, Star,
   Shield, Globe, Rocket, Heart, Mail, Phone,
+  Code,
   type LucideIcon,
 } from "lucide-react";
 
@@ -9,6 +10,7 @@ const iconMap: Record<string, LucideIcon> = {
   Zap, FolderKanban, TrendingUp, MessageCircle,
   Users, BarChart3, Sparkles, Settings, Star,
   Shield, Globe, Rocket, Heart, Mail, Phone,
+  Code,
 };
 
 export function getLucideIcon(name: string): LucideIcon {
