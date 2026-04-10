@@ -194,11 +194,6 @@ function ServicesEditor({ config, onChange }: { config: Record<string, any>; onC
     onChange({ ...config, cards: cards.filter((_: any, i: number) => i !== index) });
   };
 
-  const paddingX = config.card_padding_x ?? 24;
-  const paddingY = config.card_padding_y ?? 24;
-  const spacingX = config.card_spacing_x ?? 80;
-  const spacingY = config.card_spacing_y ?? 48;
-
   return (
     <div className="space-y-4">
       <div>
@@ -209,52 +204,6 @@ function ServicesEditor({ config, onChange }: { config: Record<string, any>; onC
         <Label>Subtítulo da seção</Label>
         <Textarea value={config.subtitle || ""} onChange={(e) => onChange({ ...config, subtitle: e.target.value })} />
       </div>
-
-      <Card className="p-4 space-y-4">
-        <Label className="text-base font-semibold">Tamanho e Espaçamento dos Cards</Label>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-xs">Padding Horizontal (px)</Label>
-            <Input
-              type="number"
-              min={8}
-              max={64}
-              value={paddingX}
-              onChange={(e) => onChange({ ...config, card_padding_x: Number(e.target.value) })}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label className="text-xs">Padding Vertical (px)</Label>
-            <Input
-              type="number"
-              min={8}
-              max={64}
-              value={paddingY}
-              onChange={(e) => onChange({ ...config, card_padding_y: Number(e.target.value) })}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label className="text-xs">Espaçamento Lateral (px)</Label>
-            <Input
-              type="number"
-              min={0}
-              max={160}
-              value={spacingX}
-              onChange={(e) => onChange({ ...config, card_spacing_x: Number(e.target.value) })}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label className="text-xs">Espaçamento Vertical (px)</Label>
-            <Input
-              type="number"
-              min={0}
-              max={120}
-              value={spacingY}
-              onChange={(e) => onChange({ ...config, card_spacing_y: Number(e.target.value) })}
-            />
-          </div>
-        </div>
-      </Card>
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
