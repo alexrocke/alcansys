@@ -30,11 +30,11 @@ export default function Landing() {
   const footer = getSection("footer");
 
   const heroConfig = hero?.config || {
-    title: "Sua empresa mais",
-    title_highlight: "inteligente",
-    subtitle: "Automação, gestão e marketing digital integrados em uma única plataforma. Escale resultados com tecnologia e IA.",
+    title: "Tecnologia que faz seu negócio",
+    title_highlight: "crescer",
+    subtitle: "Criamos sistemas personalizados, automações inteligentes e landing pages de alta conversão. Transforme sua operação com tecnologia e IA.",
     spline_url: "https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode",
-    cta_primary: "Começar agora",
+    cta_primary: "Solicitar orçamento",
     cta_secondary: "Ver serviços",
   };
 

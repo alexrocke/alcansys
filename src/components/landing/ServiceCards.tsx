@@ -2,15 +2,15 @@ import { useLandingSection } from "@/hooks/useLandingConfig";
 import { getLucideIcon } from "@/lib/lucide-icon-map";
 
 const defaultCards = [
-  { icon: "Zap", title: "Automação com IA", description: "Chatbots inteligentes e fluxos automatizados", subtitle: "WhatsApp integrado" },
-  { icon: "FolderKanban", title: "Gestão de Projetos", description: "Organize tarefas e acompanhe prazos", subtitle: "Dashboards em tempo real" },
-  { icon: "TrendingUp", title: "Marketing Digital", description: "Campanhas otimizadas e geração de leads", subtitle: "Análise de ROI" },
-  { icon: "MessageCircle", title: "Atendimento WhatsApp", description: "Múltiplas instâncias e chatbot IA", subtitle: "Gestão centralizada" },
+  { icon: "Code", title: "Sistemas Personalizados", description: "Desenvolvemos sistemas sob medida para o seu negócio, do zero ao deploy", subtitle: "100% customizado" },
+  { icon: "Zap", title: "Automação com IA", description: "Chatbots inteligentes, fluxos automatizados e integração com WhatsApp", subtitle: "Resultados 24/7" },
+  { icon: "Globe", title: "Landing Pages", description: "Páginas de alta conversão para captar leads e vender seus serviços", subtitle: "Design profissional" },
+  { icon: "MessageCircle", title: "Atendimento WhatsApp", description: "Múltiplas instâncias, chatbot IA e gestão centralizada de conversas", subtitle: "Atendimento escalável" },
 ];
 
 const defaultTexts = {
-  title: "Soluções que transformam negócios",
-  subtitle: "Tecnologia de ponta para automatizar processos, gerenciar projetos e impulsionar vendas.",
+  title: "Soluções digitais para o seu negócio",
+  subtitle: "Criamos sistemas, automações e landing pages que geram resultados reais para sua empresa.",
 };
 
 export function ServiceCards() {
