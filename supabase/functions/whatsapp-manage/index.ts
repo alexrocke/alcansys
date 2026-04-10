@@ -157,17 +157,22 @@ Deno.serve(async (req) => {
         .maybeSingle();
 
       if (!channel) {
-        const { data: newChannel } = await adminClient
+        const { data: newChannel, error: channelError } = await adminClient
           .from("channels")
           .insert({
             company_id: companyId,
             nome: "WhatsApp Principal",
             tipo: "whatsapp",
-            status: "active",
+            status: "connected",
             ativo: true,
           })
           .select("id")
           .single();
+
+        if (channelError || !newChannel) {
+          console.error("Channel insert error:", channelError);
+          return json({ error: "Erro ao criar canal WhatsApp" }, 500);
+        }
         channel = newChannel;
       }
 
@@ -176,7 +181,7 @@ Deno.serve(async (req) => {
         .insert({
           user_id: userId,
           company_id: companyId,
-          channel_id: channel!.id,
+          channel_id: channel.id,
           instance_name: instanceName,
           device_name: "Alcansys",
           server_url: serverUrl,
