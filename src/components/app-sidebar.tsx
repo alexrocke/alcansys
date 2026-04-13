@@ -91,7 +91,7 @@ export function AppSidebar() {
         <div className="px-6 py-4">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center flex-1 min-w-0">
-              <img src={logoIcon} alt="Scalefy" className={`${open ? 'h-10' : 'w-10 h-10'} shrink-0 object-contain`} />
+              <img src={logoIcon} alt="Scalefy" className={`${open ? 'h-9 w-auto max-w-[140px]' : 'w-9 h-9'} shrink-0 object-contain`} />
             </div>
             <NotificationBell />
           </div>
