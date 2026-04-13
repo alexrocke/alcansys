@@ -13,7 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Pencil, Trash2, AppWindow, ExternalLink, DollarSign } from "lucide-react";
 import { toast } from "sonner";
-import { format } from "date-fns";
+
+type AppStatus = "ativo" | "suspenso" | "cancelado";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   ativo: { label: "Ativo", className: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" },
@@ -73,12 +74,7 @@ export function ContractedAppsManager() {
         valor_mensal: app.valor_mensal,
         dia_vencimento: app.dia_vencimento,
         data_inicio: app.data_inicio,
-        data_fim: app.data_fim || null,
-        status: app.status,
-        url: app.url || null,
-        notas: app.notas || null,
-      };
-      if (app.id) {
+        status: app.status as AppStatus,
         const { error } = await supabase.from("contracted_apps").update(payload).eq("id", app.id);
         if (error) throw error;
       } else {
