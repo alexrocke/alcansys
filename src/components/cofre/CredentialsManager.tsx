@@ -42,6 +42,7 @@ interface CredentialForm {
   notas: string;
 }
 
+type CredentialCategory = "rede_social" | "aplicativo" | "email" | "hospedagem" | "dominio" | "outro";
 const emptyForm: CredentialForm = { categoria: "outro", nome: "", usuario: "", senha: "", url: "", notas: "" };
 
 export function CredentialsManager() {
@@ -72,7 +73,7 @@ export function CredentialsManager() {
       if (!currentCompany) throw new Error("Sem empresa");
       const payload = {
         company_id: currentCompany.id,
-        categoria: cred.categoria,
+        categoria: cred.categoria as CredentialCategory,
         nome: cred.nome,
         usuario: cred.usuario || null,
         senha_encrypted: cred.senha || null,
