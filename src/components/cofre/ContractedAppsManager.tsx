@@ -74,7 +74,12 @@ export function ContractedAppsManager() {
         valor_mensal: app.valor_mensal,
         dia_vencimento: app.dia_vencimento,
         data_inicio: app.data_inicio,
+        data_fim: app.data_fim || null,
         status: app.status as AppStatus,
+        url: app.url || null,
+        notas: app.notas || null,
+      };
+      if (app.id) {
         const { error } = await supabase.from("contracted_apps").update(payload).eq("id", app.id);
         if (error) throw error;
       } else {
