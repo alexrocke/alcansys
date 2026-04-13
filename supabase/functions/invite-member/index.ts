@@ -101,14 +101,56 @@ Deno.serve(async (req) => {
       await adminClient.from("user_roles").insert(roleInserts);
     }
 
-    // Send password reset so user can set their own password
-    await adminClient.auth.admin.generateLink({
+    // Generate recovery link and get the action_link
+    const { data: linkData, error: linkError } = await adminClient.auth.admin.generateLink({
       type: "recovery",
       email,
+      options: {
+        redirectTo: `${req.headers.get("origin") || supabaseUrl}/auth`,
+      },
     });
 
+    const recoveryLink = linkData?.properties?.action_link || null;
+    if (linkError) {
+      console.error("Error generating recovery link:", linkError);
+    }
+
+    // Try to send the recovery email via send-email function
+    try {
+      const emailResponse = await fetch(`${supabaseUrl}/functions/v1/send-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${serviceRoleKey}`,
+        },
+        body: JSON.stringify({
+          to: email,
+          subject: "Bem-vindo à Alcansys - Defina sua senha",
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h2 style="color: #333;">Bem-vindo à Alcansys!</h2>
+              <p>Olá <strong>${nome}</strong>,</p>
+              <p>Sua conta foi criada com sucesso. Para acessar o sistema, clique no botão abaixo para definir sua senha:</p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${recoveryLink}" style="background-color: #7c3aed; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                  Definir minha senha
+                </a>
+              </div>
+              <p style="color: #666; font-size: 14px;">Se o botão não funcionar, copie e cole este link no navegador:</p>
+              <p style="word-break: break-all; font-size: 12px; color: #999;">${recoveryLink}</p>
+            </div>
+          `,
+        }),
+      });
+      if (!emailResponse.ok) {
+        console.error("Failed to send welcome email:", await emailResponse.text());
+      }
+    } catch (emailErr) {
+      console.error("Error sending welcome email:", emailErr);
+    }
+
     return new Response(
-      JSON.stringify({ success: true, user_id: userId }),
+      JSON.stringify({ success: true, user_id: userId, recovery_link: recoveryLink }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
