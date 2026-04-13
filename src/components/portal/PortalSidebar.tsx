@@ -43,7 +43,6 @@ export function PortalSidebar() {
             {open && (
               <p className="text-xs text-muted-foreground">Portal do Cliente</p>
             )}
-            )}
           </div>
         </div>
 

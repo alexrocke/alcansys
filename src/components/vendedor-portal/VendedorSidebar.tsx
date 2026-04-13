@@ -35,7 +35,6 @@ export function VendedorSidebar() {
             {open && (
               <p className="text-xs text-muted-foreground">Portal do Vendedor</p>
             )}
-            )}
           </div>
         </div>
         <SidebarGroup>
