@@ -566,6 +566,53 @@ export type Database = {
         }
         Relationships: []
       }
+      company_credentials: {
+        Row: {
+          categoria: Database["public"]["Enums"]["credential_category"]
+          company_id: string
+          created_at: string
+          id: string
+          nome: string
+          notas: string | null
+          senha_encrypted: string | null
+          updated_at: string
+          url: string | null
+          usuario: string | null
+        }
+        Insert: {
+          categoria?: Database["public"]["Enums"]["credential_category"]
+          company_id: string
+          created_at?: string
+          id?: string
+          nome: string
+          notas?: string | null
+          senha_encrypted?: string | null
+          updated_at?: string
+          url?: string | null
+          usuario?: string | null
+        }
+        Update: {
+          categoria?: Database["public"]["Enums"]["credential_category"]
+          company_id?: string
+          created_at?: string
+          id?: string
+          nome?: string
+          notas?: string | null
+          senha_encrypted?: string | null
+          updated_at?: string
+          url?: string | null
+          usuario?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_credentials_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contacts: {
         Row: {
           autor_id: string | null
@@ -653,6 +700,65 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      contracted_apps: {
+        Row: {
+          categoria: string | null
+          company_id: string
+          created_at: string
+          data_fim: string | null
+          data_inicio: string
+          descricao: string | null
+          dia_vencimento: number
+          id: string
+          nome: string
+          notas: string | null
+          status: Database["public"]["Enums"]["contracted_app_status"]
+          updated_at: string
+          url: string | null
+          valor_mensal: number
+        }
+        Insert: {
+          categoria?: string | null
+          company_id: string
+          created_at?: string
+          data_fim?: string | null
+          data_inicio?: string
+          descricao?: string | null
+          dia_vencimento?: number
+          id?: string
+          nome: string
+          notas?: string | null
+          status?: Database["public"]["Enums"]["contracted_app_status"]
+          updated_at?: string
+          url?: string | null
+          valor_mensal?: number
+        }
+        Update: {
+          categoria?: string | null
+          company_id?: string
+          created_at?: string
+          data_fim?: string | null
+          data_inicio?: string
+          descricao?: string | null
+          dia_vencimento?: number
+          id?: string
+          nome?: string
+          notas?: string | null
+          status?: Database["public"]["Enums"]["contracted_app_status"]
+          updated_at?: string
+          url?: string | null
+          valor_mensal?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracted_apps_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       conversations: {
         Row: {
@@ -2188,12 +2294,20 @@ export type Database = {
         | "chatbot"
         | "outro"
       commission_status: "pendente" | "aprovada" | "paga"
+      contracted_app_status: "ativo" | "suspenso" | "cancelado"
       conversation_status:
         | "aberta"
         | "em_atendimento"
         | "aguardando"
         | "resolvida"
         | "arquivada"
+      credential_category:
+        | "rede_social"
+        | "aplicativo"
+        | "email"
+        | "hospedagem"
+        | "dominio"
+        | "outro"
       document_type: "contrato" | "proposta" | "relatorio" | "outros"
       finance_nature: "fixo" | "variavel"
       finance_type: "receita" | "despesa"
@@ -2388,12 +2502,21 @@ export const Constants = {
         "outro",
       ],
       commission_status: ["pendente", "aprovada", "paga"],
+      contracted_app_status: ["ativo", "suspenso", "cancelado"],
       conversation_status: [
         "aberta",
         "em_atendimento",
         "aguardando",
         "resolvida",
         "arquivada",
+      ],
+      credential_category: [
+        "rede_social",
+        "aplicativo",
+        "email",
+        "hospedagem",
+        "dominio",
+        "outro",
       ],
       document_type: ["contrato", "proposta", "relatorio", "outros"],
       finance_nature: ["fixo", "variavel"],
