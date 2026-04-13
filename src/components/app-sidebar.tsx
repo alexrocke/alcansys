@@ -91,10 +91,10 @@ export function AppSidebar() {
         <div className="px-6 py-4">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              <img src={logoIcon} alt="Alcansys" className="w-10 h-10 shrink-0 object-contain" />
+              <img src={logoIcon} alt="Scalefy" className="w-10 h-10 shrink-0 object-contain" />
               {open && (
                 <div className="min-w-0">
-                  <h1 className="text-xl font-bold text-foreground truncate">Alcansys</h1>
+                  <h1 className="text-xl font-bold text-foreground truncate">Scalefy</h1>
                 </div>
               )}
             </div>

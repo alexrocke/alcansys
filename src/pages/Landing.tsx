@@ -53,7 +53,7 @@ export default function Landing() {
   };
 
   const footerConfig = footer?.config || {
-    email: "contato@alcansys.com.br",
+    email: "contato@scalefy.com.br",
     whatsapp_url: "https://wa.me/5500000000000",
     whatsapp_label: "WhatsApp",
   };
@@ -169,7 +169,7 @@ export default function Landing() {
       {(footer?.visible !== false) && (
         <footer id="contato" className="border-t border-white/10 py-12 px-6">
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-white/40">
-            <p>© {new Date().getFullYear()} Alcansys. Todos os direitos reservados.</p>
+            <p>© {new Date().getFullYear()} Scalefy. Todos os direitos reservados.</p>
             <div className="flex gap-6">
               <a href={`mailto:${footerConfig.email}`} className="hover:text-white transition-colors">{footerConfig.email}</a>
               <a href={footerConfig.whatsapp_url} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">{footerConfig.whatsapp_label}</a>

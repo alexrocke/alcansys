@@ -7,8 +7,8 @@ export function LandingHeader() {
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[hsl(222,47%,11%)]/80 backdrop-blur-lg">
       <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-16">
         <div className="flex items-center gap-3">
-          <img src={logoIcon} alt="Alcansys" className="w-9 h-9 object-contain" />
-          <span className="text-xl font-bold text-white">Alcansys</span>
+          <img src={logoIcon} alt="Scalefy" className="w-9 h-9 object-contain" />
+          <span className="text-xl font-bold text-white">Scalefy</span>
         </div>
         <nav className="hidden md:flex items-center gap-8 text-sm text-white/60">
           <a href="#servicos" className="hover:text-white transition-colors">Serviços</a>

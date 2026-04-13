@@ -80,10 +80,8 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary-light to-secondary p-4">
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center space-y-2">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center mb-2">
-            <span className="text-2xl font-bold text-white">A</span>
-          </div>
-          <CardTitle className="text-3xl font-bold">Alcansys</CardTitle>
+          <img src="/favicon.png" alt="Scalefy" className="mx-auto w-16 h-16 object-contain mb-2" />
+          <CardTitle className="text-3xl font-bold">Scalefy</CardTitle>
           <CardDescription>Sistema de Gestão Corporativa</CardDescription>
         </CardHeader>
         <CardContent>

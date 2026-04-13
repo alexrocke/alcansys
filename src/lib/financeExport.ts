@@ -28,7 +28,7 @@ export const exportFinanceToPDF = async (
   // Header
   doc.setFontSize(20);
   doc.setTextColor(30, 58, 138); // primary color
-  doc.text('Alcansys', 14, 20);
+  doc.text('Scalefy', 14, 20);
   
   doc.setFontSize(16);
   doc.setTextColor(0, 0, 0);
@@ -180,6 +180,6 @@ export const exportFinanceToPDF = async (
   }
   
   // Save PDF
-  const fileName = `alcansys-financeiro-${mesFilter}.pdf`;
+  const fileName = `scalefy-financeiro-${mesFilter}.pdf`;
   doc.save(fileName);
 };
