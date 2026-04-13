@@ -39,12 +39,9 @@ export function PortalSidebar() {
       <SidebarContent>
         <div className="px-6 py-4">
           <div className="flex items-center gap-2">
-            <img src={logoIcon} alt="Scalefy" className="w-10 h-10 shrink-0 object-contain" />
+            <img src={logoIcon} alt="Scalefy" className={`${open ? 'h-10' : 'w-10 h-10'} shrink-0 object-contain`} />
             {open && (
-              <div className="min-w-0">
-                <h1 className="text-xl font-bold text-foreground truncate">Scalefy</h1>
-                <p className="text-xs text-muted-foreground truncate">Portal do Cliente</p>
-              </div>
+              <p className="text-xs text-muted-foreground">Portal do Cliente</p>
             )}
           </div>
         </div>
