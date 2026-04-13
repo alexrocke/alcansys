@@ -18,6 +18,18 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function translateAuthError(msg: string): string {
+  const map: Record<string, string> = {
+    'User already registered': 'Este e-mail já possui uma conta. Tente fazer login.',
+    'Invalid login credentials': 'E-mail ou senha incorretos.',
+    'Email not confirmed': 'Confirme seu e-mail antes de entrar.',
+    'Password should be at least 6 characters': 'A senha deve ter pelo menos 6 caracteres.',
+    'Signup requires a valid password': 'Informe uma senha válida.',
+    'Unable to validate email address: invalid format': 'Formato de e-mail inválido.',
+  };
+  return map[msg] || msg;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
