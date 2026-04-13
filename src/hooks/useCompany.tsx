@@ -65,7 +65,7 @@ export function CompanyProvider({ children }: { children: React.ReactNode }) {
       setCompanies(companyList);
 
       // Restore saved company or default to first
-      const savedId = localStorage.getItem('alcansys_current_company');
+      const savedId = localStorage.getItem('scalefy_current_company');
       if (savedId && companyList.find((c) => c.id === savedId)) {
         setCurrentCompanyId(savedId);
       } else if (companyList.length > 0) {
@@ -84,7 +84,7 @@ export function CompanyProvider({ children }: { children: React.ReactNode }) {
 
   const handleSetCompanyId = (id: string) => {
     setCurrentCompanyId(id);
-    localStorage.setItem('alcansys_current_company', id);
+    localStorage.setItem('scalefy_current_company', id);
   };
 
   const currentCompany = companies.find((c) => c.id === currentCompanyId) || null;

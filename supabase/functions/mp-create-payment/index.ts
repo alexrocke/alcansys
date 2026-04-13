@@ -115,9 +115,9 @@ Deno.serve(async (req) => {
           external_reference: externalRef,
           notification_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/mp-webhook`,
           back_urls: {
-            success: `${req.headers.get("origin") || "https://alcansys.lovable.app"}/financeiro`,
-            failure: `${req.headers.get("origin") || "https://alcansys.lovable.app"}/financeiro`,
-            pending: `${req.headers.get("origin") || "https://alcansys.lovable.app"}/financeiro`,
+            success: `${req.headers.get("origin") || "https://scalefy.lovable.app"}/financeiro`,
+            failure: `${req.headers.get("origin") || "https://scalefy.lovable.app"}/financeiro`,
+            pending: `${req.headers.get("origin") || "https://scalefy.lovable.app"}/financeiro`,
           },
           auto_return: "approved",
           payer: payer_email ? { email: payer_email, name: payer_name || "" } : undefined,

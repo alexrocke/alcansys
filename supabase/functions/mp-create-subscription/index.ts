@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
           transaction_amount: valor,
           currency_id: "BRL",
         },
-        back_url: `${req.headers.get("origin") || "https://alcansys.lovable.app"}/financeiro`,
+        back_url: `${req.headers.get("origin") || "https://scalefy.lovable.app"}/financeiro`,
         notification_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/mp-webhook`,
       }),
     });

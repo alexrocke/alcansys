@@ -33,7 +33,7 @@ function generatePortalEmail(nome: string): string {
     .replace(/[^a-z0-9\s]/g, '')
     .replace(/\s+/g, '.')
     .replace(/\.+/g, '.');
-  return slug ? `${slug}@portal.alcansys.com` : '';
+  return slug ? `${slug}@portal.scalefy.com` : '';
 }
 
 interface ClientFormProps {

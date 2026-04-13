@@ -25,8 +25,8 @@ export default defineConfig(({ mode }) => ({
       },
       includeAssets: ["pwa-icon-192.png", "pwa-icon-512.png"],
       manifest: {
-        name: "Alcansys - Gestão Corporativa",
-        short_name: "Alcansys",
+        name: "Scalefy - Gestão Corporativa",
+        short_name: "Scalefy",
         description: "Sistema de Gestão Corporativa - Projetos, Financeiro, CRM, Automações e mais.",
         theme_color: "#1e3a5f",
         background_color: "#ffffff",
