@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
+import logo from '@/assets/logo-alcansys.png';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -79,10 +80,12 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary-light to-secondary p-4">
       <Card className="w-full max-w-md shadow-2xl">
-        <CardHeader className="text-center space-y-2">
-          <img src="/favicon.png" alt="Scalefy" className="mx-auto w-16 h-16 object-contain mb-2" />
-          <CardTitle className="text-3xl font-bold">Scalefy</CardTitle>
-          <CardDescription>Sistema de Gestão Corporativa</CardDescription>
+        <CardHeader className="text-center space-y-4">
+          <img src={logo} alt="Scalefy" className="mx-auto h-auto w-56 max-w-full object-contain md:w-64" />
+          <div className="space-y-1">
+            <CardTitle className="text-2xl font-bold">Acesse sua conta</CardTitle>
+            <CardDescription>Sistema de Gestão Corporativa</CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="w-full">
