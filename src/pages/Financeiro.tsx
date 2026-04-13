@@ -23,7 +23,7 @@ export default function Financeiro() {
   const [areaFilter, setAreaFilter] = useState<string>('all');
   const [tipoFilter, setTipoFilter] = useState<string>('all');
   const [naturezaFilter, setNaturezaFilter] = useState<string>('all');
-  const [mesFilter, setMesFilter] = useState<string>(format(new Date(), 'yyyy-MM'));
+  const [mesFilter, setMesFilter] = useState<string>('all');
   const { currentCompany } = useCompany();
   const companyId = currentCompany?.id;
 
@@ -49,11 +49,13 @@ export default function Financeiro() {
         query = query.eq('natureza', naturezaFilter as 'fixo' | 'variavel');
       }
 
-      const startDate = startOfMonth(new Date(mesFilter + '-01'));
-      const endDate = endOfMonth(startDate);
-      query = query.gte('data', format(startDate, 'yyyy-MM-dd')).lte('data', format(endDate, 'yyyy-MM-dd'));
+      if (mesFilter !== 'all') {
+        const startDate = startOfMonth(new Date(mesFilter + '-01'));
+        const endDate = endOfMonth(startDate);
+        query = query.gte('data', format(startDate, 'yyyy-MM-dd')).lte('data', format(endDate, 'yyyy-MM-dd'));
+      }
 
-      const { data, error } = await query;
+      const { data, error } = await query.limit(5000);
       if (error) throw error;
       return data;
     },
@@ -132,7 +134,7 @@ export default function Financeiro() {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-foreground">Financeiro</h1>
           <p className="text-sm md:text-base text-muted-foreground">
-            Gestão de receitas e despesas - {format(new Date(mesFilter + '-01'), 'MMMM yyyy', { locale: ptBR })}
+            Gestão de receitas e despesas{mesFilter !== 'all' ? ` - ${format(new Date(mesFilter + '-01'), 'MMMM yyyy', { locale: ptBR })}` : ' - Todos os meses'}
           </p>
         </div>
         <div className="flex gap-2 w-full md:w-auto">
@@ -224,12 +226,29 @@ export default function Financeiro() {
           <Filter className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">Filtros:</span>
         </div>
-        <Input
-          type="month"
-          value={mesFilter}
-          onChange={(e) => setMesFilter(e.target.value)}
-          className="w-full md:w-[180px]"
-        />
+        <div className="flex gap-2 items-center w-full md:w-auto">
+          <Select value={mesFilter} onValueChange={setMesFilter}>
+            <SelectTrigger className="w-full md:w-[200px]">
+              <SelectValue placeholder="Período" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os meses</SelectItem>
+              <SelectItem value={format(new Date(), 'yyyy-MM')}>
+                {format(new Date(), 'MMMM yyyy', { locale: ptBR })}
+              </SelectItem>
+              {Array.from({ length: 11 }, (_, i) => {
+                const d = new Date();
+                d.setMonth(d.getMonth() - (i + 1));
+                const val = format(d, 'yyyy-MM');
+                return (
+                  <SelectItem key={val} value={val}>
+                    {format(d, 'MMMM yyyy', { locale: ptBR })}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        </div>
         <Select value={areaFilter} onValueChange={setAreaFilter}>
           <SelectTrigger className="w-full md:w-[180px]">
             <SelectValue placeholder="Todas as áreas" />
