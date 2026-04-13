@@ -137,7 +137,7 @@ Deno.serve(async (req) => {
 });
 
 function buildSystemPrompt(type: string, context?: any): string {
-  const basePrompt = "Você é um assistente de IA da plataforma AlcanSys. Responda sempre em português brasileiro de forma profissional e objetiva.";
+  const basePrompt = "Você é um assistente de IA da plataforma Scalefy. Responda sempre em português brasileiro de forma profissional e objetiva.";
 
   switch (type) {
     case "workflow":

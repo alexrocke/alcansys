@@ -94,7 +94,7 @@ Deno.serve(async (req) => {
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: Deno.env.get("EMAIL_FROM") || "Alcansys <noreply@alcansys.com>",
+        from: Deno.env.get("EMAIL_FROM") || "Scalefy <noreply@scalefy.com>",
         to: Array.isArray(to) ? to : [to],
         subject: emailSubject,
         html: emailHtml,
