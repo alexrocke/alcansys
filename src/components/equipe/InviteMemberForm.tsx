@@ -69,9 +69,16 @@ export function InviteMemberForm({ onSuccess, onCancel }: InviteMemberFormProps)
       if (error) throw error;
       if (result?.error) throw new Error(result.error);
 
-      toast.success('Membro convidado com sucesso!', {
-        description: `${data.nome} foi adicionado à equipe.`,
-      });
+      if (result?.recovery_link) {
+        toast.success('Membro criado com sucesso!', {
+          description: `${data.nome} receberá um email para definir a senha. As permissões já foram aplicadas.`,
+          duration: 6000,
+        });
+      } else {
+        toast.success('Membro convidado com sucesso!', {
+          description: `${data.nome} foi adicionado à equipe.`,
+        });
+      }
       onSuccess();
     } catch (error: any) {
       console.error('Invite error:', error);
