@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCompany } from "@/hooks/useCompany";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, Eye, EyeOff, KeyRound, ExternalLink, Copy } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Plus, Pencil, Trash2, Eye, EyeOff, KeyRound, ExternalLink, Copy, Users, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 const CATEGORIES = [
@@ -47,11 +49,15 @@ const emptyForm: CredentialForm = { categoria: "outro", nome: "", usuario: "", s
 
 export function CredentialsManager() {
   const { currentCompany } = useCompany();
+  const { userRole, user } = useAuth();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<CredentialForm>(emptyForm);
   const [visiblePasswords, setVisiblePasswords] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState("");
+  const [accessDialogCred, setAccessDialogCred] = useState<any>(null);
+
+  const isAdmin = userRole === "admin";
 
   const { data: credentials, isLoading } = useQuery({
     queryKey: ["company-credentials", currentCompany?.id],
@@ -66,6 +72,41 @@ export function CredentialsManager() {
       return data;
     },
     enabled: !!currentCompany,
+  });
+
+  // Fetch team members for access management
+  const { data: teamMembers } = useQuery({
+    queryKey: ["team-members-for-access", currentCompany?.id],
+    queryFn: async () => {
+      if (!currentCompany) return [];
+      const { data, error } = await supabase
+        .from("memberships")
+        .select("user_id, role, profiles(id, nome, email)")
+        .eq("company_id", currentCompany.id);
+      if (error) throw error;
+      return (data || []).map((m: any) => ({
+        user_id: m.user_id,
+        role: m.role,
+        nome: m.profiles?.nome || "Sem nome",
+        email: m.profiles?.email || "",
+      }));
+    },
+    enabled: !!currentCompany && isAdmin,
+  });
+
+  // Fetch access grants for the selected credential
+  const { data: accessGrants } = useQuery({
+    queryKey: ["credential-access", accessDialogCred?.id],
+    queryFn: async () => {
+      if (!accessDialogCred) return [];
+      const { data, error } = await supabase
+        .from("credential_access")
+        .select("*")
+        .eq("credential_id", accessDialogCred.id);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!accessDialogCred,
   });
 
   const saveMutation = useMutation({
@@ -108,11 +149,35 @@ export function CredentialsManager() {
     },
   });
 
+  const toggleAccessMutation = useMutation({
+    mutationFn: async ({ credentialId, userId, grant }: { credentialId: string; userId: string; grant: boolean }) => {
+      if (grant) {
+        const { error } = await supabase.from("credential_access").insert({
+          credential_id: credentialId,
+          user_id: userId,
+          granted_by: user?.id || null,
+        });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("credential_access")
+          .delete()
+          .eq("credential_id", credentialId)
+          .eq("user_id", userId);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["credential-access"] });
+      toast.success("Acesso atualizado!");
+    },
+    onError: () => toast.error("Erro ao atualizar acesso"),
+  });
+
   const togglePassword = (id: string) => {
     setVisiblePasswords((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
   };
@@ -124,13 +189,9 @@ export function CredentialsManager() {
 
   const openEdit = (cred: any) => {
     setForm({
-      id: cred.id,
-      categoria: cred.categoria,
-      nome: cred.nome,
-      usuario: cred.usuario || "",
-      senha: cred.senha_encrypted || "",
-      url: cred.url || "",
-      notas: cred.notas || "",
+      id: cred.id, categoria: cred.categoria, nome: cred.nome,
+      usuario: cred.usuario || "", senha: cred.senha_encrypted || "",
+      url: cred.url || "", notas: cred.notas || "",
     });
     setOpen(true);
   };
@@ -140,6 +201,10 @@ export function CredentialsManager() {
       c.nome.toLowerCase().includes(filter.toLowerCase()) ||
       c.categoria.toLowerCase().includes(filter.toLowerCase())
   );
+
+  const grantedUserIds = new Set((accessGrants || []).map((a: any) => a.user_id));
+  // Filter out current admin from the access list
+  const assignableMembers = (teamMembers || []).filter((m: any) => m.user_id !== user?.id);
 
   return (
     <Card>
@@ -151,62 +216,63 @@ export function CredentialsManager() {
               Credenciais & Logins
             </CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              Armazene logins de redes sociais, aplicativos e serviços de forma segura. Acesso restrito a administradores.
+              {isAdmin
+                ? "Gerencie credenciais e controle quais funcionários têm acesso a cada login."
+                : "Visualize os logins que foram liberados para você pelo administrador."}
             </p>
           </div>
-          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setForm(emptyForm); }}>
-            <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" /> Nova Credencial</Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-lg">
-              <DialogHeader>
-                <DialogTitle>{form.id ? "Editar Credencial" : "Nova Credencial"}</DialogTitle>
-              </DialogHeader>
-              <form
-                onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }}
-                className="space-y-4"
-              >
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Categoria</Label>
-                    <Select value={form.categoria} onValueChange={(v) => setForm({ ...form, categoria: v })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {CATEGORIES.map((c) => (
-                          <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+          {isAdmin && (
+            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setForm(emptyForm); }}>
+              <DialogTrigger asChild>
+                <Button><Plus className="h-4 w-4 mr-2" /> Nova Credencial</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>{form.id ? "Editar Credencial" : "Nova Credencial"}</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Categoria</Label>
+                      <Select value={form.categoria} onValueChange={(v) => setForm({ ...form, categoria: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {CATEGORIES.map((c) => (
+                            <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Nome do Serviço *</Label>
+                      <Input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} required placeholder="Ex: Instagram, Google Ads" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Usuário / Login</Label>
+                      <Input value={form.usuario} onChange={(e) => setForm({ ...form, usuario: e.target.value })} placeholder="email@exemplo.com" />
+                    </div>
+                    <div>
+                      <Label>Senha</Label>
+                      <Input type="password" value={form.senha} onChange={(e) => setForm({ ...form, senha: e.target.value })} placeholder="••••••••" />
+                    </div>
                   </div>
                   <div>
-                    <Label>Nome do Serviço *</Label>
-                    <Input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} required placeholder="Ex: Instagram, Google Ads" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Usuário / Login</Label>
-                    <Input value={form.usuario} onChange={(e) => setForm({ ...form, usuario: e.target.value })} placeholder="email@exemplo.com" />
+                    <Label>URL de Acesso</Label>
+                    <Input value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="https://..." />
                   </div>
                   <div>
-                    <Label>Senha</Label>
-                    <Input type="password" value={form.senha} onChange={(e) => setForm({ ...form, senha: e.target.value })} placeholder="••••••••" />
+                    <Label>Observações</Label>
+                    <Textarea value={form.notas} onChange={(e) => setForm({ ...form, notas: e.target.value })} rows={2} />
                   </div>
-                </div>
-                <div>
-                  <Label>URL de Acesso</Label>
-                  <Input value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="https://..." />
-                </div>
-                <div>
-                  <Label>Observações</Label>
-                  <Textarea value={form.notas} onChange={(e) => setForm({ ...form, notas: e.target.value })} rows={2} />
-                </div>
-                <Button type="submit" className="w-full" disabled={saveMutation.isPending}>
-                  {saveMutation.isPending ? "Salvando..." : "Salvar"}
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+                  <Button type="submit" className="w-full" disabled={saveMutation.isPending}>
+                    {saveMutation.isPending ? "Salvando..." : "Salvar"}
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </CardHeader>
       <CardContent>
@@ -222,7 +288,9 @@ export function CredentialsManager() {
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         ) : !filtered.length ? (
-          <p className="text-center text-muted-foreground py-8">Nenhuma credencial cadastrada.</p>
+          <p className="text-center text-muted-foreground py-8">
+            {isAdmin ? "Nenhuma credencial cadastrada." : "Nenhuma credencial liberada para você."}
+          </p>
         ) : (
           <div className="overflow-x-auto">
             <Table>
@@ -253,9 +321,7 @@ export function CredentialsManager() {
                             <Copy className="h-3 w-3" />
                           </Button>
                         </div>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">—</span>
-                      )}
+                      ) : <span className="text-muted-foreground text-sm">—</span>}
                     </TableCell>
                     <TableCell>
                       {cred.senha_encrypted ? (
@@ -270,27 +336,30 @@ export function CredentialsManager() {
                             <Copy className="h-3 w-3" />
                           </Button>
                         </div>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">—</span>
-                      )}
+                      ) : <span className="text-muted-foreground text-sm">—</span>}
                     </TableCell>
                     <TableCell>
                       {cred.url ? (
                         <a href={cred.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1 text-sm">
                           <ExternalLink className="h-3 w-3" /> Acessar
                         </a>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">—</span>
-                      )}
+                      ) : <span className="text-muted-foreground text-sm">—</span>}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => openEdit(cred)}>
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => { if (confirm("Excluir esta credencial?")) deleteMutation.mutate(cred.id); }}>
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
+                        {isAdmin && (
+                          <>
+                            <Button variant="ghost" size="icon" title="Gerenciar acessos" onClick={() => setAccessDialogCred(cred)}>
+                              <Users className="h-4 w-4 text-primary" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => openEdit(cred)}>
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => { if (confirm("Excluir esta credencial?")) deleteMutation.mutate(cred.id); }}>
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -299,6 +368,57 @@ export function CredentialsManager() {
             </Table>
           </div>
         )}
+
+        {/* Access management dialog */}
+        <Dialog open={!!accessDialogCred} onOpenChange={(v) => { if (!v) setAccessDialogCred(null); }}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5" />
+                Acessos: {accessDialogCred?.nome}
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground mb-4">
+              Selecione quais funcionários podem visualizar este login.
+            </p>
+            <div className="space-y-3 max-h-80 overflow-y-auto">
+              {!assignableMembers.length ? (
+                <p className="text-sm text-muted-foreground text-center py-4">Nenhum membro da equipe encontrado.</p>
+              ) : (
+                assignableMembers.map((member: any) => {
+                  const hasAccess = grantedUserIds.has(member.user_id);
+                  return (
+                    <div key={member.user_id} className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50">
+                      <div className="flex items-center gap-3">
+                        <Checkbox
+                          checked={hasAccess}
+                          onCheckedChange={(checked) => {
+                            if (accessDialogCred) {
+                              toggleAccessMutation.mutate({
+                                credentialId: accessDialogCred.id,
+                                userId: member.user_id,
+                                grant: !!checked,
+                              });
+                            }
+                          }}
+                        />
+                        <div>
+                          <p className="text-sm font-medium">{member.nome}</p>
+                          <p className="text-xs text-muted-foreground">{member.email} • {member.role}</p>
+                        </div>
+                      </div>
+                      {hasAccess && (
+                        <Badge variant="outline" className="text-xs bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-200">
+                          Liberado
+                        </Badge>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );
