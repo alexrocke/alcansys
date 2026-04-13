@@ -863,6 +863,38 @@ export type Database = {
           },
         ]
       }
+      credential_access: {
+        Row: {
+          created_at: string
+          credential_id: string
+          granted_by: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credential_id: string
+          granted_by?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credential_id?: string
+          granted_by?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credential_access_credential_id_fkey"
+            columns: ["credential_id"]
+            isOneToOne: false
+            referencedRelation: "company_credentials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           autor_id: string | null
