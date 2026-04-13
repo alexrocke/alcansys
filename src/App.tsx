@@ -31,6 +31,7 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import AtividadeLog from "./pages/AtividadeLog";
 import Checkout from "./pages/Checkout";
+import CofreInterno from "./pages/CofreInterno";
 import PortalDashboard from "./pages/portal/PortalDashboard";
 import PortalServicos from "./pages/portal/PortalServicos";
 import PortalAutomacoes from "./pages/portal/PortalAutomacoes";
@@ -79,6 +80,7 @@ function InternalLayout() {
               <Route path="/atividades" element={<AtividadeLog />} />
               <Route path="/vendedores" element={<Vendedores />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/cofre" element={<CofreInterno />} />
               {/* Admin can access portal and vendedor routes */}
               <Route path="/portal" element={<PortalDashboard />} />
               <Route path="/portal/servicos" element={<PortalServicos />} />

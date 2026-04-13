@@ -15,7 +15,8 @@ import {
   MessagesSquare,
   BadgeDollarSign,
   Activity,
-  CreditCard
+  CreditCard,
+  KeyRound
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import logoIcon from "@/assets/logo-icon.png";
@@ -64,6 +65,7 @@ const mainItems: MenuItem[] = [
 ];
 
 const settingsItems: MenuItem[] = [
+  { title: "Cofre Interno", url: "/cofre", pageKey: "configuracoes", icon: KeyRound },
   { title: "Configurações", url: "/configuracoes", pageKey: "configuracoes", icon: Settings },
   { title: "Atividades", url: "/atividades", pageKey: "atividades", icon: Activity },
 ];
