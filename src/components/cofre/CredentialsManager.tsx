@@ -124,7 +124,7 @@ async function decryptPassword(credentialId: string): Promise<string> {
 
 export function CredentialsManager() {
   const { currentCompany } = useCompany();
-  const { userRole, user } = useAuth();
+  const { userRole, user, loading, roleLoading } = useAuth();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<CredentialForm>(emptyForm);
@@ -135,6 +135,7 @@ export function CredentialsManager() {
   const [migrating, setMigrating] = useState(false);
 
   const isAdmin = userRole === "admin";
+  const canLoadAccessMembers = !!user && !loading && !roleLoading && isAdmin;
 
   const { data: credentials, isLoading } = useQuery({
     queryKey: ["company-credentials", currentCompany?.id],
@@ -178,10 +179,12 @@ export function CredentialsManager() {
     }
   }, [isAdmin, currentCompany?.id, credentials?.length]);
 
-  const { data: teamMembers } = useQuery({
-    queryKey: ["team-members-for-access", currentCompany?.id],
+  const { data: teamMembers, isLoading: isLoadingTeamMembers, error: teamMembersError } = useQuery({
+    queryKey: ["team-members-for-access", currentCompany?.id, user?.id, accessDialogCred?.id],
     queryFn: async () => {
       if (!currentCompany) return [];
+
+      await ensureVaultSession();
 
       const { data: memberships, error: membershipsError } = await supabase
         .from("memberships")
@@ -215,7 +218,8 @@ export function CredentialsManager() {
         };
       });
     },
-    enabled: !!currentCompany && isAdmin,
+    enabled: !!currentCompany && !!accessDialogCred && canLoadAccessMembers,
+    staleTime: 0,
   });
 
   const { data: accessGrants } = useQuery({
@@ -549,7 +553,13 @@ export function CredentialsManager() {
               Selecione quais funcionários podem visualizar este login.
             </p>
             <div className="space-y-3 max-h-80 overflow-y-auto">
-              {!assignableMembers.length ? (
+              {isLoadingTeamMembers ? (
+                <p className="text-sm text-muted-foreground text-center py-4">Carregando membros da equipe...</p>
+              ) : teamMembersError ? (
+                <p className="text-sm text-destructive text-center py-4">
+                  {teamMembersError instanceof Error ? teamMembersError.message : "Erro ao carregar membros da equipe."}
+                </p>
+              ) : !assignableMembers.length ? (
                 <p className="text-sm text-muted-foreground text-center py-4">Nenhum membro da equipe encontrado.</p>
               ) : (
                 assignableMembers.map((member: any) => {
