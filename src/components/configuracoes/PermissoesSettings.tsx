@@ -112,8 +112,6 @@ export function PermissoesSettings() {
   const selectedUserPages = selectedUserId
     ? (localUserPerms[selectedUserId] ?? null)
     : null;
-  const isProtected = selectedUser?.email === PROTECTED_EMAIL;
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
