@@ -166,7 +166,7 @@ export function CredentialsManager() {
       if (cred.id) {
         // If password field is empty, don't overwrite existing encrypted password
         if (!cred.senha) {
-          const { senha_encrypted, ...rest } = payload;
+          const { senha_encrypted: _removed, ...rest } = payload;
           const { error } = await supabase.from("company_credentials").update(rest).eq("id", cred.id);
           if (error) throw error;
         } else {
