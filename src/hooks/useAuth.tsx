@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -39,40 +39,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userStatus, setUserStatus] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Fetch user role and status after auth state changes
-        if (session?.user) {
-          setTimeout(() => {
-            fetchUserData(session.user.id);
-          }, 0);
-        } else {
-          setUserRole(null);
-          setUserStatus(null);
-        }
-      }
-    );
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        fetchUserData(session.user.id);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+  const clearAuthState = useCallback(() => {
+    setSession(null);
+    setUser(null);
+    setUserRole(null);
+    setUserStatus(null);
+    setRoleLoading(false);
   }, []);
 
-  const fetchUserData = async (userId: string) => {
+  const fetchUserData = useCallback(async (userId: string) => {
     setRoleLoading(true);
     try {
       const [profileResult, roleResult] = await Promise.all([
@@ -87,7 +62,70 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setRoleLoading(false);
     }
-  };
+  }, []);
+
+  const validateStoredSession = useCallback(async (storedSession: Session | null) => {
+    if (!storedSession) {
+      clearAuthState();
+      return;
+    }
+
+    const { data: { user: validatedUser }, error } = await supabase.auth.getUser();
+
+    if (error || !validatedUser) {
+      await supabase.auth.signOut({ scope: 'local' });
+      clearAuthState();
+      return;
+    }
+
+    setSession(storedSession);
+    setUser(validatedUser);
+    await fetchUserData(validatedUser.id);
+  }, [clearAuthState, fetchUserData]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!mounted) return;
+
+        if (!session) {
+          clearAuthState();
+          setLoading(false);
+          return;
+        }
+
+        setSession(session);
+        setUser(session.user ?? null);
+
+        if (event !== 'SIGNED_OUT' && session.user) {
+          setTimeout(() => {
+            if (mounted) {
+              fetchUserData(session.user.id);
+            }
+          }, 0);
+        }
+
+        setLoading(false);
+      }
+    );
+
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!mounted) return;
+
+      await validateStoredSession(session);
+
+      if (mounted) {
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [clearAuthState, fetchUserData, validateStoredSession]);
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -131,17 +169,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         variant: 'destructive',
       });
       throw error;
-function translateAuthError(msg: string): string {
-  const map: Record<string, string> = {
-    'User already registered': 'Este e-mail já possui uma conta. Tente fazer login.',
-    'Invalid login credentials': 'E-mail ou senha incorretos.',
-    'Email not confirmed': 'Confirme seu e-mail antes de entrar.',
-    'Password should be at least 6 characters': 'A senha deve ter pelo menos 6 caracteres.',
-    'Signup requires a valid password': 'Informe uma senha válida.',
-    'Unable to validate email address: invalid format': 'Formato de e-mail inválido.',
-  };
-  return map[msg] || msg;
-}
     }
 
     toast({

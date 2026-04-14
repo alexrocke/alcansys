@@ -46,28 +46,65 @@ interface CredentialForm {
 
 type CredentialCategory = "rede_social" | "aplicativo" | "email" | "hospedagem" | "dominio" | "outro";
 const emptyForm: CredentialForm = { categoria: "outro", nome: "", usuario: "", senha: "", url: "", notas: "" };
+const SESSION_EXPIRED_MESSAGE = "Sua sessão expirou. Faça login novamente para acessar o cofre.";
+
+async function ensureVaultSession() {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    await supabase.auth.signOut({ scope: 'local' });
+    throw new Error(SESSION_EXPIRED_MESSAGE);
+  }
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (!userError && user) {
+    return;
+  }
+
+  const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+
+  if (refreshError || !refreshData.session) {
+    await supabase.auth.signOut({ scope: 'local' });
+    throw new Error(SESSION_EXPIRED_MESSAGE);
+  }
+}
+
+async function invokeVault(body: Record<string, unknown>) {
+  await ensureVaultSession();
+
+  const { data, error } = await supabase.functions.invoke('vault-crypto', { body });
+
+  if (error) {
+    console.warn('Vault error:', error.message);
+
+    if (error.message?.includes('401') || error.message?.includes('Não autorizado')) {
+      await supabase.auth.signOut({ scope: 'local' });
+      throw new Error(SESSION_EXPIRED_MESSAGE);
+    }
+
+    throw new Error('Falha ao comunicar com o cofre seguro.');
+  }
+
+  if (data?.error) {
+    if (String(data.error).includes('Não autorizado')) {
+      await supabase.auth.signOut({ scope: 'local' });
+      throw new Error(SESSION_EXPIRED_MESSAGE);
+    }
+
+    throw new Error(data.error);
+  }
+
+  return data;
+}
 
 async function encryptPassword(password: string): Promise<string> {
-  const { data, error } = await supabase.functions.invoke('vault-crypto', {
-    body: { action: 'encrypt', password },
-  });
-  if (error) {
-    console.warn('Vault encrypt error:', error.message);
-    throw new Error('Falha ao criptografar. Tente novamente.');
-  }
-  if (data?.error) throw new Error(data.error);
+  const data = await invokeVault({ action: 'encrypt', password });
   return data.encrypted;
 }
 
 async function decryptPassword(credentialId: string): Promise<string> {
-  const { data, error } = await supabase.functions.invoke('vault-crypto', {
-    body: { action: 'decrypt', credential_id: credentialId },
-  });
-  if (error) {
-    console.warn('Vault decrypt error:', error.message);
-    throw new Error('Falha ao descriptografar. Tente recarregar a página.');
-  }
-  if (data?.error) throw new Error(data.error);
+  const data = await invokeVault({ action: 'decrypt', credential_id: credentialId });
   return data.password;
 }
 
@@ -106,14 +143,23 @@ export function CredentialsManager() {
       const hasAny = credentials.some((c: any) => c.senha_encrypted);
       if (hasAny) {
         setMigrating(true);
-        supabase.functions.invoke('vault-crypto', {
-          body: { action: 'migrate', company_id: currentCompany.id },
-        }).then(({ data }) => {
-          if (data?.migrated > 0) {
-            queryClient.invalidateQueries({ queryKey: ["company-credentials"] });
-            toast.success(`${data.migrated} senha(s) migrada(s) para criptografia segura`);
+
+        void (async () => {
+          try {
+            const data = await invokeVault({ action: 'migrate', company_id: currentCompany.id });
+
+            if (data?.migrated > 0) {
+              queryClient.invalidateQueries({ queryKey: ["company-credentials"] });
+              toast.success(`${data.migrated} senha(s) migrada(s) para criptografia segura`);
+            }
+          } catch (error) {
+            if (error instanceof Error && error.message === SESSION_EXPIRED_MESSAGE) {
+              toast.error(error.message);
+            }
+          } finally {
+            setMigrating(false);
           }
-        }).catch(() => {}).finally(() => setMigrating(false));
+        })();
       }
     }
   }, [isAdmin, currentCompany?.id, credentials?.length]);
@@ -190,7 +236,7 @@ export function CredentialsManager() {
       setOpen(false);
       setForm(emptyForm);
     },
-    onError: () => toast.error("Erro ao salvar credencial"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Erro ao salvar credencial"),
   });
 
   const deleteMutation = useMutation({
@@ -226,7 +272,7 @@ export function CredentialsManager() {
       queryClient.invalidateQueries({ queryKey: ["credential-access"] });
       toast.success("Acesso atualizado!");
     },
-    onError: () => toast.error("Erro ao atualizar acesso"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Erro ao atualizar acesso"),
   });
 
   const togglePassword = async (id: string) => {
@@ -244,8 +290,8 @@ export function CredentialsManager() {
     try {
       const password = await decryptPassword(id);
       setVisiblePasswords((prev) => ({ ...prev, [id]: password }));
-    } catch {
-      toast.error("Erro ao descriptografar senha");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao descriptografar senha");
     } finally {
       setLoadingPasswords((prev) => {
         const next = new Set(prev);
@@ -260,8 +306,8 @@ export function CredentialsManager() {
       const password = visiblePasswords[id] || await decryptPassword(id);
       navigator.clipboard.writeText(password);
       toast.success("Senha copiada!");
-    } catch {
-      toast.error("Erro ao copiar senha");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao copiar senha");
     }
   };
 
