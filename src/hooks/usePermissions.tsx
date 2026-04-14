@@ -115,6 +115,20 @@ export function usePermissions() {
   const currentRolePerms = rolePermissions || DEFAULT_PERMISSIONS;
   const currentUserPerms = userPermissions || {};
 
+  const getEffectiveRolePages = (role: string | null | undefined): string[] => {
+    if (!role) return [];
+
+    if (FULL_ACCESS_ROLES.includes(role as AppRole)) {
+      return ALL_PAGES.map((page) => page.key);
+    }
+
+    const configuredPages = currentRolePerms[role];
+    const defaultPages = DEFAULT_PERMISSIONS[role] || [];
+    const mergedPages = new Set([...(configuredPages || []), ...defaultPages]);
+
+    return Array.from(mergedPages);
+  };
+
   const hasPageAccess = (pageKey: string): boolean => {
     if (!userRole || !user) return false;
     // Admin always has full access (cannot be overridden)
@@ -125,8 +139,7 @@ export function usePermissions() {
       return userOverride.includes(pageKey);
     }
     // Fall back to role permissions
-    if (FULL_ACCESS_ROLES.includes(userRole as AppRole)) return true;
-    const rolePages = currentRolePerms[userRole] || DEFAULT_PERMISSIONS[userRole] || [];
+    const rolePages = getEffectiveRolePages(userRole);
     return rolePages.includes(pageKey);
   };
 
