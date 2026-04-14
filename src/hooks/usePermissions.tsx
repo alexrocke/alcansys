@@ -23,6 +23,7 @@ export const ALL_PAGES: PagePermission[] = [
   { key: "documentos", label: "Documentos" },
   { key: "vendedores", label: "Vendedores" },
   { key: "equipe", label: "Equipe" },
+  { key: "cofre", label: "Cofre Interno" },
   { key: "configuracoes", label: "Configurações" },
 ];
 
