@@ -34,7 +34,7 @@ const DEFAULT_PERMISSIONS: Record<string, string[]> = {
   gestor: ALL_PAGES.map(p => p.key),
   financeiro: ALL_PAGES.map(p => p.key),
   marketing: ["dashboard", "marketing", "leads", "automacoes", "conversas", "tarefas"],
-  colaborador: ["dashboard", "projetos", "documentos", "tarefas"],
+  colaborador: ["dashboard", "projetos", "documentos", "tarefas", "cofre"],
   vendedor: ["dashboard"],
 };
 
