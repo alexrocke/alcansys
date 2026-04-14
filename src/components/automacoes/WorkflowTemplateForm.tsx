@@ -2,14 +2,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Sparkles, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { WorkflowStepBuilder, type WorkflowStep } from './WorkflowStepBuilder';
 
@@ -33,6 +33,8 @@ interface Props {
 export function WorkflowTemplateForm({ template, onSuccess, onCancel }: Props) {
   const [features, setFeatures] = useState<string[]>(template?.features || []);
   const [newFeature, setNewFeature] = useState('');
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
   const [steps, setSteps] = useState<WorkflowStep[]>(
     (template?.config_schema as any)?.steps || []
   );
@@ -58,6 +60,32 @@ export function WorkflowTemplateForm({ template, onSuccess, onCancel }: Props) {
 
   const removeFeature = (index: number) => {
     setFeatures(features.filter((_, i) => i !== index));
+  };
+
+  const generateWithAI = async () => {
+    if (!aiPrompt.trim()) {
+      toast({ title: 'Digite um prompt para gerar o workflow', variant: 'destructive' });
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-workflow', {
+        body: { prompt: aiPrompt.trim() },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (data?.steps?.length) {
+        setSteps(data.steps);
+        toast({ title: `✨ Workflow gerado com ${data.steps.length} etapas!` });
+        setAiPrompt('');
+      } else {
+        toast({ title: 'IA não retornou etapas válidas', variant: 'destructive' });
+      }
+    } catch (err: any) {
+      toast({ title: 'Erro ao gerar workflow', description: err.message, variant: 'destructive' });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const onSubmit = async (data: FormData) => {
@@ -156,6 +184,41 @@ export function WorkflowTemplateForm({ template, onSuccess, onCancel }: Props) {
       </div>
 
       <Separator />
+
+      {/* AI Workflow Generator */}
+      <div className="space-y-3 p-4 rounded-xl border-2 border-dashed border-primary/30 bg-primary/5">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-primary" />
+          <Label className="text-base font-semibold text-primary">Gerar Workflow com IA</Label>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Descreva o que o workflow deve fazer e a IA vai gerar as etapas automaticamente para você revisar e ajustar.
+        </p>
+        <Textarea
+          value={aiPrompt}
+          onChange={(e) => setAiPrompt(e.target.value)}
+          placeholder="Ex: Crie um fluxo de atendimento que recebe o cliente, pergunta o que precisa, processa com IA, e se não resolver transfere para um humano..."
+          rows={3}
+          maxLength={2000}
+          disabled={isGenerating}
+        />
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] text-muted-foreground">{aiPrompt.length}/2000</span>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={generateWithAI}
+            disabled={isGenerating || !aiPrompt.trim()}
+            className="gap-2 border-primary/40 text-primary hover:bg-primary/10"
+          >
+            {isGenerating ? (
+              <><Loader2 className="h-4 w-4 animate-spin" /> Gerando...</>
+            ) : (
+              <><Sparkles className="h-4 w-4" /> Gerar Workflow</>
+            )}
+          </Button>
+        </div>
+      </div>
 
       {/* Workflow Step Builder */}
       <WorkflowStepBuilder steps={steps} onChange={setSteps} />
