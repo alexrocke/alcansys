@@ -336,9 +336,10 @@ export default function WhatsApp() {
         ) : error ? (
           <Card>
             <CardContent className="py-12 flex flex-col items-center gap-4">
-              <AlertCircle className="h-10 w-10 text-destructive" />
-              <p className="text-destructive font-medium">{error}</p>
-              <Button onClick={() => { setLoading(true); setError(""); loadInstance(); }}>Tentar novamente</Button>
+              <Smartphone className="h-10 w-10 text-muted-foreground" />
+              <p className="text-foreground font-medium">Instância não encontrada</p>
+              <p className="text-sm text-muted-foreground text-center">Não foi possível localizar sua instância WhatsApp. Clique abaixo para criar uma nova.</p>
+              <Button onClick={() => { setLoading(true); setError(""); loadInstance(); }}>Criar Instância</Button>
             </CardContent>
           </Card>
         ) : (
