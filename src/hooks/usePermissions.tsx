@@ -23,6 +23,7 @@ export const ALL_PAGES: PagePermission[] = [
   { key: "documentos", label: "Documentos" },
   { key: "vendedores", label: "Vendedores" },
   { key: "equipe", label: "Equipe" },
+  { key: "cofre", label: "Cofre Interno" },
   { key: "configuracoes", label: "Configurações" },
 ];
 
@@ -33,7 +34,7 @@ const DEFAULT_PERMISSIONS: Record<string, string[]> = {
   gestor: ALL_PAGES.map(p => p.key),
   financeiro: ALL_PAGES.map(p => p.key),
   marketing: ["dashboard", "marketing", "leads", "automacoes", "conversas", "tarefas"],
-  colaborador: ["dashboard", "projetos", "documentos", "tarefas"],
+  colaborador: ["dashboard", "projetos", "documentos", "tarefas", "cofre"],
   vendedor: ["dashboard"],
 };
 

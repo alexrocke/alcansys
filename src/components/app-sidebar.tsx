@@ -65,7 +65,7 @@ const mainItems: MenuItem[] = [
 ];
 
 const settingsItems: MenuItem[] = [
-  { title: "Cofre Interno", url: "/cofre", pageKey: "configuracoes", icon: KeyRound },
+  { title: "Cofre Interno", url: "/cofre", pageKey: "cofre", icon: KeyRound },
   { title: "Configurações", url: "/configuracoes", pageKey: "configuracoes", icon: Settings },
   { title: "Atividades", url: "/atividades", pageKey: "atividades", icon: Activity },
 ];
