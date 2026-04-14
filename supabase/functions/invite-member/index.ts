@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { email, nome, roles } = await req.json();
+    const { email, nome, roles, company_id } = await req.json();
 
     if (!email || !nome) {
       return new Response(JSON.stringify({ error: "Email e nome são obrigatórios" }), {
@@ -99,6 +99,16 @@ Deno.serve(async (req) => {
         role,
       }));
       await adminClient.from("user_roles").insert(roleInserts);
+    }
+
+    // Create company membership
+    if (company_id) {
+      const membershipRole = roles?.includes('admin') ? 'admin' : roles?.includes('gestor') ? 'gestor' : 'member';
+      await adminClient.from("memberships").insert({
+        user_id: userId,
+        company_id,
+        role: membershipRole,
+      });
     }
 
     // Generate recovery link and get the action_link

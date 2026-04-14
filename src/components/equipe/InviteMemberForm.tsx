@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useCompany } from '@/hooks/useCompany';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -31,6 +32,7 @@ interface InviteMemberFormProps {
 }
 
 export function InviteMemberForm({ onSuccess, onCancel }: InviteMemberFormProps) {
+  const { currentCompany } = useCompany();
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -63,6 +65,7 @@ export function InviteMemberForm({ onSuccess, onCancel }: InviteMemberFormProps)
           email: data.email,
           nome: data.nome,
           roles: selectedRoles,
+          company_id: currentCompany?.id,
         },
       });
 
