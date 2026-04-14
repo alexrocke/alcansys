@@ -81,6 +81,21 @@ export default function WhatsApp() {
     lockRef.current = true;
     try {
       setError("");
+      const data = await callManageFunction("get");
+      setInstance(data.instance || null);
+      if (data.instance && !data.instance.is_connected) await fetchQrCode();
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+      lockRef.current = false;
+    }
+  }, [callManageFunction]);
+
+  const createInstance = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
       const data = await callManageFunction("get-or-create");
       setInstance(data.instance);
       if (data.is_new) sonnerToast.success("Instância WhatsApp criada!");
@@ -89,7 +104,6 @@ export default function WhatsApp() {
       setError(e.message);
     } finally {
       setLoading(false);
-      lockRef.current = false;
     }
   }, [callManageFunction]);
 

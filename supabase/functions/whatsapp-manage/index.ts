@@ -46,9 +46,20 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const { action } = body;
 
-    const validActions = ["get-or-create", "qrcode", "disconnect", "delete"];
+    const validActions = ["get", "get-or-create", "qrcode", "disconnect", "delete"];
     if (!action || !validActions.includes(action)) {
       return json({ error: "Ação inválida. Use: " + validActions.join(", ") }, 400);
+    }
+
+    // ── GET (read-only, no creation) ──
+    if (action === "get") {
+      const { data: existing } = await adminClient
+        .from("whatsapp_instances")
+        .select("id, instance_name, device_name, server_url, status, is_connected, phone_number, last_connection_at, created_at")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      return json({ instance: existing || null, is_new: false });
     }
 
     // ── GET-OR-CREATE ──
