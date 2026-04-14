@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
     const userId = user.id;
 
     const body = await req.json();
-    const { company_id, valor, descricao, method, payer_email, payer_name, invoice_id } = body;
+    const { company_id, valor, descricao, method, payer_email, payer_name, invoice_id, automation_provision } = body;
 
     // Validate
     if (!company_id || !valor || !descricao || !method) {
