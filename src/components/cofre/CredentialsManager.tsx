@@ -51,7 +51,10 @@ async function encryptPassword(password: string): Promise<string> {
   const { data, error } = await supabase.functions.invoke('vault-crypto', {
     body: { action: 'encrypt', password },
   });
-  if (error) throw error;
+  if (error) {
+    console.warn('Vault encrypt error:', error.message);
+    throw new Error('Falha ao criptografar. Tente novamente.');
+  }
   if (data?.error) throw new Error(data.error);
   return data.encrypted;
 }
@@ -60,7 +63,10 @@ async function decryptPassword(credentialId: string): Promise<string> {
   const { data, error } = await supabase.functions.invoke('vault-crypto', {
     body: { action: 'decrypt', credential_id: credentialId },
   });
-  if (error) throw error;
+  if (error) {
+    console.warn('Vault decrypt error:', error.message);
+    throw new Error('Falha ao descriptografar. Tente recarregar a página.');
+  }
   if (data?.error) throw new Error(data.error);
   return data.password;
 }
