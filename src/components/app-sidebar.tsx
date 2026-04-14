@@ -88,7 +88,7 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r border-border">
       <SidebarContent>
-        <div className={`${open ? 'px-4 py-1' : 'px-2 py-1 flex justify-center'}`}>
+        <div className={`${open ? 'px-4 -my-2' : 'px-2 -my-1 flex justify-center'}`}>
           <div className={`flex items-center ${open ? 'justify-between' : 'justify-center'} gap-2`}>
             <img src={logoIcon} alt="Scalefy" className={`${open ? 'h-24 w-24' : 'w-10 h-10'} shrink-0 object-contain`} />
             {open && <NotificationBell />}
