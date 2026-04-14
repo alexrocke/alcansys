@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
     const userId = user.id;
 
     const body = await req.json();
-    const { company_id, valor, descricao, method, payer_email, payer_name, invoice_id } = body;
+    const { company_id, valor, descricao, method, payer_email, payer_name, invoice_id, automation_provision } = body;
 
     // Validate
     if (!company_id || !valor || !descricao || !method) {
@@ -140,7 +140,7 @@ Deno.serve(async (req) => {
         external_reference: externalRef,
         invoice_id: invoice_id || null,
         status: "pending",
-        metadata: { init_point: prefData.init_point, sandbox_init_point: prefData.sandbox_init_point },
+        metadata: { init_point: prefData.init_point, sandbox_init_point: prefData.sandbox_init_point, ...(automation_provision ? { automation_provision } : {}) },
       }).select().single();
 
       if (dbErr) throw dbErr;
@@ -189,7 +189,7 @@ Deno.serve(async (req) => {
       pix_qr_code: pixQr,
       pix_qr_code_base64: pixQrBase64,
       boleto_url: boletoUrl,
-      metadata: mpData,
+      metadata: { ...mpData, ...(automation_provision ? { automation_provision } : {}) },
     }).select().single();
 
     if (dbErr) throw dbErr;

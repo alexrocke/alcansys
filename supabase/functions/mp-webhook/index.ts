@@ -28,14 +28,12 @@ Deno.serve(async (req) => {
       return new Response("OK", { status: 200 });
     }
 
-    // Validate type is one of expected MP event types
     const validTypes = ["payment", "subscription_preapproval", "subscription_authorized_payment", "plan", "subscription", "invoice", "point_integration_wh"];
     if (!validTypes.includes(type)) {
       console.warn(`MP webhook: unexpected event type: ${type}`);
       return new Response("OK", { status: 200 });
     }
 
-    // Validate data.id format (MP uses numeric IDs)
     const dataId = String(data.id);
     if (!/^\d{1,20}$/.test(dataId)) {
       console.warn(`MP webhook: invalid data.id format: ${dataId}`);
@@ -48,7 +46,7 @@ Deno.serve(async (req) => {
       return new Response("OK", { status: 200 });
     }
 
-    // Handle payment events - always verify with MP API (prevents spoofed webhooks)
+    // Handle payment events
     if (type === "payment") {
       const mpRes = await fetch(`https://api.mercadopago.com/v1/payments/${dataId}`, {
         headers: { Authorization: `Bearer ${MP_TOKEN}` },
@@ -68,7 +66,6 @@ Deno.serve(async (req) => {
         return new Response("OK", { status: 200 });
       }
 
-      // Map MP status to our status
       const statusMap: Record<string, string> = {
         approved: "approved",
         pending: "pending",
@@ -82,7 +79,7 @@ Deno.serve(async (req) => {
       const newStatus = statusMap[mpPayment.status] || mpPayment.status;
 
       // Update payment in DB
-      const { error: updateErr } = await supabaseAdmin
+      const { data: updatedPayment, error: updateErr } = await supabaseAdmin
         .from("payments")
         .update({
           status: newStatus,
@@ -91,9 +88,66 @@ Deno.serve(async (req) => {
           method: mpPayment.payment_method_id || null,
           metadata: mpPayment,
         })
-        .eq("external_reference", extRef);
+        .eq("external_reference", extRef)
+        .select()
+        .single();
 
       if (updateErr) console.error("Error updating payment:", updateErr);
+
+      // AUTO-PROVISION: If payment approved and has automation metadata, create client_automation
+      if (newStatus === "approved" && updatedPayment) {
+        const meta = updatedPayment.metadata as Record<string, unknown> | null;
+        const automationMeta = meta?.automation_provision as Record<string, unknown> | undefined;
+
+        if (automationMeta) {
+          const templateIds: string[] = (automationMeta.template_ids as string[]) || [];
+          const companyId = updatedPayment.company_id;
+          const promptTemplate = (automationMeta.prompt_template as string) || null;
+
+          console.log(`Auto-provisioning ${templateIds.length} automation(s) for company ${companyId}`);
+
+          for (const templateId of templateIds) {
+            // Check if automation already exists for this company+template
+            const { data: existing } = await supabaseAdmin
+              .from("client_automations")
+              .select("id")
+              .eq("company_id", companyId)
+              .eq("template_id", templateId)
+              .maybeSingle();
+
+            if (!existing) {
+              const { error: insertErr } = await supabaseAdmin
+                .from("client_automations")
+                .insert({
+                  company_id: companyId,
+                  template_id: templateId,
+                  prompt: promptTemplate,
+                  status: "configurando",
+                  config: {
+                    auto_provisioned: true,
+                    payment_id: updatedPayment.id,
+                    provisioned_at: new Date().toISOString(),
+                  },
+                });
+
+              if (insertErr) {
+                console.error(`Error provisioning automation for template ${templateId}:`, insertErr);
+              } else {
+                console.log(`Automation provisioned: template ${templateId} for company ${companyId}`);
+              }
+            } else {
+              console.log(`Automation already exists for template ${templateId}, skipping`);
+            }
+          }
+
+          // Create alert for the company
+          await supabaseAdmin.from("alerts").insert({
+            tipo: "informativo",
+            mensagem: `Automação contratada com sucesso! Configure seu WhatsApp e prompts para ativar.`,
+            company_id: companyId,
+          });
+        }
+      }
 
       // Log
       await supabaseAdmin.from("payment_logs").insert({
