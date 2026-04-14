@@ -39,6 +39,9 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useCompany } from "@/hooks/useCompany";
 
 interface MenuItem {
   title: string;
@@ -73,9 +76,42 @@ const settingsItems: MenuItem[] = [
 export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
+  const { currentCompany } = useCompany();
   const { hasPageAccess } = usePermissions();
   const currentPath = location.pathname;
+
+  const { data: hasGrantedVaultAccess = false } = useQuery({
+    queryKey: ['sidebar-vault-access', currentCompany?.id, user?.id],
+    queryFn: async () => {
+      if (!currentCompany || !user) return false;
+
+      const { data: grants, error: grantsError } = await supabase
+        .from('credential_access')
+        .select('credential_id')
+        .eq('user_id', user.id);
+
+      if (grantsError) throw grantsError;
+
+      const credentialIds = (grants || [])
+        .map((grant) => grant.credential_id)
+        .filter(Boolean);
+
+      if (!credentialIds.length) return false;
+
+      const { data: companyCredentials, error: credentialsError } = await supabase
+        .from('company_credentials')
+        .select('id')
+        .eq('company_id', currentCompany.id)
+        .in('id', credentialIds)
+        .limit(1);
+
+      if (credentialsError) throw credentialsError;
+
+      return (companyCredentials?.length || 0) > 0;
+    },
+    enabled: !!currentCompany && !!user,
+  });
 
   const isActive = (path: string) => {
     if (path === "/dashboard") return currentPath === "/dashboard";
@@ -83,7 +119,13 @@ export function AppSidebar() {
   };
 
   const visibleMain = mainItems.filter((item) => hasPageAccess(item.pageKey));
-  const visibleSettings = settingsItems.filter((item) => hasPageAccess(item.pageKey));
+  const visibleSettings = settingsItems.filter((item) => {
+    if (item.pageKey === 'cofre') {
+      return hasPageAccess(item.pageKey) || hasGrantedVaultAccess;
+    }
+
+    return hasPageAccess(item.pageKey);
+  });
 
   return (
     <Sidebar className="border-r border-border">
