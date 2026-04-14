@@ -140,7 +140,7 @@ Deno.serve(async (req) => {
         external_reference: externalRef,
         invoice_id: invoice_id || null,
         status: "pending",
-        metadata: { init_point: prefData.init_point, sandbox_init_point: prefData.sandbox_init_point },
+        metadata: { init_point: prefData.init_point, sandbox_init_point: prefData.sandbox_init_point, ...(automation_provision ? { automation_provision } : {}) },
       }).select().single();
 
       if (dbErr) throw dbErr;
@@ -189,7 +189,7 @@ Deno.serve(async (req) => {
       pix_qr_code: pixQr,
       pix_qr_code_base64: pixQrBase64,
       boleto_url: boletoUrl,
-      metadata: mpData,
+      metadata: { ...mpData, ...(automation_provision ? { automation_provision } : {}) },
     }).select().single();
 
     if (dbErr) throw dbErr;
