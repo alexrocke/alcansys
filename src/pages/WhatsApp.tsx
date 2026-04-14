@@ -81,6 +81,21 @@ export default function WhatsApp() {
     lockRef.current = true;
     try {
       setError("");
+      const data = await callManageFunction("get");
+      setInstance(data.instance || null);
+      if (data.instance && !data.instance.is_connected) await fetchQrCode();
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+      lockRef.current = false;
+    }
+  }, [callManageFunction]);
+
+  const createInstance = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
       const data = await callManageFunction("get-or-create");
       setInstance(data.instance);
       if (data.is_new) sonnerToast.success("Instância WhatsApp criada!");
@@ -89,7 +104,6 @@ export default function WhatsApp() {
       setError(e.message);
     } finally {
       setLoading(false);
-      lockRef.current = false;
     }
   }, [callManageFunction]);
 
@@ -149,7 +163,7 @@ export default function WhatsApp() {
     if (!instance || instance.is_connected) return;
     const interval = setInterval(async () => {
       try {
-        const data = await callManageFunction("get-or-create");
+        const data = await callManageFunction("get");
         if (data?.instance?.is_connected) {
           setInstance(data.instance);
           setQrCode("");
@@ -339,7 +353,7 @@ export default function WhatsApp() {
               <Smartphone className="h-10 w-10 text-muted-foreground" />
               <p className="text-foreground font-medium">Instância não encontrada</p>
               <p className="text-sm text-muted-foreground text-center">Não foi possível localizar sua instância WhatsApp. Clique abaixo para criar uma nova.</p>
-              <Button onClick={() => { setLoading(true); setError(""); loadInstance(); }}>Criar Instância</Button>
+              <Button onClick={createInstance}>Criar Instância</Button>
             </CardContent>
           </Card>
         ) : (
@@ -347,7 +361,7 @@ export default function WhatsApp() {
             <CardContent className="py-12 flex flex-col items-center gap-4">
               <Smartphone className="h-12 w-12 text-muted-foreground" />
               <p className="text-muted-foreground">Nenhuma instância encontrada.</p>
-              <Button onClick={() => { setLoading(true); loadInstance(); }}>Criar Instância</Button>
+              <Button onClick={createInstance}>Criar Instância</Button>
             </CardContent>
           </Card>
         )}
