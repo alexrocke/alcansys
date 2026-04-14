@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
-type AppRole = 'admin' | 'gestor' | 'colaborador' | 'financeiro' | 'marketing' | 'vendedor';
+type AppRole = 'admin' | 'gestor' | 'colaborador' | 'usuario' | 'financeiro' | 'marketing' | 'vendedor';
 
 export interface PagePermission {
   key: string;
@@ -35,6 +35,7 @@ const DEFAULT_PERMISSIONS: Record<string, string[]> = {
   financeiro: ALL_PAGES.map(p => p.key),
   marketing: ["dashboard", "marketing", "leads", "automacoes", "conversas", "tarefas"],
   colaborador: ["dashboard", "projetos", "documentos", "tarefas", "cofre"],
+  usuario: ["dashboard", "projetos", "documentos", "tarefas", "cofre"],
   vendedor: ["dashboard"],
 };
 
@@ -125,7 +126,7 @@ export function usePermissions() {
     }
     // Fall back to role permissions
     if (FULL_ACCESS_ROLES.includes(userRole as AppRole)) return true;
-    const rolePages = currentRolePerms[userRole] || [];
+    const rolePages = currentRolePerms[userRole] || DEFAULT_PERMISSIONS[userRole] || [];
     return rolePages.includes(pageKey);
   };
 

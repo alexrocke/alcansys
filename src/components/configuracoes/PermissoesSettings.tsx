@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 const CONFIGURABLE_ROLES = [
   { value: "marketing", label: "Marketing" },
   { value: "colaborador", label: "Colaborador" },
+  { value: "usuario", label: "Colaborador (legado)" },
 ];
 
 const FULL_ACCESS_DISPLAY = [
@@ -111,8 +112,6 @@ export function PermissoesSettings() {
   const selectedUserPages = selectedUserId
     ? (localUserPerms[selectedUserId] ?? null)
     : null;
-  const isProtected = selectedUser?.email === PROTECTED_EMAIL;
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">

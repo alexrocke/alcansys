@@ -58,6 +58,7 @@ const roleLabels: Record<string, string> = {
   financeiro: 'Financeiro',
   marketing: 'Marketing',
   colaborador: 'Colaborador',
+  usuario: 'Colaborador',
   vendedor: 'Vendedor',
 };
 
