@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 const CONFIGURABLE_ROLES = [
   { value: "marketing", label: "Marketing" },
   { value: "colaborador", label: "Colaborador" },
+  { value: "usuario", label: "Colaborador (legado)" },
 ];
 
 const FULL_ACCESS_DISPLAY = [
