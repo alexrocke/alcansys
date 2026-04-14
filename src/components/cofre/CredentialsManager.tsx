@@ -49,7 +49,7 @@ const emptyForm: CredentialForm = { categoria: "outro", nome: "", usuario: "", s
 const SESSION_EXPIRED_MESSAGE = "Sua sessão expirou. Faça login novamente para acessar o cofre.";
 
 async function ensureVaultSession() {
-  const { data: { session } } = await supabase.auth.getSession();
+  let { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {
     await supabase.auth.signOut({ scope: 'local' });
@@ -68,12 +68,26 @@ async function ensureVaultSession() {
     await supabase.auth.signOut({ scope: 'local' });
     throw new Error(SESSION_EXPIRED_MESSAGE);
   }
+
+  session = refreshData.session;
+
+  if (!session?.access_token) {
+    await supabase.auth.signOut({ scope: 'local' });
+    throw new Error(SESSION_EXPIRED_MESSAGE);
+  }
+
+  return session;
 }
 
 async function invokeVault(body: Record<string, unknown>) {
-  await ensureVaultSession();
+  const session = await ensureVaultSession();
 
-  const { data, error } = await supabase.functions.invoke('vault-crypto', { body });
+  const { data, error } = await supabase.functions.invoke('vault-crypto', {
+    body,
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+    },
+  });
 
   if (error) {
     console.warn('Vault error:', error.message);
@@ -168,17 +182,38 @@ export function CredentialsManager() {
     queryKey: ["team-members-for-access", currentCompany?.id],
     queryFn: async () => {
       if (!currentCompany) return [];
-      const { data, error } = await supabase
+
+      const { data: memberships, error: membershipsError } = await supabase
         .from("memberships")
-        .select("user_id, role, profiles(id, nome, email)")
+        .select("user_id, role")
         .eq("company_id", currentCompany.id);
-      if (error) throw error;
-      return (data || []).map((m: any) => ({
-        user_id: m.user_id,
-        role: m.role,
-        nome: m.profiles?.nome || "Sem nome",
-        email: m.profiles?.email || "",
-      }));
+
+      if (membershipsError) throw membershipsError;
+
+      const membershipRows = memberships || [];
+      const userIds = membershipRows.map((member: any) => member.user_id).filter(Boolean);
+
+      if (!userIds.length) return [];
+
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, nome, email")
+        .in("id", userIds);
+
+      if (profilesError) throw profilesError;
+
+      const profileMap = new Map((profiles || []).map((profile: any) => [profile.id, profile]));
+
+      return membershipRows.map((member: any) => {
+        const profile = profileMap.get(member.user_id);
+
+        return {
+          user_id: member.user_id,
+          role: member.role,
+          nome: profile?.nome || "Sem nome",
+          email: profile?.email || "",
+        };
+      });
     },
     enabled: !!currentCompany && isAdmin,
   });
