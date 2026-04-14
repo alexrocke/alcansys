@@ -101,6 +101,16 @@ Deno.serve(async (req) => {
       await adminClient.from("user_roles").insert(roleInserts);
     }
 
+    // Create company membership
+    if (company_id) {
+      const membershipRole = roles?.includes('admin') ? 'admin' : roles?.includes('gestor') ? 'gestor' : 'member';
+      await adminClient.from("memberships").insert({
+        user_id: userId,
+        company_id,
+        role: membershipRole,
+      });
+    }
+
     // Generate recovery link and get the action_link
     const { data: linkData, error: linkError } = await adminClient.auth.admin.generateLink({
       type: "recovery",
