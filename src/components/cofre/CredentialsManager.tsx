@@ -59,7 +59,7 @@ async function ensureVaultSession() {
   const { data: { user }, error: userError } = await supabase.auth.getUser();
 
   if (!userError && user) {
-    return;
+    return session;
   }
 
   const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
