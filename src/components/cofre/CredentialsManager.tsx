@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCompany } from "@/hooks/useCompany";
@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Pencil, Trash2, Eye, EyeOff, KeyRound, ExternalLink, Copy, Users, ShieldCheck } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, KeyRound, ExternalLink, Copy, Users, ShieldCheck, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 const CATEGORIES = [
@@ -47,15 +47,35 @@ interface CredentialForm {
 type CredentialCategory = "rede_social" | "aplicativo" | "email" | "hospedagem" | "dominio" | "outro";
 const emptyForm: CredentialForm = { categoria: "outro", nome: "", usuario: "", senha: "", url: "", notas: "" };
 
+async function encryptPassword(password: string): Promise<string> {
+  const { data, error } = await supabase.functions.invoke('vault-crypto', {
+    body: { action: 'encrypt', password },
+  });
+  if (error) throw error;
+  if (data?.error) throw new Error(data.error);
+  return data.encrypted;
+}
+
+async function decryptPassword(credentialId: string): Promise<string> {
+  const { data, error } = await supabase.functions.invoke('vault-crypto', {
+    body: { action: 'decrypt', credential_id: credentialId },
+  });
+  if (error) throw error;
+  if (data?.error) throw new Error(data.error);
+  return data.password;
+}
+
 export function CredentialsManager() {
   const { currentCompany } = useCompany();
   const { userRole, user } = useAuth();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<CredentialForm>(emptyForm);
-  const [visiblePasswords, setVisiblePasswords] = useState<Set<string>>(new Set());
+  const [visiblePasswords, setVisiblePasswords] = useState<Record<string, string>>({});
+  const [loadingPasswords, setLoadingPasswords] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState("");
   const [accessDialogCred, setAccessDialogCred] = useState<any>(null);
+  const [migrating, setMigrating] = useState(false);
 
   const isAdmin = userRole === "admin";
 
@@ -74,7 +94,24 @@ export function CredentialsManager() {
     enabled: !!currentCompany,
   });
 
-  // Fetch team members for access management
+  // Migrate existing plain text passwords on first load (admin only)
+  useEffect(() => {
+    if (isAdmin && currentCompany && credentials && credentials.length > 0 && !migrating) {
+      const hasAny = credentials.some((c: any) => c.senha_encrypted);
+      if (hasAny) {
+        setMigrating(true);
+        supabase.functions.invoke('vault-crypto', {
+          body: { action: 'migrate', company_id: currentCompany.id },
+        }).then(({ data }) => {
+          if (data?.migrated > 0) {
+            queryClient.invalidateQueries({ queryKey: ["company-credentials"] });
+            toast.success(`${data.migrated} senha(s) migrada(s) para criptografia segura`);
+          }
+        }).catch(() => {}).finally(() => setMigrating(false));
+      }
+    }
+  }, [isAdmin, currentCompany?.id, credentials?.length]);
+
   const { data: teamMembers } = useQuery({
     queryKey: ["team-members-for-access", currentCompany?.id],
     queryFn: async () => {
@@ -94,7 +131,6 @@ export function CredentialsManager() {
     enabled: !!currentCompany && isAdmin,
   });
 
-  // Fetch access grants for the selected credential
   const { data: accessGrants } = useQuery({
     queryKey: ["credential-access", accessDialogCred?.id],
     queryFn: async () => {
@@ -112,18 +148,31 @@ export function CredentialsManager() {
   const saveMutation = useMutation({
     mutationFn: async (cred: CredentialForm) => {
       if (!currentCompany) throw new Error("Sem empresa");
+      
+      let encryptedPassword: string | null = null;
+      if (cred.senha) {
+        encryptedPassword = await encryptPassword(cred.senha);
+      }
+
       const payload = {
         company_id: currentCompany.id,
         categoria: cred.categoria as CredentialCategory,
         nome: cred.nome,
         usuario: cred.usuario || null,
-        senha_encrypted: cred.senha || null,
+        senha_encrypted: encryptedPassword,
         url: cred.url || null,
         notas: cred.notas || null,
       };
       if (cred.id) {
-        const { error } = await supabase.from("company_credentials").update(payload).eq("id", cred.id);
-        if (error) throw error;
+        // If password field is empty, don't overwrite existing encrypted password
+        if (!cred.senha) {
+          const { senha_encrypted, ...rest } = payload;
+          const { error } = await supabase.from("company_credentials").update(rest).eq("id", cred.id);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase.from("company_credentials").update(payload).eq("id", cred.id);
+          if (error) throw error;
+        }
       } else {
         const { error } = await supabase.from("company_credentials").insert(payload);
         if (error) throw error;
@@ -131,7 +180,7 @@ export function CredentialsManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["company-credentials"] });
-      toast.success("Credencial salva com sucesso!");
+      toast.success("Credencial salva com criptografia!");
       setOpen(false);
       setForm(emptyForm);
     },
@@ -174,12 +223,40 @@ export function CredentialsManager() {
     onError: () => toast.error("Erro ao atualizar acesso"),
   });
 
-  const togglePassword = (id: string) => {
-    setVisiblePasswords((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
+  const togglePassword = async (id: string) => {
+    if (visiblePasswords[id]) {
+      // Hide password
+      setVisiblePasswords((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      return;
+    }
+    // Decrypt and show
+    setLoadingPasswords((prev) => new Set(prev).add(id));
+    try {
+      const password = await decryptPassword(id);
+      setVisiblePasswords((prev) => ({ ...prev, [id]: password }));
+    } catch {
+      toast.error("Erro ao descriptografar senha");
+    } finally {
+      setLoadingPasswords((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  };
+
+  const copyPassword = async (id: string) => {
+    try {
+      const password = visiblePasswords[id] || await decryptPassword(id);
+      navigator.clipboard.writeText(password);
+      toast.success("Senha copiada!");
+    } catch {
+      toast.error("Erro ao copiar senha");
+    }
   };
 
   const copyToClipboard = (text: string, label: string) => {
@@ -190,7 +267,7 @@ export function CredentialsManager() {
   const openEdit = (cred: any) => {
     setForm({
       id: cred.id, categoria: cred.categoria, nome: cred.nome,
-      usuario: cred.usuario || "", senha: cred.senha_encrypted || "",
+      usuario: cred.usuario || "", senha: "",
       url: cred.url || "", notas: cred.notas || "",
     });
     setOpen(true);
@@ -203,7 +280,6 @@ export function CredentialsManager() {
   );
 
   const grantedUserIds = new Set((accessGrants || []).map((a: any) => a.user_id));
-  // Filter out current admin from the access list
   const assignableMembers = (teamMembers || []).filter((m: any) => m.user_id !== user?.id);
 
   return (
@@ -214,10 +290,14 @@ export function CredentialsManager() {
             <CardTitle className="flex items-center gap-2">
               <KeyRound className="h-5 w-5" />
               Credenciais & Logins
+              <Badge variant="outline" className="ml-2 text-xs bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-200">
+                <Lock className="h-3 w-3 mr-1" />
+                Criptografia AES-256
+              </Badge>
             </CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
               {isAdmin
-                ? "Gerencie credenciais e controle quais funcionários têm acesso a cada login."
+                ? "Senhas protegidas com criptografia de ponta. Gerencie credenciais e controle acessos."
                 : "Visualize os logins que foram liberados para você pelo administrador."}
             </p>
           </div>
@@ -254,7 +334,7 @@ export function CredentialsManager() {
                       <Input value={form.usuario} onChange={(e) => setForm({ ...form, usuario: e.target.value })} placeholder="email@exemplo.com" />
                     </div>
                     <div>
-                      <Label>Senha</Label>
+                      <Label>Senha {form.id ? "(deixe vazio para manter)" : ""}</Label>
                       <Input type="password" value={form.senha} onChange={(e) => setForm({ ...form, senha: e.target.value })} placeholder="••••••••" />
                     </div>
                   </div>
@@ -267,7 +347,7 @@ export function CredentialsManager() {
                     <Textarea value={form.notas} onChange={(e) => setForm({ ...form, notas: e.target.value })} rows={2} />
                   </div>
                   <Button type="submit" className="w-full" disabled={saveMutation.isPending}>
-                    {saveMutation.isPending ? "Salvando..." : "Salvar"}
+                    {saveMutation.isPending ? "Criptografando e salvando..." : "Salvar com Criptografia"}
                   </Button>
                 </form>
               </DialogContent>
@@ -327,12 +407,12 @@ export function CredentialsManager() {
                       {cred.senha_encrypted ? (
                         <div className="flex items-center gap-1">
                           <span className="text-sm font-mono">
-                            {visiblePasswords.has(cred.id) ? cred.senha_encrypted : "••••••••"}
+                            {loadingPasswords.has(cred.id) ? "Descriptografando..." : visiblePasswords[cred.id] ? visiblePasswords[cred.id] : "••••••••"}
                           </span>
-                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => togglePassword(cred.id)}>
-                            {visiblePasswords.has(cred.id) ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => togglePassword(cred.id)} disabled={loadingPasswords.has(cred.id)}>
+                            {visiblePasswords[cred.id] ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyToClipboard(cred.senha_encrypted, "Senha")}>
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyPassword(cred.id)}>
                             <Copy className="h-3 w-3" />
                           </Button>
                         </div>
