@@ -30,7 +30,7 @@ const availableRoles = [
   { value: 'gestor', label: 'Gestor' },
   { value: 'financeiro', label: 'Financeiro' },
   { value: 'marketing', label: 'Marketing' },
-  { value: 'usuario', label: 'Usuário' },
+  { value: 'colaborador', label: 'Colaborador' },
 ];
 
 export function TeamMemberForm({ member, onSuccess, onCancel }: TeamMemberFormProps) {

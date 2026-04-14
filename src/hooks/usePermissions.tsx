@@ -126,7 +126,7 @@ export function usePermissions() {
     }
     // Fall back to role permissions
     if (FULL_ACCESS_ROLES.includes(userRole as AppRole)) return true;
-    const rolePages = currentRolePerms[userRole] || [];
+    const rolePages = currentRolePerms[userRole] || DEFAULT_PERMISSIONS[userRole] || [];
     return rolePages.includes(pageKey);
   };
 
