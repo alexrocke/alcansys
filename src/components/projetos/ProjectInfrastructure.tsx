@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Plus, Pencil, Trash2, Globe, Database, Mail, Key, Package } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { usePermissions } from '@/hooks/usePermissions';
+import { useAuth } from '@/hooks/useAuth';
 
 type Integration = {
   id: string;
@@ -49,7 +49,8 @@ interface Props {
 
 export function ProjectInfrastructure({ projectId, companyId }: Props) {
   const qc = useQueryClient();
-  const { isAdmin } = usePermissions();
+  const { userRole } = useAuth();
+  const isAdmin = userRole === 'admin';
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Integration | null>(null);
   const [form, setForm] = useState({
