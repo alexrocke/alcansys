@@ -1552,6 +1552,63 @@ export type Database = {
         }
         Relationships: []
       }
+      project_integrations: {
+        Row: {
+          categoria: string
+          company_id: string
+          config: Json
+          created_at: string
+          id: string
+          nome: string
+          observacoes: string | null
+          project_id: string
+          status: string
+          updated_at: string
+          valor: string | null
+        }
+        Insert: {
+          categoria: string
+          company_id: string
+          config?: Json
+          created_at?: string
+          id?: string
+          nome: string
+          observacoes?: string | null
+          project_id: string
+          status?: string
+          updated_at?: string
+          valor?: string | null
+        }
+        Update: {
+          categoria?: string
+          company_id?: string
+          config?: Json
+          created_at?: string
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          project_id?: string
+          status?: string
+          updated_at?: string
+          valor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_integrations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_integrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_tasks: {
         Row: {
           company_id: string | null
