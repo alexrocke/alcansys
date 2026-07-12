@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Calendar, DollarSign, Users, FileText, ListChecks, Loader2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Calendar, DollarSign, Users, FileText, ListChecks, Loader2, AlertTriangle, Server } from 'lucide-react';
 import { ProjectTasks } from '@/components/projetos/ProjectTasks';
+import { ProjectInfrastructure } from '@/components/projetos/ProjectInfrastructure';
 
 const statusColors: Record<string, string> = {
   planejamento: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
@@ -208,6 +209,7 @@ export default function ProjetoDetalhe() {
           <TabsTrigger value="financeiro"><DollarSign className="h-4 w-4 mr-1" />Financeiro</TabsTrigger>
           <TabsTrigger value="equipe"><Users className="h-4 w-4 mr-1" />Equipe</TabsTrigger>
           <TabsTrigger value="documentos"><FileText className="h-4 w-4 mr-1" />Documentos</TabsTrigger>
+          <TabsTrigger value="infra"><Server className="h-4 w-4 mr-1" />Infraestrutura</TabsTrigger>
         </TabsList>
 
         <TabsContent value="tarefas">
@@ -317,6 +319,14 @@ export default function ProjetoDetalhe() {
                   ))}
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="infra">
+          <Card>
+            <CardContent className="pt-6">
+              <ProjectInfrastructure projectId={project.id} companyId={project.company_id!} />
             </CardContent>
           </Card>
         </TabsContent>
