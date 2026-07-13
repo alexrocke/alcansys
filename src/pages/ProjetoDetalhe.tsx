@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Calendar, DollarSign, Users, FileText, ListChecks, Loader2, AlertTriangle, Server, Flag, UserCircle, Cloud, Target, Video, FileSignature, Key, Receipt, LifeBuoy } from 'lucide-react';
+import { ArrowLeft, Calendar, DollarSign, Users, FileText, ListChecks, Loader2, AlertTriangle, Server, Flag, UserCircle, Cloud, Target, Video, FileSignature, Key, Receipt, LifeBuoy, FileDown } from 'lucide-react';
+import { generateProjectFullReport } from '@/lib/reportGenerator';
 import { ProjectTasks } from '@/components/projetos/ProjectTasks';
 import { ProjectInfrastructure } from '@/components/projetos/ProjectInfrastructure';
 import { ProjectMilestones } from '@/components/projetos/ProjectMilestones';
@@ -148,7 +149,11 @@ export default function ProjetoDetalhe() {
             {project.area} {project.client?.nome ? `• Cliente: ${project.client.nome}` : ''}
           </p>
         </div>
+        <Button variant="outline" size="sm" onClick={() => generateProjectFullReport(project.id, supabase)} className="gap-2">
+          <FileDown className="h-4 w-4" /><span className="hidden sm:inline">Exportar PDF</span>
+        </Button>
       </div>
+
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
