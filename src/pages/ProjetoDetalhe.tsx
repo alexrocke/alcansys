@@ -5,9 +5,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Calendar, DollarSign, Users, FileText, ListChecks, Loader2, AlertTriangle, Server } from 'lucide-react';
+import { ArrowLeft, Calendar, DollarSign, Users, FileText, ListChecks, Loader2, AlertTriangle, Server, Flag, UserCircle, Cloud, Target, Video, FileSignature, Key, Receipt, LifeBuoy } from 'lucide-react';
 import { ProjectTasks } from '@/components/projetos/ProjectTasks';
 import { ProjectInfrastructure } from '@/components/projetos/ProjectInfrastructure';
+import { ProjectMilestones } from '@/components/projetos/ProjectMilestones';
+import { ProjectStakeholders } from '@/components/projetos/ProjectStakeholders';
+import { ProjectRisks } from '@/components/projetos/ProjectRisks';
+import { ProjectEnvironments } from '@/components/projetos/ProjectEnvironments';
+import { ProjectKPIs } from '@/components/projetos/ProjectKPIs';
+import { ProjectMeetings } from '@/components/projetos/ProjectMeetings';
+import { ProjectContracts } from '@/components/projetos/ProjectContracts';
+import { ProjectCredentials } from '@/components/projetos/ProjectCredentials';
+import { ProjectInvoices } from '@/components/projetos/ProjectInvoices';
+import { ProjectSupport } from '@/components/projetos/ProjectSupport';
 
 const statusColors: Record<string, string> = {
   planejamento: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
