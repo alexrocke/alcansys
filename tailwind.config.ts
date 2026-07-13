@@ -60,7 +60,18 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Fira Sans', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['DM Serif Display', 'Georgia', 'serif'],
+        serif: ['DM Serif Display', 'Georgia', 'serif'],
+      },
+      backgroundImage: {
+        'gradient-ember': 'var(--gradient-ember)',
+        'gradient-noir': 'var(--gradient-noir)',
+      },
+      boxShadow: {
+        ember: 'var(--shadow-ember)',
+        noir: 'var(--shadow-noir)',
+        soft: 'var(--shadow-soft)',
       },
       borderRadius: {
         lg: "var(--radius)",

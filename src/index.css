@@ -2,92 +2,118 @@
   display: none !important;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* ============================================================
+   AMBER NOIR — Alcansys design system
+   All colors MUST be HSL. Never hardcode Tailwind color classes
+   (text-white, bg-black, etc). Use semantic tokens.
+============================================================ */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    /* Light — warm cream over off-white with brand orange preserved */
+    --background: 34 40% 97%;         /* #FBF7F1 warm paper */
+    --foreground: 20 14% 10%;         /* near-black warm */
+
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 20 14% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    
-    /* Scalefy blue theme */
-    --primary: 223 83% 31%;        /* #1E3A8A - dark blue */
-    --primary-foreground: 0 0% 100%;
-    --primary-light: 217 91% 60%;  /* #3B82F6 - secondary blue */
-    
-    --secondary: 217 91% 60%;      /* #3B82F6 */
-    --secondary-foreground: 0 0% 100%;
-    
-    --muted: 220 13% 91%;
-    --muted-foreground: 220 9% 46%;
-    
-    --accent: 217 91% 60%;
-    --accent-foreground: 0 0% 100%;
-    
-    --destructive: 0 84% 60%;
+    --popover-foreground: 20 14% 10%;
+
+    --surface: 34 30% 94%;
+    --surface-elevated: 0 0% 100%;
+
+    --primary: 20 100% 58%;           /* #FF7A29 brand orange */
+    --primary-foreground: 20 14% 8%;
+    --primary-glow: 25 100% 65%;
+
+    --secondary: 20 14% 14%;          /* graphite */
+    --secondary-foreground: 34 60% 96%;
+
+    --accent: 38 92% 50%;             /* #F59E0B amber */
+    --accent-foreground: 20 14% 8%;
+
+    --muted: 30 12% 90%;
+    --muted-foreground: 25 8% 40%;
+
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 60%;
-    --radius: 1rem;
-    
+
+    --border: 30 15% 86%;
+    --input: 30 15% 86%;
+    --ring: 20 100% 58%;
+    --radius: 0.75rem;
+
     /* Sidebar */
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 223 83% 31%;
+    --sidebar-foreground: 20 14% 12%;
+    --sidebar-primary: 20 100% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 217 91% 95%;
-    --sidebar-accent-foreground: 223 83% 31%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-accent: 30 30% 94%;
+    --sidebar-accent-foreground: 20 100% 40%;
+    --sidebar-border: 30 15% 86%;
+    --sidebar-ring: 20 100% 58%;
+
+    /* Gradients & shadows */
+    --gradient-ember: linear-gradient(135deg, hsl(20 100% 58%), hsl(38 92% 55%));
+    --gradient-noir: linear-gradient(180deg, hsl(20 14% 6%), hsl(20 10% 12%));
+    --shadow-ember: 0 20px 60px -20px hsl(20 100% 55% / 0.35);
+    --shadow-noir: 0 20px 50px -20px hsl(20 14% 4% / 0.5);
+    --shadow-soft: 0 2px 12px -4px hsl(20 14% 10% / 0.08);
   }
 
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
-    
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 11%;
-    --primary-light: 217 91% 70%;
-    
-    --secondary: 223 83% 31%;
-    --secondary-foreground: 210 40% 98%;
-    
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    
-    --accent: 217 91% 60%;
-    --accent-foreground: 222 47% 11%;
-    
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 217 91% 60%;
-    
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 217 33% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 33% 17%;
-    --sidebar-ring: 217 91% 60%;
+    /* Dark — amber noir signature */
+    --background: 20 12% 4%;          /* near absolute black warm */
+    --foreground: 34 60% 92%;         /* warm cream */
+
+    --card: 20 10% 8%;
+    --card-foreground: 34 60% 92%;
+    --popover: 20 10% 8%;
+    --popover-foreground: 34 60% 92%;
+
+    --surface: 20 10% 8%;
+    --surface-elevated: 20 8% 12%;
+
+    --primary: 20 100% 58%;           /* keep brand orange */
+    --primary-foreground: 20 14% 6%;
+    --primary-glow: 25 100% 65%;
+
+    --secondary: 20 8% 14%;
+    --secondary-foreground: 34 60% 92%;
+
+    --accent: 38 92% 55%;             /* amber */
+    --accent-foreground: 20 14% 6%;
+
+    --muted: 20 8% 14%;
+    --muted-foreground: 30 15% 65%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 34 60% 92%;
+
+    --border: 20 8% 16%;
+    --input: 20 8% 16%;
+    --ring: 20 100% 58%;
+
+    --sidebar-background: 20 12% 5%;
+    --sidebar-foreground: 34 60% 88%;
+    --sidebar-primary: 20 100% 58%;
+    --sidebar-primary-foreground: 20 14% 6%;
+    --sidebar-accent: 20 10% 10%;
+    --sidebar-accent-foreground: 20 100% 65%;
+    --sidebar-border: 20 8% 14%;
+    --sidebar-ring: 20 100% 58%;
+
+    --gradient-ember: linear-gradient(135deg, hsl(20 100% 58%), hsl(38 92% 55%));
+    --gradient-noir: linear-gradient(180deg, hsl(20 12% 3%), hsl(20 10% 8%));
+    --shadow-ember: 0 30px 80px -20px hsl(20 100% 50% / 0.4);
+    --shadow-noir: 0 30px 60px -20px hsl(0 0% 0% / 0.6);
+    --shadow-soft: 0 2px 12px -4px hsl(0 0% 0% / 0.4);
   }
 }
 
@@ -97,22 +123,45 @@ All colors MUST be HSL.
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-feature-settings: 'ss01', 'cv11';
   }
 
-  /* Scrollbar styling */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  h1, h2, h3, .font-display {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
   }
-  ::-webkit-scrollbar-track {
-    background: hsl(var(--background));
-  }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: hsl(var(--background)); }
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted-foreground) / 0.3);
+    background: hsl(var(--primary) / 0.35);
     border-radius: 4px;
   }
-  ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground) / 0.5);
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary) / 0.6); }
+}
+
+@layer utilities {
+  .bg-gradient-ember { background: var(--gradient-ember); }
+  .bg-gradient-noir { background: var(--gradient-noir); }
+  .shadow-ember { box-shadow: var(--shadow-ember); }
+  .shadow-noir { box-shadow: var(--shadow-noir); }
+  .text-gradient-ember {
+    background: var(--gradient-ember);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .grain {
+    position: relative;
+  }
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 }

@@ -1,76 +1,53 @@
-# Plano: Gestão Completa de Projetos
+# Redesign Alcansys — Amber Noir
 
-Expandir `ProjetoDetalhe.tsx` com 10 novas abas/seções, cada uma com CRUD próprio, RLS e vínculo ao `project_id`.
+## Direção fechada
+- **Paleta Amber Noir**: `#08080A` (bg), `#1C1917` (surface), `#F59E0B` (âmbar/accent secundário), `#FF7A29` (laranja marca/primary), `#F4E6D2` (cream foreground).
+- **Tipografia**: DM Serif Display (headings) + Fira Sans (body/UI).
+- **Layout LP**: Split-screen editorial.
+- **Escopo**: LP pública + painéis admin/vendedor + portal cliente.
 
-## Novas abas a adicionar
+## Fase 1 — Fundação de design tokens (base de tudo)
+Reescrever `src/index.css` e `tailwind.config.ts`:
+- Tokens HSL semânticos: `--background`, `--foreground`, `--primary` (laranja), `--accent` (âmbar), `--surface`, `--surface-elevated`, `--border`, `--muted`.
+- Gradientes: `--gradient-ember` (laranja→âmbar), `--gradient-noir` (preto→grafite).
+- Shadows quentes: `--shadow-ember` (glow laranja), `--shadow-noir`.
+- Dark mode = default. Light mode = cream sobre off-white com laranja preservado.
+- Registrar fontes DM Serif Display + Fira Sans via `@import` no `index.css` e mapear em `tailwind.config.ts` (`font-display`, `font-sans`).
+- Remover qualquer resquício azul dos tokens atuais.
 
-1. **Credenciais** — Acessos específicos do projeto (login painel cliente, FTP, Git, servidor). Criptografia AES-256-GCM via `vault-crypto` (padrão do Cofre Interno).
-2. **Milestones** — Marcos com data prevista × entregue, status, % de conclusão.
-3. **Contratos** — Vincular contratos assinados, aditivos, SLA. Reusa `contract_templates`.
-4. **Reuniões / Atas** — Timeline de reuniões: data, participantes, decisões, link gravação.
-5. **Riscos** — Lista com impacto (baixo/médio/alto), probabilidade, mitigação, responsável, status.
-6. **Stakeholders** — Contatos do cliente (nome, cargo, email, telefone, papel: PM/técnico/financeiro).
-7. **Ambientes & Repos** — URLs de dev/staging/prod, branch principal, link repo, provider de deploy.
-8. **KPIs / Objetivos** — Metas mensuráveis, valor alvo, valor atual, % de progresso.
-9. **Faturas** — Reusa tabela `invoices` filtrada por `project_id` (adicionar coluna se faltar) + status pagamento.
-10. **Suporte Pós-Entrega** — Data início garantia, horas contratadas, horas consumidas, chamados abertos.
+## Fase 2 — Landing Page (redesign completo)
+Reconstruir `src/pages/Index.tsx` (ou LP equivalente) com estrutura split-screen editorial:
+1. **Hero split** — Esquerda: título serif enorme + subtítulo + CTAs. Direita: mockup/visual com glow âmbar (substitui robô Spline atual, que dá "cara de IA").
+2. **Prova social** — logos em faixa noir sutil.
+3. **Features split alternado** — 3-4 blocos zigzag, cada um com número serif gigante + texto Fira Sans.
+4. **Como funciona** — timeline vertical com marcadores âmbar.
+5. **Pricing** — cards noir, um destacado com borda ember.
+6. **FAQ + CTA final** — fundo gradient noir com CTA laranja sólido.
+7. **Footer** — minimalista, tipografia editorial.
 
-## Migrations (SQL)
+Remover: Spotlight glassmorphism azul, Spline robô, qualquer gradient roxo/azul.
+Preservar: CMS `landing_config` (só troca a apresentação).
 
-Criar tabelas com padrão idêntico: `id`, `project_id`, `company_id`, campos específicos, `created_at`, `updated_at`, RLS (membros lêem, admin/gestor escreve), GRANTs, trigger `update_updated_at_column`.
+## Fase 3 — Painéis (admin + vendedor)
+Sem mudar lógica de negócio. Apenas presentation:
+- `AppSidebar`/`DashboardLayout`: fundo `--surface`, accent laranja no item ativo, tipografia Fira Sans.
+- Cards (`Card`, `StatCard`): borda sutil `--border`, hover com `--shadow-ember` leve.
+- Botões primários: laranja sólido. Secundários: outline cream.
+- Headings de página: DM Serif Display.
+- Tabelas: linhas com hover âmbar transparente.
+- Charts (Recharts): paleta ember (laranja/âmbar/cream/grafite) em vez de azul.
 
-- `project_credentials` (nome, tipo, usuario, senha_encrypted, url, observacoes)
-- `project_milestones` (titulo, descricao, data_prevista, data_entrega, status, ordem)
-- `project_contracts` (titulo, tipo, template_id?, url_arquivo, data_assinatura, valor, status)
-- `project_meetings` (titulo, data, participantes[], ata, link_gravacao)
-- `project_risks` (titulo, descricao, impacto, probabilidade, mitigacao, responsavel_id, status)
-- `project_stakeholders` (nome, cargo, email, telefone, papel)
-- `project_environments` (nome, tipo [dev/staging/prod], url, branch, repo_url, deploy_provider)
-- `project_kpis` (titulo, descricao, valor_alvo, valor_atual, unidade, prazo)
-- `project_support` (data_inicio_garantia, data_fim_garantia, horas_contratadas, horas_consumidas, observacoes) — 1 linha por projeto
-- Adicionar `project_id UUID REFERENCES projects(id)` em `invoices` se não existir
+## Fase 4 — Portal cliente
+- `PortalLayout` e `PortalSidebar`: mesma paleta noir, headings serif.
+- Cards de projeto, faturas, KPIs: consistentes com painel admin mas com densidade menor (portal é read-only).
+- Login/onboarding do portal: tela split-screen (visual esquerda + form direita) espelhando a LP.
 
-## Componentes React
+## Detalhes técnicos
+- **Ordem de execução**: tokens → LP → shared components (Button/Card/Sidebar) → páginas admin → portal.
+- **Sem regressão funcional**: nenhum handler, rota, query ou RLS é tocado.
+- **Componentes shadcn**: reestilizados via variantes/tokens, não reescritos.
+- **Fontes**: `@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Fira+Sans:wght@300;400;500;600;700&display=swap')` no topo do `index.css`.
+- **Verificação**: após cada fase, screenshot via Playwright de rotas-chave (`/`, `/dashboard`, `/portal`) para validar que nada quebrou visualmente.
 
-Criar em `src/components/projetos/`:
-- `ProjectCredentials.tsx` (usa vault-crypto)
-- `ProjectMilestones.tsx`
-- `ProjectContracts.tsx`
-- `ProjectMeetings.tsx`
-- `ProjectRisks.tsx`
-- `ProjectStakeholders.tsx`
-- `ProjectEnvironments.tsx`
-- `ProjectKPIs.tsx`
-- `ProjectInvoices.tsx`
-- `ProjectSupport.tsx`
-
-Cada um: `useQuery` para listar, `useMutation` para create/update/delete, Dialog com formulário, `isAdmin || isGestor` para escrita.
-
-## UI: ProjetoDetalhe.tsx
-
-Reorganizar `TabsList` em grupos horizontais roláveis (14 abas ficam muitas). Agrupar visualmente:
-- **Execução:** Tarefas, Milestones, Riscos, KPIs
-- **Pessoas:** Equipe, Stakeholders, Reuniões
-- **Comercial:** Financeiro, Faturas, Contratos, Suporte
-- **Técnico:** Documentos, Infraestrutura, Ambientes, Credenciais
-
-Usar `TabsList` com `overflow-x-auto` e ícones lucide compactos.
-
-## Segurança
-
-- Todas as tabelas: RLS via `user_belongs_to_company` + `has_role('admin')` / `user_has_company_role(gestor)`.
-- `project_credentials.senha_encrypted`: nunca retornar em plaintext no SELECT — só via edge function `vault-crypto` sob demanda.
-- GRANTs explícitos para `authenticated` e `service_role`.
-
-## Ordem de execução
-
-1. Migration única com as 10 tabelas + coluna em invoices + RLS/GRANTs/triggers.
-2. Aguardar aprovação e regeneração de `types.ts`.
-3. Criar 10 componentes em paralelo.
-4. Atualizar `ProjetoDetalhe.tsx` com nova estrutura de abas agrupadas.
-
-## Fora do escopo
-
-- Notificações automáticas (milestone atrasado, garantia expirando) — fase futura.
-- Dashboard consolidado multi-projeto — fase futura.
-- Exportação PDF por seção — fase futura.
+## Entrega
+Uma fase por turno para conseguirmos revisar. Começo pela **Fase 1 + Fase 2** (tokens + LP) — é onde o impacto visual é maior e onde a "cara de IA" mora. Painéis e portal vêm em seguida.
