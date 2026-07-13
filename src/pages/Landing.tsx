@@ -177,7 +177,7 @@ export default function Landing() {
                     <span className="flex items-center gap-2">
                       <Sparkles className="w-3 h-3 text-primary" /> Editorial
                     </span>
-                    <span>ALCANSYS ©</span>
+                    <span>SCALEFY ©</span>
                   </div>
                 </div>
               </div>
