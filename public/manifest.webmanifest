@@ -1,0 +1,29 @@
+{
+  "name": "Scalefy - Gestão Corporativa",
+  "short_name": "Scalefy",
+  "description": "Sistema de Gestão Corporativa - Projetos, Financeiro, CRM, Automações e mais.",
+  "theme_color": "#ff7a29",
+  "background_color": "#0d0a09",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
