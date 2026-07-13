@@ -123,11 +123,15 @@ export default function Projetos() {
         </div>
       </div>
 
-      <Tabs defaultValue="projetos" className="space-y-4">
+      <Tabs defaultValue="dashboard" className="space-y-4">
         <TabsList>
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="projetos">Projetos</TabsTrigger>
           <TabsTrigger value="produtos">Produtos</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="dashboard"><ProjectsDashboard /></TabsContent>
+
 
         <TabsContent value="projetos" className="space-y-4">
           <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
