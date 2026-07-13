@@ -3,22 +3,8 @@ import App from "./App.tsx";
 import "./index.css";
 
 // PWA cleanup: the old app-shell service worker was serving stale HTML/chunks.
-// Keep home-screen manifest/icons, but remove app-shell registrations everywhere.
-const isInIframe = (() => {
-  try {
-    return window.self !== window.top;
-  } catch (e) {
-    return true;
-  }
-})();
-
-const isPreviewHost =
-  window.location.hostname.includes("id-preview--") ||
-  window.location.hostname.includes("lovableproject.com");
-
-const shouldCleanAppShellWorker = isPreviewHost || isInIframe || window.location.search.includes("sw=off") || true;
-
-if (shouldCleanAppShellWorker) {
+// Keep home-screen manifest/icons, but remove old app-shell registrations.
+if ("serviceWorker" in navigator) {
   navigator.serviceWorker?.getRegistrations().then((registrations) => {
     registrations
       .filter((registration) => {

@@ -5,14 +5,12 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { ArrowRight, ArrowUpRight, Sparkles } from "lucide-react";
-import { useLandingConfig } from "@/hooks/useLandingConfig";
 import { getLucideIcon } from "@/lib/lucide-icon-map";
 
 export default function Landing() {
   const { session } = useAuth();
   const navigate = useNavigate();
   const { setTheme } = useTheme();
-  const { data: sections } = useLandingConfig();
 
   // Force dark theme on the public landing page — Amber Noir signature.
   useEffect(() => {
@@ -25,13 +23,7 @@ export default function Landing() {
 
   if (session) return null;
 
-  const getSection = (name: string) => sections?.find((s) => s.section === name);
-  const hero = getSection("hero");
-  const stats = getSection("stats");
-  const cta = getSection("cta");
-  const footer = getSection("footer");
-
-  const heroConfig = hero?.config || {
+  const heroConfig = {
     title: "Tecnologia que faz seu negócio",
     title_highlight: "crescer",
     subtitle:
@@ -40,7 +32,7 @@ export default function Landing() {
     cta_secondary: "Ver serviços",
   };
 
-  const statsConfig = stats?.config || {
+  const statsConfig = {
     items: [
       { icon: "Users", value: "150+", label: "Clientes ativos" },
       { icon: "Zap", value: "500+", label: "Automações rodando" },
@@ -48,13 +40,13 @@ export default function Landing() {
     ],
   };
 
-  const ctaConfig = cta?.config || {
+  const ctaConfig = {
     title: "Pronto para transformar seu negócio?",
     subtitle: "Comece agora e veja resultado em poucos dias.",
     button_text: "Criar conta grátis",
   };
 
-  const footerConfig = footer?.config || {
+  const footerConfig = {
     email: "contato@scalefy.com.br",
     whatsapp_url: "https://wa.me/5500000000000",
     whatsapp_label: "WhatsApp",
@@ -95,7 +87,7 @@ export default function Landing() {
       <LandingHeader />
 
       {/* ============ HERO — Split-screen editorial ============ */}
-      {hero?.visible !== false && (
+      {(
         <section className="relative pt-32 md:pt-40 pb-20 md:pb-28 px-6 md:px-10">
           <div className="max-w-7xl mx-auto grid md:grid-cols-12 gap-10 md:gap-16 items-center">
             {/* Left — editorial title */}
@@ -271,7 +263,7 @@ export default function Landing() {
       </section>
 
       {/* ============ Números ============ */}
-      {stats?.visible !== false && (
+      {(
         <section id="numeros" className="py-24 md:py-32 px-6 md:px-10">
           <div className="max-w-7xl mx-auto">
             <div className="text-xs uppercase tracking-[0.25em] text-primary mb-3 text-center">Resultados</div>
@@ -298,7 +290,7 @@ export default function Landing() {
       )}
 
       {/* ============ CTA final ============ */}
-      {cta?.visible !== false && (
+      {(
         <section className="py-24 md:py-32 px-6 md:px-10">
           <div className="max-w-6xl mx-auto relative rounded-3xl overflow-hidden bg-gradient-noir border border-border p-12 md:p-20 text-center shadow-noir">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-primary/20 blur-[120px]" />
@@ -323,7 +315,7 @@ export default function Landing() {
       )}
 
       {/* ============ Footer ============ */}
-      {footer?.visible !== false && (
+      {(
         <footer id="contato" className="border-t border-border py-12 px-6 md:px-10">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
