@@ -2875,6 +2875,7 @@ export type Database = {
       }
     }
     Functions: {
+      check_project_alerts: { Args: never; Returns: undefined }
       get_user_company_ids: { Args: { _user_id: string }; Returns: string[] }
       has_role: {
         Args: {
