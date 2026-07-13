@@ -4,16 +4,19 @@ import logo from "@/assets/logo-alcansys.png";
 
 export function LandingHeader() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[hsl(222,47%,11%)]/80 backdrop-blur-lg">
-      <div className="max-w-6xl mx-auto flex items-center justify-between gap-4 px-6 h-24 md:h-28">
-        <img src={logo} alt="Scalefy" className="h-14 md:h-16 w-auto max-w-[240px] md:max-w-[300px] object-contain" />
-        <nav className="hidden md:flex items-center gap-8 text-sm text-white/60">
-          <a href="#servicos" className="hover:text-white transition-colors">Serviços</a>
-          <a href="#numeros" className="hover:text-white transition-colors">Resultados</a>
-          <a href="#contato" className="hover:text-white transition-colors">Contato</a>
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/70 backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 px-6 md:px-10 h-20">
+        <Link to="/" className="flex items-center gap-3">
+          <img src={logo} alt="Alcansys" className="h-10 md:h-12 w-auto object-contain" />
+        </Link>
+        <nav className="hidden md:flex items-center gap-10 text-sm text-muted-foreground font-medium">
+          <a href="#servicos" className="hover:text-foreground transition-colors">Serviços</a>
+          <a href="#processo" className="hover:text-foreground transition-colors">Processo</a>
+          <a href="#numeros" className="hover:text-foreground transition-colors">Resultados</a>
+          <a href="#contato" className="hover:text-foreground transition-colors">Contato</a>
         </nav>
         <Link to="/auth">
-          <Button size="sm" className="bg-[hsl(217,91%,60%)] text-white hover:bg-[hsl(217,91%,50%)]">
+          <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium tracking-wide">
             Entrar
           </Button>
         </Link>
