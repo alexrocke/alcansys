@@ -344,11 +344,38 @@ export default function ProjetoDetalhe() {
         </TabsContent>
 
         <TabsContent value="infra">
-          <Card>
-            <CardContent className="pt-6">
-              <ProjectInfrastructure projectId={project.id} companyId={project.company_id!} />
-            </CardContent>
-          </Card>
+          <Card><CardContent className="pt-6"><ProjectInfrastructure projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+
+        <TabsContent value="milestones">
+          <Card><CardContent className="pt-6"><ProjectMilestones projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="riscos">
+          <Card><CardContent className="pt-6"><ProjectRisks projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="kpis">
+          <Card><CardContent className="pt-6"><ProjectKPIs projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="stakeholders">
+          <Card><CardContent className="pt-6"><ProjectStakeholders projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="reunioes">
+          <Card><CardContent className="pt-6"><ProjectMeetings projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="faturas">
+          <Card><CardContent className="pt-6"><ProjectInvoices projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="contratos">
+          <Card><CardContent className="pt-6"><ProjectContracts projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="suporte">
+          <Card><CardContent className="pt-6"><ProjectSupport projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="ambientes">
+          <Card><CardContent className="pt-6"><ProjectEnvironments projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="credenciais">
+          <Card><CardContent className="pt-6"><ProjectCredentials projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
         </TabsContent>
       </Tabs>
     </div>
