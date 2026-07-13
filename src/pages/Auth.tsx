@@ -59,34 +59,58 @@ export default function Auth() {
 
   if (user && userStatus === 'pendente') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary-light to-secondary p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Aguardando Aprovação</CardTitle>
-            <CardDescription>
-              Sua conta foi criada com sucesso e está aguardando aprovação do administrador.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-center text-muted-foreground text-sm">
-              Você receberá um e-mail quando sua conta for aprovada.
-            </p>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen grid md:grid-cols-2 bg-background text-foreground">
+        <div className="hidden md:flex relative bg-gradient-noir items-end p-12 overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-primary/30 blur-[100px]" />
+          <div className="relative space-y-4">
+            <div className="text-xs uppercase tracking-[0.25em] text-primary">Alcansys</div>
+            <h2 className="font-display text-5xl leading-tight">Aguardando <em className="text-gradient-ember not-italic">aprovação</em>.</h2>
+          </div>
+        </div>
+        <div className="flex items-center justify-center p-8">
+          <Card className="w-full max-w-md border-border">
+            <CardHeader className="text-center">
+              <CardTitle className="font-display text-3xl">Aguardando aprovação</CardTitle>
+              <CardDescription>Sua conta foi criada e está sob análise do administrador.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-center text-muted-foreground text-sm">Você receberá um e-mail quando sua conta for aprovada.</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary-light to-secondary p-4">
-      <Card className="w-full max-w-md shadow-2xl">
-        <CardHeader className="text-center space-y-4">
-          <img src={logo} alt="Scalefy" className="mx-auto h-auto w-56 max-w-full object-contain md:w-64" />
-          <div className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Acesse sua conta</CardTitle>
-            <CardDescription>Sistema de Gestão Corporativa</CardDescription>
-          </div>
-        </CardHeader>
+    <div className="min-h-screen grid md:grid-cols-2 bg-background text-foreground">
+      {/* Editorial split — left */}
+      <div className="hidden md:flex relative bg-gradient-noir flex-col justify-between p-12 overflow-hidden border-r border-border">
+        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-primary/30 blur-[120px]" />
+        <div className="absolute -bottom-24 -left-16 w-80 h-80 rounded-full bg-accent/20 blur-[100px]" />
+        <div className="relative flex items-center gap-3">
+          <img src={logo} alt="Alcansys" className="h-12 w-auto object-contain" />
+        </div>
+        <div className="relative space-y-6">
+          <div className="text-xs uppercase tracking-[0.25em] text-primary">Bem-vindo de volta</div>
+          <h1 className="font-display text-6xl leading-[0.95]">
+            Software que <em className="text-gradient-ember not-italic">trabalha</em> por você.
+          </h1>
+          <p className="text-muted-foreground text-lg max-w-md leading-relaxed">
+            Entre para acompanhar seus projetos, automações e resultados em tempo real.
+          </p>
+        </div>
+        <div className="relative text-xs uppercase tracking-[0.25em] text-muted-foreground">Alcansys © {new Date().getFullYear()}</div>
+      </div>
+
+      {/* Form — right */}
+      <div className="flex items-center justify-center p-6 md:p-12">
+        <Card className="w-full max-w-md border-border shadow-soft">
+          <CardHeader className="text-center space-y-2">
+            <img src={logo} alt="Alcansys" className="md:hidden mx-auto h-14 w-auto object-contain mb-2" />
+            <CardTitle className="font-display text-3xl">Acesse sua conta</CardTitle>
+            <CardDescription>Painel Alcansys</CardDescription>
+          </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2">

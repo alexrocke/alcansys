@@ -159,7 +159,7 @@ const Index = () => {
     return acc;
   }, []).sort((a, b) => b.value - a.value) || [];
 
-  const COLORS = ["hsl(var(--primary))", "hsl(var(--secondary))", "hsl(var(--accent))", "hsl(var(--muted))", "#8b5cf6", "#ec4899"];
+  const COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(34 60% 75%)", "hsl(20 8% 40%)", "hsl(38 92% 35%)", "hsl(20 100% 40%)"];
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -199,8 +199,8 @@ const Index = () => {
   return (
     <div className="p-4 md:p-6 lg:p-8 space-y-6 overflow-hidden">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground">Bem-vindo ao Scalefy</p>
+        <h1 className="font-display text-4xl md:text-5xl text-foreground">Dashboard</h1>
+        <p className="text-muted-foreground mt-1">Bem-vindo à Alcansys</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
