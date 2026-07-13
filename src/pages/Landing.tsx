@@ -55,7 +55,7 @@ export default function Landing() {
   };
 
   const footerConfig = footer?.config || {
-    email: "contato@alcansys.com.br",
+    email: "contato@scalefy.com.br",
     whatsapp_url: "https://wa.me/5500000000000",
     whatsapp_label: "WhatsApp",
   };
@@ -102,7 +102,7 @@ export default function Landing() {
             <div className="md:col-span-7 space-y-8">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-surface text-xs uppercase tracking-[0.2em] text-muted-foreground">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                Alcansys · Software & automação
+                Scalefy · Software & automação
               </div>
 
               <h1 className="font-display text-5xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight">
@@ -145,7 +145,7 @@ export default function Landing() {
                     />
                   ))}
                 </div>
-                <span>+150 operações rodando com Alcansys</span>
+                <span>+150 operações rodando com Scalefy</span>
               </div>
             </div>
 
@@ -327,9 +327,9 @@ export default function Landing() {
         <footer id="contato" className="border-t border-border py-12 px-6 md:px-10">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
-              <div className="font-display text-2xl">Alcansys</div>
+              <div className="font-display text-2xl">Scalefy</div>
               <p className="text-sm text-muted-foreground mt-1">
-                © {new Date().getFullYear()} Alcansys. Todos os direitos reservados.
+                © {new Date().getFullYear()} Scalefy. Todos os direitos reservados.
               </p>
             </div>
             <div className="flex flex-col md:flex-row gap-4 md:gap-8 text-sm text-muted-foreground">

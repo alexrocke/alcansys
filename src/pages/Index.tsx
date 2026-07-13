@@ -200,7 +200,7 @@ const Index = () => {
     <div className="p-4 md:p-6 lg:p-8 space-y-6 overflow-hidden">
       <div>
         <h1 className="font-display text-4xl md:text-5xl text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Bem-vindo à Alcansys</p>
+        <p className="text-muted-foreground mt-1">Bem-vindo à Scalefy</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
