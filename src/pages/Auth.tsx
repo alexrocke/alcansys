@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
-import logo from '@/assets/logo-alcansys.png';
+import logo from '@/assets/logo-scalefy.png';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -63,7 +63,7 @@ export default function Auth() {
         <div className="hidden md:flex relative bg-gradient-noir items-end p-12 overflow-hidden">
           <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-primary/30 blur-[100px]" />
           <div className="relative space-y-4">
-            <div className="text-xs uppercase tracking-[0.25em] text-primary">Alcansys</div>
+            <div className="text-xs uppercase tracking-[0.25em] text-primary">Scalefy</div>
             <h2 className="font-display text-5xl leading-tight">Aguardando <em className="text-gradient-ember not-italic">aprovação</em>.</h2>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function Auth() {
         <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-primary/30 blur-[120px]" />
         <div className="absolute -bottom-24 -left-16 w-80 h-80 rounded-full bg-accent/20 blur-[100px]" />
         <div className="relative flex items-center gap-3">
-          <img src={logo} alt="Alcansys" className="h-12 w-auto object-contain" />
+          <img src={logo} alt="Scalefy" className="h-12 w-auto object-contain" />
         </div>
         <div className="relative space-y-6">
           <div className="text-xs uppercase tracking-[0.25em] text-primary">Bem-vindo de volta</div>
@@ -100,16 +100,16 @@ export default function Auth() {
             Entre para acompanhar seus projetos, automações e resultados em tempo real.
           </p>
         </div>
-        <div className="relative text-xs uppercase tracking-[0.25em] text-muted-foreground">Alcansys © {new Date().getFullYear()}</div>
+        <div className="relative text-xs uppercase tracking-[0.25em] text-muted-foreground">Scalefy © {new Date().getFullYear()}</div>
       </div>
 
       {/* Form — right */}
       <div className="flex items-center justify-center p-6 md:p-12">
         <Card className="w-full max-w-md border-border shadow-soft">
           <CardHeader className="text-center space-y-2">
-            <img src={logo} alt="Alcansys" className="md:hidden mx-auto h-14 w-auto object-contain mb-2" />
+            <img src={logo} alt="Scalefy" className="md:hidden mx-auto h-14 w-auto object-contain mb-2" />
             <CardTitle className="font-display text-3xl">Acesse sua conta</CardTitle>
-            <CardDescription>Painel Alcansys</CardDescription>
+            <CardDescription>Painel Scalefy</CardDescription>
           </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="w-full">
