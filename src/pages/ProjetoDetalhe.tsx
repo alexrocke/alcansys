@@ -214,12 +214,22 @@ export default function ProjetoDetalhe() {
 
       {/* Tabs */}
       <Tabs defaultValue="tarefas" className="space-y-4">
-        <TabsList className="flex flex-wrap">
+        <TabsList className="flex flex-wrap h-auto">
           <TabsTrigger value="tarefas"><ListChecks className="h-4 w-4 mr-1" />Tarefas</TabsTrigger>
-          <TabsTrigger value="financeiro"><DollarSign className="h-4 w-4 mr-1" />Financeiro</TabsTrigger>
+          <TabsTrigger value="milestones"><Flag className="h-4 w-4 mr-1" />Marcos</TabsTrigger>
+          <TabsTrigger value="riscos"><AlertTriangle className="h-4 w-4 mr-1" />Riscos</TabsTrigger>
+          <TabsTrigger value="kpis"><Target className="h-4 w-4 mr-1" />KPIs</TabsTrigger>
           <TabsTrigger value="equipe"><Users className="h-4 w-4 mr-1" />Equipe</TabsTrigger>
+          <TabsTrigger value="stakeholders"><UserCircle className="h-4 w-4 mr-1" />Stakeholders</TabsTrigger>
+          <TabsTrigger value="reunioes"><Video className="h-4 w-4 mr-1" />Reuniões</TabsTrigger>
+          <TabsTrigger value="financeiro"><DollarSign className="h-4 w-4 mr-1" />Financeiro</TabsTrigger>
+          <TabsTrigger value="faturas"><Receipt className="h-4 w-4 mr-1" />Faturas</TabsTrigger>
+          <TabsTrigger value="contratos"><FileSignature className="h-4 w-4 mr-1" />Contratos</TabsTrigger>
+          <TabsTrigger value="suporte"><LifeBuoy className="h-4 w-4 mr-1" />Suporte</TabsTrigger>
           <TabsTrigger value="documentos"><FileText className="h-4 w-4 mr-1" />Documentos</TabsTrigger>
-          <TabsTrigger value="infra"><Server className="h-4 w-4 mr-1" />Infraestrutura</TabsTrigger>
+          <TabsTrigger value="infra"><Server className="h-4 w-4 mr-1" />Infra</TabsTrigger>
+          <TabsTrigger value="ambientes"><Cloud className="h-4 w-4 mr-1" />Ambientes</TabsTrigger>
+          <TabsTrigger value="credenciais"><Key className="h-4 w-4 mr-1" />Credenciais</TabsTrigger>
         </TabsList>
 
         <TabsContent value="tarefas">
