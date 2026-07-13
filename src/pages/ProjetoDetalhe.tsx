@@ -5,9 +5,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Calendar, DollarSign, Users, FileText, ListChecks, Loader2, AlertTriangle, Server } from 'lucide-react';
+import { ArrowLeft, Calendar, DollarSign, Users, FileText, ListChecks, Loader2, AlertTriangle, Server, Flag, UserCircle, Cloud, Target, Video, FileSignature, Key, Receipt, LifeBuoy } from 'lucide-react';
 import { ProjectTasks } from '@/components/projetos/ProjectTasks';
 import { ProjectInfrastructure } from '@/components/projetos/ProjectInfrastructure';
+import { ProjectMilestones } from '@/components/projetos/ProjectMilestones';
+import { ProjectStakeholders } from '@/components/projetos/ProjectStakeholders';
+import { ProjectRisks } from '@/components/projetos/ProjectRisks';
+import { ProjectEnvironments } from '@/components/projetos/ProjectEnvironments';
+import { ProjectKPIs } from '@/components/projetos/ProjectKPIs';
+import { ProjectMeetings } from '@/components/projetos/ProjectMeetings';
+import { ProjectContracts } from '@/components/projetos/ProjectContracts';
+import { ProjectCredentials } from '@/components/projetos/ProjectCredentials';
+import { ProjectInvoices } from '@/components/projetos/ProjectInvoices';
+import { ProjectSupport } from '@/components/projetos/ProjectSupport';
 
 const statusColors: Record<string, string> = {
   planejamento: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
@@ -204,12 +214,22 @@ export default function ProjetoDetalhe() {
 
       {/* Tabs */}
       <Tabs defaultValue="tarefas" className="space-y-4">
-        <TabsList className="flex flex-wrap">
+        <TabsList className="flex flex-wrap h-auto">
           <TabsTrigger value="tarefas"><ListChecks className="h-4 w-4 mr-1" />Tarefas</TabsTrigger>
-          <TabsTrigger value="financeiro"><DollarSign className="h-4 w-4 mr-1" />Financeiro</TabsTrigger>
+          <TabsTrigger value="milestones"><Flag className="h-4 w-4 mr-1" />Marcos</TabsTrigger>
+          <TabsTrigger value="riscos"><AlertTriangle className="h-4 w-4 mr-1" />Riscos</TabsTrigger>
+          <TabsTrigger value="kpis"><Target className="h-4 w-4 mr-1" />KPIs</TabsTrigger>
           <TabsTrigger value="equipe"><Users className="h-4 w-4 mr-1" />Equipe</TabsTrigger>
+          <TabsTrigger value="stakeholders"><UserCircle className="h-4 w-4 mr-1" />Stakeholders</TabsTrigger>
+          <TabsTrigger value="reunioes"><Video className="h-4 w-4 mr-1" />Reuniões</TabsTrigger>
+          <TabsTrigger value="financeiro"><DollarSign className="h-4 w-4 mr-1" />Financeiro</TabsTrigger>
+          <TabsTrigger value="faturas"><Receipt className="h-4 w-4 mr-1" />Faturas</TabsTrigger>
+          <TabsTrigger value="contratos"><FileSignature className="h-4 w-4 mr-1" />Contratos</TabsTrigger>
+          <TabsTrigger value="suporte"><LifeBuoy className="h-4 w-4 mr-1" />Suporte</TabsTrigger>
           <TabsTrigger value="documentos"><FileText className="h-4 w-4 mr-1" />Documentos</TabsTrigger>
-          <TabsTrigger value="infra"><Server className="h-4 w-4 mr-1" />Infraestrutura</TabsTrigger>
+          <TabsTrigger value="infra"><Server className="h-4 w-4 mr-1" />Infra</TabsTrigger>
+          <TabsTrigger value="ambientes"><Cloud className="h-4 w-4 mr-1" />Ambientes</TabsTrigger>
+          <TabsTrigger value="credenciais"><Key className="h-4 w-4 mr-1" />Credenciais</TabsTrigger>
         </TabsList>
 
         <TabsContent value="tarefas">
@@ -324,11 +344,38 @@ export default function ProjetoDetalhe() {
         </TabsContent>
 
         <TabsContent value="infra">
-          <Card>
-            <CardContent className="pt-6">
-              <ProjectInfrastructure projectId={project.id} companyId={project.company_id!} />
-            </CardContent>
-          </Card>
+          <Card><CardContent className="pt-6"><ProjectInfrastructure projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+
+        <TabsContent value="milestones">
+          <Card><CardContent className="pt-6"><ProjectMilestones projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="riscos">
+          <Card><CardContent className="pt-6"><ProjectRisks projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="kpis">
+          <Card><CardContent className="pt-6"><ProjectKPIs projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="stakeholders">
+          <Card><CardContent className="pt-6"><ProjectStakeholders projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="reunioes">
+          <Card><CardContent className="pt-6"><ProjectMeetings projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="faturas">
+          <Card><CardContent className="pt-6"><ProjectInvoices projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="contratos">
+          <Card><CardContent className="pt-6"><ProjectContracts projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="suporte">
+          <Card><CardContent className="pt-6"><ProjectSupport projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="ambientes">
+          <Card><CardContent className="pt-6"><ProjectEnvironments projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
+        </TabsContent>
+        <TabsContent value="credenciais">
+          <Card><CardContent className="pt-6"><ProjectCredentials projectId={project.id} companyId={project.company_id!} /></CardContent></Card>
         </TabsContent>
       </Tabs>
     </div>
