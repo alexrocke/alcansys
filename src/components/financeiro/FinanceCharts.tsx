@@ -7,7 +7,7 @@ interface FinanceChartsProps {
   finances: any[];
 }
 
-const COLORS = ['#3B82F6', '#1E3A8A', '#60A5FA', '#93C5FD', '#DBEAFE'];
+const COLORS = ['hsl(20 100% 58%)', 'hsl(38 92% 55%)', 'hsl(34 60% 75%)', 'hsl(20 8% 40%)', 'hsl(20 8% 22%)'];
 
 export function FinanceCharts({ finances }: FinanceChartsProps) {
   // Preparar dados para gráfico de linha (Receita x Custo por dia)
