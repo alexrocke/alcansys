@@ -38,6 +38,8 @@ import PortalAutomacoes from "./pages/portal/PortalAutomacoes";
 import PortalFaturas from "./pages/portal/PortalFaturas";
 import PortalSistemas from "./pages/portal/PortalSistemas";
 import PortalConversas from "./pages/portal/PortalConversas";
+import PortalProjetos from "./pages/portal/PortalProjetos";
+import PortalProjetoDetalhe from "./pages/portal/PortalProjetoDetalhe";
 import Vendedores from "./pages/Vendedores";
 import { VendedorSidebar } from "@/components/vendedor-portal/VendedorSidebar";
 import VendedorDashboard from "./pages/vendedor-portal/VendedorDashboard";
@@ -88,6 +90,8 @@ function InternalLayout() {
               <Route path="/portal/faturas" element={<PortalFaturas />} />
               <Route path="/portal/conversas" element={<PortalConversas />} />
               <Route path="/portal/sistemas" element={<PortalSistemas />} />
+              <Route path="/portal/projetos" element={<PortalProjetos />} />
+              <Route path="/portal/projetos/:id" element={<PortalProjetoDetalhe />} />
               <Route path="/vendedor" element={<VendedorDashboard />} />
               <Route path="/vendedor/leads" element={<VendedorLeads />} />
               <Route path="/vendedor/comissoes" element={<VendedorComissoes />} />

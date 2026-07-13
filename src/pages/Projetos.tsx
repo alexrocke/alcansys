@@ -12,6 +12,7 @@ import { ProductList } from '@/components/projetos/ProductList';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ProjectsDashboard } from '@/components/projetos/ProjectsDashboard';
 
 export default function Projetos() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -122,11 +123,15 @@ export default function Projetos() {
         </div>
       </div>
 
-      <Tabs defaultValue="projetos" className="space-y-4">
+      <Tabs defaultValue="dashboard" className="space-y-4">
         <TabsList>
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="projetos">Projetos</TabsTrigger>
           <TabsTrigger value="produtos">Produtos</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="dashboard"><ProjectsDashboard /></TabsContent>
+
 
         <TabsContent value="projetos" className="space-y-4">
           <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
