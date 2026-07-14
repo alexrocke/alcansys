@@ -21,6 +21,7 @@ import {
 import { NavLink } from "@/components/NavLink";
 import logoIcon from "@/assets/logo-icon.png";
 import { useLocation } from "react-router-dom";
+import { useMemo, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { CompanySelector } from "@/components/CompanySelector";
 import { NotificationBell } from "@/components/NotificationBell";
