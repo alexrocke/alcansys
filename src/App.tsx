@@ -47,7 +47,17 @@ import VendedorLeads from "./pages/vendedor-portal/VendedorLeads";
 import VendedorComissoes from "./pages/vendedor-portal/VendedorComissoes";
 import VendedorClientes from "./pages/vendedor-portal/VendedorClientes";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60_000,
+      gcTime: 5 * 60_000,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      retry: 1,
+    },
+  },
+});
 
 function InternalLayout() {
   const location = useLocation();
