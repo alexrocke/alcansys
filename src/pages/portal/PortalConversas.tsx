@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -173,11 +173,16 @@ export default function PortalConversas() {
     toast({ title: `Atendimento transferido para ${newType === 'ia' ? 'IA' : 'humano'}` });
   };
 
-  const filteredConversations = conversations.filter((c: any) =>
-    c.contato_nome.toLowerCase().includes(searchQuery.toLowerCase()) || c.contato_telefone?.includes(searchQuery)
-  );
-  const openCount = conversations.filter((c: any) => c.status === 'aberta' || c.status === 'em_atendimento').length;
-  const iaCount = conversations.filter((c: any) => c.atendente_tipo === 'ia').length;
+  const filteredConversations = useMemo(() => {
+    const q = searchQuery.toLowerCase();
+    return conversations.filter((c: any) =>
+      c.contato_nome.toLowerCase().includes(q) || c.contato_telefone?.includes(searchQuery)
+    );
+  }, [conversations, searchQuery]);
+  const { openCount, iaCount } = useMemo(() => ({
+    openCount: conversations.filter((c: any) => c.status === 'aberta' || c.status === 'em_atendimento').length,
+    iaCount: conversations.filter((c: any) => c.atendente_tipo === 'ia').length,
+  }), [conversations]);
 
   if (!currentCompany) {
     return (

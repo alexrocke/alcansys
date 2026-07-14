@@ -85,6 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
+    let bootstrapped = false;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -99,11 +100,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         setUser(session.user ?? null);
 
-        if (event !== 'SIGNED_OUT' && session.user) {
+        // Skip duplicate fetch on initial bootstrap (handled by getSession below)
+        if (event !== 'SIGNED_OUT' && event !== 'INITIAL_SESSION' && session.user) {
           setTimeout(() => {
-            if (mounted) {
-              fetchUserData(session.user.id);
-            }
+            if (mounted) fetchUserData(session.user.id);
           }, 0);
         }
 
@@ -112,13 +112,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!mounted) return;
+      if (!mounted || bootstrapped) return;
+      bootstrapped = true;
 
       await validateStoredSession(session);
 
-      if (mounted) {
-        setLoading(false);
-      }
+      if (mounted) setLoading(false);
     });
 
     return () => {
