@@ -176,7 +176,8 @@ export default function PortalConversas() {
   const filteredConversations = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return conversations.filter((c: any) =>
-      c.contato_nome.toLowerCase().includes(q) || c.contato_telefone?.includes(searchQuery)
+      (c.contato_nome?.toLowerCase().includes(q) ?? false) ||
+      (c.contato_telefone?.includes(searchQuery) ?? false)
     );
   }, [conversations, searchQuery]);
   const { openCount, iaCount } = useMemo(() => ({
