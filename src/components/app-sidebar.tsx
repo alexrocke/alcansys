@@ -114,19 +114,24 @@ export function AppSidebar() {
     enabled: !!currentCompany && !!user,
   });
 
-  const isActive = (path: string) => {
+  const isActive = useCallback((path: string) => {
     if (path === "/dashboard") return currentPath === "/dashboard";
     return currentPath.startsWith(path);
-  };
+  }, [currentPath]);
 
-  const visibleMain = mainItems.filter((item) => hasPageAccess(item.pageKey));
-  const visibleSettings = settingsItems.filter((item) => {
-    if (item.pageKey === 'cofre') {
-      return hasPageAccess(item.pageKey) || hasGrantedVaultAccess;
-    }
-
-    return hasPageAccess(item.pageKey);
-  });
+  const visibleMain = useMemo(
+    () => mainItems.filter((item) => hasPageAccess(item.pageKey)),
+    [hasPageAccess]
+  );
+  const visibleSettings = useMemo(
+    () => settingsItems.filter((item) => {
+      if (item.pageKey === 'cofre') {
+        return hasPageAccess(item.pageKey) || hasGrantedVaultAccess;
+      }
+      return hasPageAccess(item.pageKey);
+    }),
+    [hasPageAccess, hasGrantedVaultAccess]
+  );
 
   return (
     <Sidebar className="border-r border-border">
