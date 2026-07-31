@@ -66,11 +66,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const [profileResult, roleResult] = await Promise.all([
         supabase.from('profiles').select('status').eq('id', userId).maybeSingle(),
-        supabase.from('user_roles').select('role').eq('user_id', userId).maybeSingle()
+        // A user can hold several roles; maybeSingle() would error out and
+        // silently downgrade them to "no role" (client portal).
+        supabase.from('user_roles').select('role').eq('user_id', userId)
       ]);
 
       const nextStatus = profileResult.data?.status ?? null;
-      const nextRole = roleResult.data?.role ?? null;
+      const rolePriority = ['admin', 'gestor', 'financeiro', 'marketing', 'colaborador', 'vendedor'];
+      const roles = (roleResult.data ?? []).map((r: { role: string }) => r.role);
+      const nextRole =
+        rolePriority.find((r) => roles.includes(r)) ?? roles[0] ?? null;
       setUserStatus((prev) => (prev === nextStatus ? prev : nextStatus));
       setUserRole((prev) => (prev === nextRole ? prev : nextRole));
       loadedUserIdRef.current = userId;
