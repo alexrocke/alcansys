@@ -23,7 +23,6 @@ const portalItems = [
   { title: "Serviços", url: "/portal/servicos", icon: ShoppingBag },
   { title: "Automações", url: "/portal/automacoes", icon: Zap },
   { title: "Faturas", url: "/portal/faturas", icon: Receipt },
-  { title: "Conversas", url: "/portal/conversas", icon: MessageCircle },
   { title: "Sistemas", url: "/portal/sistemas", icon: Monitor },
 ];
 
