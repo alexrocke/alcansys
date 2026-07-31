@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Pencil, Trash2, AlertTriangle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type R = { id: string; titulo: string; descricao: string | null; impacto: string; probabilidade: string; mitigacao: string | null; status: string };
 const NIVEIS = ['baixo', 'medio', 'alto'];
@@ -88,7 +89,7 @@ export function ProjectRisks({ projectId, companyId }: { projectId: string; comp
                 {r.descricao && <p className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">{r.descricao}</p>}
                 {r.mitigacao && <p className="text-xs text-muted-foreground mt-1"><strong>Mitigação:</strong> {r.mitigacao}</p>}
               </div>
-              {canEdit && <div className="flex gap-1 shrink-0"><Button size="icon" variant="ghost" onClick={() => openEdit(r)}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" onClick={() => confirm('Remover?') && remove.mutate(r.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>}
+              {canEdit && <div className="flex gap-1 shrink-0"><Button size="icon" variant="ghost" onClick={() => openEdit(r)}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" onClick={async () => { if (await confirmDialog('Remover este item? Esta ação não pode ser desfeita.')) remove.mutate(r.id); }}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>}
             </div>
           </CardContent></Card>
         ))}</div>

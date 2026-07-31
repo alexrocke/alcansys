@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Pencil, Trash2, UserCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type S = { id: string; nome: string; cargo: string | null; email: string | null; telefone: string | null; papel: string; observacoes: string | null };
 const PAPEIS = ['pm', 'tecnico', 'financeiro', 'diretor', 'outro'];
@@ -85,7 +86,7 @@ export function ProjectStakeholders({ projectId, companyId }: { projectId: strin
                 <p className="text-xs text-muted-foreground mt-1">{s.cargo} {s.email && `• ${s.email}`} {s.telefone && `• ${s.telefone}`}</p>
                 {s.observacoes && <p className="text-xs text-muted-foreground mt-1">{s.observacoes}</p>}
               </div>
-              {canEdit && <div className="flex gap-1 shrink-0"><Button size="icon" variant="ghost" onClick={() => openEdit(s)}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" onClick={() => confirm('Remover?') && remove.mutate(s.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>}
+              {canEdit && <div className="flex gap-1 shrink-0"><Button size="icon" variant="ghost" onClick={() => openEdit(s)}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" onClick={async () => { if (await confirmDialog('Remover este item? Esta ação não pode ser desfeita.')) remove.mutate(s.id); }}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>}
             </div>
           </CardContent></Card>
         ))}</div>

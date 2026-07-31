@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Plus, Pencil, Trash2, Target } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type K = { id: string; titulo: string; descricao: string | null; valor_alvo: number | null; valor_atual: number | null; unidade: string | null; prazo: string | null };
 
@@ -86,7 +87,7 @@ export function ProjectKPIs({ projectId, companyId }: { projectId: string; compa
                   <div className="mt-2 flex items-center gap-2"><Progress value={pct} className="flex-1 h-2" /><span className="text-xs font-medium">{pct}%</span></div>
                   <p className="text-xs text-muted-foreground mt-1">{k.valor_atual ?? 0} / {k.valor_alvo ?? '-'} {k.unidade} {k.prazo && `• prazo: ${k.prazo}`}</p>
                 </div>
-                {canEdit && <div className="flex gap-1 shrink-0"><Button size="icon" variant="ghost" onClick={() => openEdit(k)}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" onClick={() => confirm('Remover?') && remove.mutate(k.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>}
+                {canEdit && <div className="flex gap-1 shrink-0"><Button size="icon" variant="ghost" onClick={() => openEdit(k)}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" onClick={async () => { if (await confirmDialog('Remover este item? Esta ação não pode ser desfeita.')) remove.mutate(k.id); }}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>}
               </div>
             </CardContent></Card>
           );

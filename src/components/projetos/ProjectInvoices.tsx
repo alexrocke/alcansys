@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Pencil, Trash2, Receipt } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const STATUS = ['pendente', 'pago', 'vencido', 'cancelado'];
 
@@ -98,7 +99,7 @@ export function ProjectInvoices({ projectId, companyId }: { projectId: string; c
                 <p className="text-sm font-semibold">{fmt(Number(i.valor))}</p>
                 <Badge variant="outline" className={i.status === 'pago' ? 'bg-green-500/10 text-green-500 border-green-500/20' : i.status === 'vencido' ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'}>{i.status}</Badge>
               </div>
-              {canEdit && <div className="flex gap-1 shrink-0"><Button size="icon" variant="ghost" onClick={() => openEdit(i)}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" onClick={() => confirm('Remover?') && remove.mutate(i.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>}
+              {canEdit && <div className="flex gap-1 shrink-0"><Button size="icon" variant="ghost" onClick={() => openEdit(i)}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" onClick={async () => { if (await confirmDialog('Remover este item? Esta ação não pode ser desfeita.')) remove.mutate(i.id); }}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>}
             </div>
           </CardContent></Card>
         ))}</div>

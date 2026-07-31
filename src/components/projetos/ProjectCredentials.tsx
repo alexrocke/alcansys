@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Pencil, Trash2, Key, Eye, EyeOff, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type C = { id: string; nome: string; tipo: string; usuario: string | null; senha_encrypted: string | null; url: string | null; observacoes: string | null };
 const TIPOS = ['painel', 'ftp', 'ssh', 'git', 'banco', 'servidor', 'outro'];
@@ -118,7 +119,7 @@ export function ProjectCredentials({ projectId, companyId }: { projectId: string
                 )}
                 {c.observacoes && <p className="text-xs text-muted-foreground mt-1">{c.observacoes}</p>}
               </div>
-              {canEdit && <div className="flex gap-1 shrink-0"><Button size="icon" variant="ghost" onClick={() => openEdit(c)}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" onClick={() => confirm('Remover?') && remove.mutate(c.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>}
+              {canEdit && <div className="flex gap-1 shrink-0"><Button size="icon" variant="ghost" onClick={() => openEdit(c)}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" onClick={async () => { if (await confirmDialog('Remover este item? Esta ação não pode ser desfeita.')) remove.mutate(c.id); }}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>}
             </div>
           </CardContent></Card>
         ))}</div>

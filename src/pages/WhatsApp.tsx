@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConversationList } from "@/components/conversas/ConversationList";
 import { ChatArea } from "@/components/conversas/ChatArea";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import {
   Smartphone,
   QrCode,
@@ -141,7 +142,7 @@ export default function WhatsApp() {
   };
 
   const handleDelete = async () => {
-    if (!confirm("Tem certeza que deseja remover a instância? Isso é irreversível.")) return;
+    if (!(await confirmDialog("Tem certeza que deseja remover a instância? Isso é irreversível."))) return;
     setActionLoading(true);
     try {
       await callManageFunction("delete");

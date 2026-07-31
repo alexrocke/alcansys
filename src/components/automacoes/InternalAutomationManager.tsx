@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { Plus, Wifi, WifiOff, Trash2, Building2, Zap } from 'lucide-react';
 import { UazapInstanceSetup } from './UazapInstanceSetup';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const statusColors: Record<string, string> = {
   ativa: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
@@ -73,7 +74,7 @@ export function InternalAutomationManager() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Remover esta automação interna?')) return;
+    if (!(await confirmDialog('Remover esta automação interna?'))) return;
     const { error } = await supabase.from('client_automations').delete().eq('id', id);
     if (error) {
       toast({ title: 'Erro', description: error.message, variant: 'destructive' });

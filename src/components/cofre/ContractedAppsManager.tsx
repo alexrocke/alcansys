@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Pencil, Trash2, AppWindow, ExternalLink, DollarSign } from "lucide-react";
 import { toast } from "sonner";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type AppStatus = "ativo" | "suspenso" | "cancelado";
 
@@ -270,7 +271,7 @@ export function ContractedAppsManager() {
                           <Button variant="ghost" size="icon" onClick={() => openEdit(app)}>
                             <Pencil className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" onClick={() => { if (confirm("Excluir este aplicativo?")) deleteMutation.mutate(app.id); }}>
+                          <Button variant="ghost" size="icon" onClick={async () => { if (await confirmDialog("Excluir este aplicativo?")) deleteMutation.mutate(app.id); }}>
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>

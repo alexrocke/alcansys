@@ -9,6 +9,7 @@ import { toast } from '@/hooks/use-toast';
 import { Plus, Wifi, WifiOff, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const statusColors: Record<string, string> = {
   ativa: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
@@ -79,7 +80,7 @@ export function ClientAutomationManager() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Remover esta automação do cliente?')) return;
+    if (!(await confirmDialog('Remover esta automação do cliente?'))) return;
     const { error } = await supabase.from('client_automations').delete().eq('id', id);
     if (error) {
       toast({ title: 'Erro', description: error.message, variant: 'destructive' });
