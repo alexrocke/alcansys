@@ -89,7 +89,7 @@ export function ProjectEnvironments({ projectId, companyId }: { projectId: strin
                 {e.repo_url && <a href={e.repo_url} target="_blank" rel="noreferrer" className="text-xs text-muted-foreground hover:underline block mt-0.5">Repo: {e.repo_url} {e.branch && `(${e.branch})`}</a>}
                 {e.observacoes && <p className="text-xs text-muted-foreground mt-1">{e.observacoes}</p>}
               </div>
-              {canEdit && <div className="flex gap-1 shrink-0"><Button size="icon" variant="ghost" onClick={() => openEdit(e)}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" onClick={() => confirm('Remover?') && remove.mutate(e.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>}
+              {canEdit && <div className="flex gap-1 shrink-0"><Button size="icon" variant="ghost" onClick={() => openEdit(e)}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" onClick={async () => { if (await confirmDialog('Remover este item? Esta ação não pode ser desfeita.')) remove.mutate(e.id); }}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>}
             </div>
           </CardContent></Card>
         ))}</div>
