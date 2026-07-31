@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -39,7 +39,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userStatus, setUserStatus] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // Tracks which user id already had role/status loaded, so returning to the
+  // tab (TOKEN_REFRESHED / SIGNED_IN) never re-triggers a blocking reload.
+  const loadedUserIdRef = useRef<string | null>(null);
+
   const clearAuthState = useCallback(() => {
+    loadedUserIdRef.current = null;
     setSession(null);
     setUser(null);
     setUserRole(null);
@@ -47,20 +52,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setRoleLoading(false);
   }, []);
 
-  const fetchUserData = useCallback(async (userId: string) => {
-    setRoleLoading(true);
+  const fetchUserData = useCallback(async (userId: string, silent = false) => {
+    if (!silent) setRoleLoading(true);
     try {
       const [profileResult, roleResult] = await Promise.all([
         supabase.from('profiles').select('status').eq('id', userId).maybeSingle(),
         supabase.from('user_roles').select('role').eq('user_id', userId).maybeSingle()
       ]);
 
-      setUserStatus(profileResult.data?.status ?? null);
-      setUserRole(roleResult.data?.role ?? null);
+      const nextStatus = profileResult.data?.status ?? null;
+      const nextRole = roleResult.data?.role ?? null;
+      setUserStatus((prev) => (prev === nextStatus ? prev : nextStatus));
+      setUserRole((prev) => (prev === nextRole ? prev : nextRole));
+      loadedUserIdRef.current = userId;
     } catch (error) {
       console.error('Error fetching user data:', error);
     } finally {
-      setRoleLoading(false);
+      if (!silent) setRoleLoading(false);
     }
   }, []);
 
@@ -98,12 +106,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         setSession(session);
-        setUser(session.user ?? null);
+        // Keep the same user object reference when the id didn't change, so a
+        // token refresh (tab focus) doesn't cascade re-renders / remounts.
+        setUser((prev) => (prev && prev.id === session.user?.id ? prev : session.user ?? null));
 
         // Skip duplicate fetch on initial bootstrap (handled by getSession below)
         if (event !== 'SIGNED_OUT' && event !== 'INITIAL_SESSION' && session.user) {
+          const alreadyLoaded = loadedUserIdRef.current === session.user.id;
           setTimeout(() => {
-            if (mounted) fetchUserData(session.user.id);
+            // Same user (token refresh / focus): refresh silently, never blocking the UI.
+            if (mounted) fetchUserData(session.user.id, alreadyLoaded);
           }, 0);
         }
 
