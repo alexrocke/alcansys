@@ -1,4 +1,4 @@
-import { LayoutDashboard, ShoppingBag, Zap, Receipt, Monitor, MessageCircle, LogOut, FolderKanban } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Zap, Receipt, Monitor, LogOut, FolderKanban } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
