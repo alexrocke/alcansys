@@ -2,23 +2,12 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
-// PWA cleanup: register the kill-switch worker at /sw.js so it replaces any
-// old vite-plugin-pwa/Workbox registration, clears its caches, navigates open
-// clients to fresh HTML, and then unregisters itself. Without this step the
-// old Workbox SW keeps serving stale HTML/chunks in the Lovable preview.
+// PWA cleanup (idempotent): unregister any leftover app-shell service worker.
+// We never (re)register a worker here — doing so caused an install/activate/reload
+// loop. Messaging workers (FCM/OneSignal) are left untouched.
 if ("serviceWorker" in navigator) {
-  const swPaths = ["/sw.js", "/service-worker.js"];
+  const appShellPaths = ["/sw.js", "/service-worker.js"];
 
-  // Kick the replacement worker(s) so the browser fetches the new script and
-  // the activate handler (which purges old caches + reloads tabs) runs.
-  swPaths.forEach((path) => {
-    navigator.serviceWorker.register(path).catch(() => {
-      /* ignore — path may not have been registered previously */
-    });
-  });
-
-  // Belt-and-suspenders: if the kill-switch has already unregistered itself
-  // on a prior load, make sure no other stale registrations linger.
   navigator.serviceWorker.getRegistrations?.().then((registrations) => {
     registrations.forEach((registration) => {
       const scriptURL =
@@ -27,11 +16,15 @@ if ("serviceWorker" in navigator) {
         registration.installing?.scriptURL ||
         "";
       if (!scriptURL) return;
-      // Only touch app-shell workers; leave messaging workers (FCM/OneSignal) alone.
-      if (swPaths.some((p) => scriptURL.endsWith(p))) return;
       if (/firebase-messaging-sw|OneSignalSDKWorker/i.test(scriptURL)) return;
-      // Unknown worker: don't touch it.
+      if (appShellPaths.some((p) => new URL(scriptURL).pathname === p)) {
+        registration.unregister().catch(() => {
+          /* ignore */
+        });
+      }
     });
+  }).catch(() => {
+    /* ignore */
   });
 }
 
