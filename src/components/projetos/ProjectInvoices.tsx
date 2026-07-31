@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Pencil, Trash2, Receipt } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const STATUS = ['pendente', 'pago', 'vencido', 'cancelado'];
 

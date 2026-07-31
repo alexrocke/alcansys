@@ -5,6 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { Pencil, Trash2, Zap, Headphones, TrendingUp, Megaphone, LifeBuoy } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const categoryIcons: Record<string, React.ElementType> = {
   atendimento: Headphones,
@@ -44,7 +45,7 @@ export function WorkflowTemplateCard({ template, onEdit, onRefetch }: WorkflowTe
   };
 
   const handleDelete = async () => {
-    if (!confirm('Tem certeza que deseja excluir este template?')) return;
+    if (!(await confirmDialog('Tem certeza que deseja excluir este template?'))) return;
     const { error } = await supabase.from('workflow_templates').delete().eq('id', template.id);
     if (error) {
       toast({ title: 'Erro', description: error.message, variant: 'destructive' });

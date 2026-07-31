@@ -16,6 +16,7 @@ import {
 import { Plus, Pencil, Trash2, Globe, Database, Mail, Key, Package } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type Integration = {
   id: string;
@@ -233,7 +234,7 @@ export function ProjectInfrastructure({ projectId, companyId }: Props) {
                                 <Pencil className="h-4 w-4" />
                               </Button>
                               <Button size="icon" variant="ghost" onClick={() => {
-                                if (confirm('Remover esta integração?')) remove.mutate(i.id);
+                                if (await confirmDialog('Remover esta integração?')) remove.mutate(i.id);
                               }}>
                                 <Trash2 className="h-4 w-4 text-destructive" />
                               </Button>

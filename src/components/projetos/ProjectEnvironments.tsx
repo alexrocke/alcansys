@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Pencil, Trash2, Cloud, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type E = { id: string; nome: string; tipo: string; url: string | null; branch: string | null; repo_url: string | null; deploy_provider: string | null; observacoes: string | null };
 const TIPOS = ['dev', 'staging', 'producao', 'homologacao'];

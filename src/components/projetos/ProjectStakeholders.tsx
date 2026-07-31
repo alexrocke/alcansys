@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Pencil, Trash2, UserCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type S = { id: string; nome: string; cargo: string | null; email: string | null; telefone: string | null; papel: string; observacoes: string | null };
 const PAPEIS = ['pm', 'tecnico', 'financeiro', 'diretor', 'outro'];

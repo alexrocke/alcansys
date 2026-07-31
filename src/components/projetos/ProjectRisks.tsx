@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Pencil, Trash2, AlertTriangle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type R = { id: string; titulo: string; descricao: string | null; impacto: string; probabilidade: string; mitigacao: string | null; status: string };
 const NIVEIS = ['baixo', 'medio', 'alto'];

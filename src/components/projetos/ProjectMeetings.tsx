@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Plus, Pencil, Trash2, Video, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type M = { id: string; titulo: string; data: string; participantes: string[] | null; ata: string | null; link_gravacao: string | null };
 

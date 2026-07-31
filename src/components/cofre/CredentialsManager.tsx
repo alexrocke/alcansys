@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Pencil, Trash2, Eye, EyeOff, KeyRound, ExternalLink, Copy, Users, ShieldCheck, Lock } from "lucide-react";
 import { toast } from "sonner";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const CATEGORIES = [
   { value: "rede_social", label: "Rede Social" },
@@ -526,7 +527,7 @@ export function CredentialsManager() {
                             <Button variant="ghost" size="icon" onClick={() => openEdit(cred)}>
                               <Pencil className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="icon" onClick={() => { if (confirm("Excluir esta credencial?")) deleteMutation.mutate(cred.id); }}>
+                            <Button variant="ghost" size="icon" onClick={async () => { if (await confirmDialog("Excluir esta credencial?")) deleteMutation.mutate(cred.id); }}>
                               <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
                           </>

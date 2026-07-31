@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Plus, Pencil, Trash2, Target } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type K = { id: string; titulo: string; descricao: string | null; valor_alvo: number | null; valor_atual: number | null; unidade: string | null; prazo: string | null };
 

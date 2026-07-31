@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Pencil, Trash2, Key, Eye, EyeOff, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type C = { id: string; nome: string; tipo: string; usuario: string | null; senha_encrypted: string | null; url: string | null; observacoes: string | null };
 const TIPOS = ['painel', 'ftp', 'ssh', 'git', 'banco', 'servidor', 'outro'];
