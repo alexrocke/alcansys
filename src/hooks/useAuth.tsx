@@ -16,7 +16,16 @@ interface AuthContextType {
   userStatus: string | null;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Keep a single stable context instance across HMR updates. Without this, a hot
+// update of this module creates a new context object while the already-mounted
+// AuthProvider still feeds the old one, making consumers throw
+// "useAuth must be used within an AuthProvider" and blanking the screen.
+const globalScope = globalThis as unknown as {
+  __scalefyAuthContext?: React.Context<AuthContextType | undefined>;
+};
+const AuthContext =
+  globalScope.__scalefyAuthContext ??
+  (globalScope.__scalefyAuthContext = createContext<AuthContextType | undefined>(undefined));
 
 function translateAuthError(msg: string): string {
   const map: Record<string, string> = {
