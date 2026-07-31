@@ -106,12 +106,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         setSession(session);
-        setUser(session.user ?? null);
+        // Keep the same user object reference when the id didn't change, so a
+        // token refresh (tab focus) doesn't cascade re-renders / remounts.
+        setUser((prev) => (prev && prev.id === session.user?.id ? prev : session.user ?? null));
 
         // Skip duplicate fetch on initial bootstrap (handled by getSession below)
         if (event !== 'SIGNED_OUT' && event !== 'INITIAL_SESSION' && session.user) {
+          const alreadyLoaded = loadedUserIdRef.current === session.user.id;
           setTimeout(() => {
-            if (mounted) fetchUserData(session.user.id);
+            // Same user (token refresh / focus): refresh silently, never blocking the UI.
+            if (mounted) fetchUserData(session.user.id, alreadyLoaded);
           }, 0);
         }
 
