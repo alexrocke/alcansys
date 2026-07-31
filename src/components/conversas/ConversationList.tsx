@@ -15,11 +15,11 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusColors: Record<string, string> = {
-  aberta: 'bg-blue-500/10 text-blue-700 border-blue-200',
-  em_atendimento: 'bg-green-500/10 text-green-700 border-green-200',
-  aguardando: 'bg-yellow-500/10 text-yellow-700 border-yellow-200',
-  resolvida: 'bg-gray-500/10 text-gray-700 border-gray-200',
-  arquivada: 'bg-gray-500/10 text-gray-500 border-gray-200',
+  aberta: 'bg-primary/10 text-primary border-primary/20',
+  em_atendimento: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+  aguardando: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+  resolvida: 'bg-muted text-muted-foreground border-border',
+  arquivada: 'bg-muted text-muted-foreground/70 border-border',
 };
 
 interface ConversationListProps {
