@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
+import { Suspense, lazy } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -11,40 +12,45 @@ import { PortalSidebar } from "@/components/portal/PortalSidebar";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { CompanyProvider } from "@/hooks/useCompany";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import Index from "./pages/Index";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ConfirmDialogHost } from "@/components/ConfirmDialog";
+import { GlobalSearch } from "@/components/GlobalSearch";
+import { PageSkeleton } from "@/components/ui/loading-state";
 import Landing from "./pages/Landing";
-import Projetos from "./pages/Projetos";
-import ProjetoDetalhe from "./pages/ProjetoDetalhe";
-import Financeiro from "./pages/Financeiro";
-import Clientes from "./pages/Clientes";
-import ClienteDetalhe from "./pages/ClienteDetalhe";
-import Equipe from "./pages/Equipe";
-import Marketing from "./pages/Marketing";
-import Automacoes from "./pages/Automacoes";
-import WhatsAppPage from "./pages/WhatsApp";
-import Documentos from "./pages/Documentos";
-import Configuracoes from "./pages/Configuracoes";
-import Leads from "./pages/Leads";
-import Conversas from "./pages/Conversas";
-import Tarefas from "./pages/Tarefas";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
-import AtividadeLog from "./pages/AtividadeLog";
-import Checkout from "./pages/Checkout";
-import CofreInterno from "./pages/CofreInterno";
-import PortalDashboard from "./pages/portal/PortalDashboard";
-import PortalServicos from "./pages/portal/PortalServicos";
-import PortalAutomacoes from "./pages/portal/PortalAutomacoes";
-import PortalFaturas from "./pages/portal/PortalFaturas";
-import PortalSistemas from "./pages/portal/PortalSistemas";
-import PortalProjetos from "./pages/portal/PortalProjetos";
-import PortalProjetoDetalhe from "./pages/portal/PortalProjetoDetalhe";
-import Vendedores from "./pages/Vendedores";
 import { VendedorSidebar } from "@/components/vendedor-portal/VendedorSidebar";
-import VendedorDashboard from "./pages/vendedor-portal/VendedorDashboard";
-import VendedorLeads from "./pages/vendedor-portal/VendedorLeads";
-import VendedorComissoes from "./pages/vendedor-portal/VendedorComissoes";
-import VendedorClientes from "./pages/vendedor-portal/VendedorClientes";
+
+const Index = lazy(() => import("./pages/Index"));
+const Projetos = lazy(() => import("./pages/Projetos"));
+const ProjetoDetalhe = lazy(() => import("./pages/ProjetoDetalhe"));
+const Financeiro = lazy(() => import("./pages/Financeiro"));
+const Clientes = lazy(() => import("./pages/Clientes"));
+const ClienteDetalhe = lazy(() => import("./pages/ClienteDetalhe"));
+const Equipe = lazy(() => import("./pages/Equipe"));
+const Marketing = lazy(() => import("./pages/Marketing"));
+const Automacoes = lazy(() => import("./pages/Automacoes"));
+const WhatsAppPage = lazy(() => import("./pages/WhatsApp"));
+const Documentos = lazy(() => import("./pages/Documentos"));
+const Configuracoes = lazy(() => import("./pages/Configuracoes"));
+const Leads = lazy(() => import("./pages/Leads"));
+const Conversas = lazy(() => import("./pages/Conversas"));
+const Tarefas = lazy(() => import("./pages/Tarefas"));
+const AtividadeLog = lazy(() => import("./pages/AtividadeLog"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const CofreInterno = lazy(() => import("./pages/CofreInterno"));
+const Vendedores = lazy(() => import("./pages/Vendedores"));
+const PortalDashboard = lazy(() => import("./pages/portal/PortalDashboard"));
+const PortalServicos = lazy(() => import("./pages/portal/PortalServicos"));
+const PortalAutomacoes = lazy(() => import("./pages/portal/PortalAutomacoes"));
+const PortalFaturas = lazy(() => import("./pages/portal/PortalFaturas"));
+const PortalSistemas = lazy(() => import("./pages/portal/PortalSistemas"));
+const PortalProjetos = lazy(() => import("./pages/portal/PortalProjetos"));
+const PortalProjetoDetalhe = lazy(() => import("./pages/portal/PortalProjetoDetalhe"));
+const VendedorDashboard = lazy(() => import("./pages/vendedor-portal/VendedorDashboard"));
+const VendedorLeads = lazy(() => import("./pages/vendedor-portal/VendedorLeads"));
+const VendedorComissoes = lazy(() => import("./pages/vendedor-portal/VendedorComissoes"));
+const VendedorClientes = lazy(() => import("./pages/vendedor-portal/VendedorClientes"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,6 +64,10 @@ const queryClient = new QueryClient({
   },
 });
 
+function RouteFallback() {
+  return <PageSkeleton />;
+}
+
 function InternalLayout() {
   const location = useLocation();
   const isPortalRoute = location.pathname.startsWith('/portal');
@@ -67,45 +77,50 @@ function InternalLayout() {
       <div className="flex min-h-screen w-full">
         {isPortalRoute ? <PortalSidebar /> : <AppSidebar />}
         <div className="flex-1 flex flex-col">
-          <header className="h-14 border-b border-border bg-background flex items-center justify-between px-4">
+          <header className="h-14 border-b border-border bg-background flex items-center justify-between px-4 gap-2">
             <SidebarTrigger />
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <GlobalSearch />
+              <ThemeToggle />
+            </div>
           </header>
           <main className="flex-1 overflow-auto">
-            <Routes>
-              <Route path="/dashboard" element={<Index />} />
-              <Route path="/projetos" element={<Projetos />} />
-              <Route path="/projetos/:id" element={<ProjetoDetalhe />} />
-              <Route path="/tarefas" element={<Tarefas />} />
-              <Route path="/financeiro" element={<Financeiro />} />
-              <Route path="/clientes" element={<Clientes />} />
-              <Route path="/clientes/:id" element={<ClienteDetalhe />} />
-              <Route path="/equipe" element={<Equipe />} />
-              <Route path="/marketing" element={<Marketing />} />
-              <Route path="/automacoes" element={<Automacoes />} />
-              <Route path="/whatsapp" element={<WhatsAppPage />} />
-              <Route path="/documentos" element={<Documentos />} />
-              <Route path="/leads" element={<Leads />} />
-              <Route path="/conversas" element={<Conversas />} />
-              <Route path="/configuracoes" element={<Configuracoes />} />
-              <Route path="/atividades" element={<AtividadeLog />} />
-              <Route path="/vendedores" element={<Vendedores />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/cofre" element={<CofreInterno />} />
-              {/* Admin can access portal and vendedor routes */}
-              <Route path="/portal" element={<PortalDashboard />} />
-              <Route path="/portal/servicos" element={<PortalServicos />} />
-              <Route path="/portal/automacoes" element={<PortalAutomacoes />} />
-              <Route path="/portal/faturas" element={<PortalFaturas />} />
-              <Route path="/portal/sistemas" element={<PortalSistemas />} />
-              <Route path="/portal/projetos" element={<PortalProjetos />} />
-              <Route path="/portal/projetos/:id" element={<PortalProjetoDetalhe />} />
-              <Route path="/vendedor" element={<VendedorDashboard />} />
-              <Route path="/vendedor/leads" element={<VendedorLeads />} />
-              <Route path="/vendedor/comissoes" element={<VendedorComissoes />} />
-              <Route path="/vendedor/clientes" element={<VendedorClientes />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
+                <Route path="/dashboard" element={<Index />} />
+                <Route path="/projetos" element={<Projetos />} />
+                <Route path="/projetos/:id" element={<ProjetoDetalhe />} />
+                <Route path="/tarefas" element={<Tarefas />} />
+                <Route path="/financeiro" element={<Financeiro />} />
+                <Route path="/clientes" element={<Clientes />} />
+                <Route path="/clientes/:id" element={<ClienteDetalhe />} />
+                <Route path="/equipe" element={<Equipe />} />
+                <Route path="/marketing" element={<Marketing />} />
+                <Route path="/automacoes" element={<Automacoes />} />
+                <Route path="/whatsapp" element={<WhatsAppPage />} />
+                <Route path="/documentos" element={<Documentos />} />
+                <Route path="/leads" element={<Leads />} />
+                <Route path="/conversas" element={<Conversas />} />
+                <Route path="/configuracoes" element={<Configuracoes />} />
+                <Route path="/atividades" element={<AtividadeLog />} />
+                <Route path="/vendedores" element={<Vendedores />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/cofre" element={<CofreInterno />} />
+                {/* Admin can access portal and vendedor routes */}
+                <Route path="/portal" element={<PortalDashboard />} />
+                <Route path="/portal/servicos" element={<PortalServicos />} />
+                <Route path="/portal/automacoes" element={<PortalAutomacoes />} />
+                <Route path="/portal/faturas" element={<PortalFaturas />} />
+                <Route path="/portal/sistemas" element={<PortalSistemas />} />
+                <Route path="/portal/projetos" element={<PortalProjetos />} />
+                <Route path="/portal/projetos/:id" element={<PortalProjetoDetalhe />} />
+                <Route path="/vendedor" element={<VendedorDashboard />} />
+                <Route path="/vendedor/leads" element={<VendedorLeads />} />
+                <Route path="/vendedor/comissoes" element={<VendedorComissoes />} />
+                <Route path="/vendedor/clientes" element={<VendedorClientes />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </main>
         </div>
       </div>
@@ -124,14 +139,18 @@ function PortalLayout() {
             <ThemeToggle />
           </header>
           <main className="flex-1 overflow-auto">
-            <Routes>
-              <Route path="/portal" element={<PortalDashboard />} />
-              <Route path="/portal/servicos" element={<PortalServicos />} />
-              <Route path="/portal/automacoes" element={<PortalAutomacoes />} />
-              <Route path="/portal/faturas" element={<PortalFaturas />} />
-              <Route path="/portal/sistemas" element={<PortalSistemas />} />
-              <Route path="*" element={<Navigate to="/portal" replace />} />
-            </Routes>
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
+                <Route path="/portal" element={<PortalDashboard />} />
+                <Route path="/portal/servicos" element={<PortalServicos />} />
+                <Route path="/portal/automacoes" element={<PortalAutomacoes />} />
+                <Route path="/portal/faturas" element={<PortalFaturas />} />
+                <Route path="/portal/sistemas" element={<PortalSistemas />} />
+                <Route path="/portal/projetos" element={<PortalProjetos />} />
+                <Route path="/portal/projetos/:id" element={<PortalProjetoDetalhe />} />
+                <Route path="*" element={<Navigate to="/portal" replace />} />
+              </Routes>
+            </Suspense>
           </main>
         </div>
       </div>
@@ -150,13 +169,15 @@ function VendedorLayout() {
             <ThemeToggle />
           </header>
           <main className="flex-1 overflow-auto">
-            <Routes>
-              <Route path="/vendedor" element={<VendedorDashboard />} />
-              <Route path="/vendedor/leads" element={<VendedorLeads />} />
-              <Route path="/vendedor/comissoes" element={<VendedorComissoes />} />
-              <Route path="/vendedor/clientes" element={<VendedorClientes />} />
-              <Route path="*" element={<Navigate to="/vendedor" replace />} />
-            </Routes>
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
+                <Route path="/vendedor" element={<VendedorDashboard />} />
+                <Route path="/vendedor/leads" element={<VendedorLeads />} />
+                <Route path="/vendedor/comissoes" element={<VendedorComissoes />} />
+                <Route path="/vendedor/clientes" element={<VendedorClientes />} />
+                <Route path="*" element={<Navigate to="/vendedor" replace />} />
+              </Routes>
+            </Suspense>
           </main>
         </div>
       </div>
@@ -191,22 +212,25 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route
-                path="/*"
-                element={
-                  <ProtectedRoute>
-                    <AppRoutes />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </AuthProvider>
-        </BrowserRouter>
+        <ConfirmDialogHost />
+        <ErrorBoundary>
+          <BrowserRouter>
+            <AuthProvider>
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route
+                  path="/*"
+                  element={
+                    <ProtectedRoute>
+                      <AppRoutes />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </AuthProvider>
+          </BrowserRouter>
+        </ErrorBoundary>
       </TooltipProvider>
     </QueryClientProvider>
   </ThemeProvider>
