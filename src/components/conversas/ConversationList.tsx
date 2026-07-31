@@ -61,22 +61,23 @@ export function ConversationList({
   };
 
   return (
-    <div className={`w-full md:w-96 border-r border-border flex flex-col bg-background ${selectedConversation && isMobile ? 'hidden' : 'flex'}`}>
-      <div className="p-4 border-b border-border space-y-3">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold text-foreground">Conversas</h1>
-          <div className="flex gap-2 items-center">
-            <Badge variant="outline">{openCount} abertas</Badge>
-            <Badge variant="secondary" className="gap-1"><Bot className="h-3 w-3" />{iaCount} IA</Badge>
-            <SupervisaoPanel companyId={companyId} />
+    <div className={`w-full md:w-96 border-r border-border flex flex-col bg-card/40 ${selectedConversation && isMobile ? 'hidden' : 'flex'}`}>
+      <div className="px-4 pt-5 pb-4 border-b border-border space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <h1 className="text-lg font-semibold tracking-tight text-foreground">Conversas</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {openCount} abertas · {iaCount} com IA
+            </p>
           </div>
+          <SupervisaoPanel companyId={companyId} />
         </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Buscar..." value={searchQuery} onChange={(e) => onSearchChange(e.target.value)} className="pl-9" />
+          <Input placeholder="Buscar conversa..." value={searchQuery} onChange={(e) => onSearchChange(e.target.value)} className="pl-9 h-9 bg-background" />
         </div>
         <Select value={statusFilter} onValueChange={onStatusFilterChange}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full h-9 bg-background">
             <SelectValue placeholder="Filtrar" />
           </SelectTrigger>
           <SelectContent>
@@ -88,11 +89,14 @@ export function ConversationList({
 
       <ScrollArea className="flex-1">
         {isLoading ? (
-          <p className="p-4 text-center text-muted-foreground">Carregando...</p>
+          <p className="p-4 text-center text-sm text-muted-foreground">Carregando...</p>
         ) : conversations.length === 0 ? (
-          <div className="p-8 text-center">
-            <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-            <p className="text-muted-foreground">Nenhuma conversa</p>
+          <div className="p-10 text-center">
+            <div className="mx-auto mb-3 h-11 w-11 rounded-full bg-muted/60 flex items-center justify-center">
+              <MessageSquare className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium text-foreground">Nenhuma conversa</p>
+            <p className="text-xs text-muted-foreground mt-1">Novas conversas aparecerão aqui.</p>
           </div>
         ) : (
           conversations.map((conv: any) => {
