@@ -14,8 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConversationList } from "@/components/conversas/ConversationList";
 import { ChatArea } from "@/components/conversas/ChatArea";
-import {
 import { confirmDialog } from "@/components/ConfirmDialog";
+import {
   Smartphone,
   QrCode,
   Wifi,
