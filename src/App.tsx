@@ -37,7 +37,6 @@ import PortalServicos from "./pages/portal/PortalServicos";
 import PortalAutomacoes from "./pages/portal/PortalAutomacoes";
 import PortalFaturas from "./pages/portal/PortalFaturas";
 import PortalSistemas from "./pages/portal/PortalSistemas";
-import PortalConversas from "./pages/portal/PortalConversas";
 import PortalProjetos from "./pages/portal/PortalProjetos";
 import PortalProjetoDetalhe from "./pages/portal/PortalProjetoDetalhe";
 import Vendedores from "./pages/Vendedores";
@@ -98,7 +97,6 @@ function InternalLayout() {
               <Route path="/portal/servicos" element={<PortalServicos />} />
               <Route path="/portal/automacoes" element={<PortalAutomacoes />} />
               <Route path="/portal/faturas" element={<PortalFaturas />} />
-              <Route path="/portal/conversas" element={<PortalConversas />} />
               <Route path="/portal/sistemas" element={<PortalSistemas />} />
               <Route path="/portal/projetos" element={<PortalProjetos />} />
               <Route path="/portal/projetos/:id" element={<PortalProjetoDetalhe />} />
@@ -131,7 +129,6 @@ function PortalLayout() {
               <Route path="/portal/servicos" element={<PortalServicos />} />
               <Route path="/portal/automacoes" element={<PortalAutomacoes />} />
               <Route path="/portal/faturas" element={<PortalFaturas />} />
-              <Route path="/portal/conversas" element={<PortalConversas />} />
               <Route path="/portal/sistemas" element={<PortalSistemas />} />
               <Route path="*" element={<Navigate to="/portal" replace />} />
             </Routes>
