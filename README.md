@@ -1,73 +1,74 @@
-# Welcome to your Lovable project
+# ScalefySistemas
 
-## Project info
+Crie um sistema corporativo completo chamado Alcansys em português, com o objetivo de gerenciar projetos, finanças, marketing, automações, clientes e equipe interna.
 
-**URL**: https://lovable.dev/projects/81650d91-a5e6-44f9-9237-1c461af89e18
+Tema visual: azul escuro (#1E3A8A) com azul secundário (#3B82F6), cantos arredondados 2xl e fonte Inter.
 
-## How can I edit this code?
+Autenticação: por e-mail e senha, com aprovação manual de usuários pelo administrador antes do acesso.
 
-There are several ways of editing your application.
+Perfis: Admin, Gestor, Colaborador, Financeiro e Marketing.
 
-**Use Lovable**
+Layout: navegação lateral (sidebar).
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/81650d91-a5e6-44f9-9237-1c461af89e18) and start prompting.
+Páginas e funcionalidades:
 
-Changes made via Lovable will be committed automatically to this repo.
+Dashboard: métricas de projetos ativos, receita mensal, custo operacional e ROI médio, além de gráficos de linha (receita x custo) e pizza (distribuição por área).
 
-**Use your preferred IDE**
+Projetos: CRUD completo com campos nome, cliente, área, status, gestor, orçamento e datas; relação com checklist, finanças e documentação.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Financeiro: gráficos e tabelas de receitas e despesas, distribuição de custos, exportação em PDF e meta mensal ajustável.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Marketing e Tráfego: controle de campanhas com campos de orçamento, ROI e status.
 
-Follow these steps:
+Automação: catálogo de automações (n8n, WhatsApp, e-mail) com custo, retorno e status.
+
+Clientes: cadastro, plano, área, status e envio de relatórios automáticos.
+
+Documentação: lista com upload, tipo, autor, data e tags.
+
+Equipe: gerenciamento de colaboradores com status e nível de acesso.
+
+Configurações: logotipo, tema, custos fixos, áreas ativas e meta mensal.
+
+Triggers automáticos:
+
+Ao cadastrar usuário → definir como pendente e notificar admin.
+
+Ao vencer tarefa → criar alerta de atraso.
+
+Ao expirar domínio (menos de 7 dias) → alerta crítico.
+
+Ao custo exceder orçamento → alerta de risco financeiro.
+
+Ao faturamento cair abaixo de 80% da meta → alerta de receita baixa.
+
+Relatório mensal automático: gerar resumo financeiro com receitas, custos e ROI, enviar PDF para o admin por e-mail.
+
+Relatórios automáticos:
+
+Financeiro mensal (resumo, gráficos, tabelas de custos e receitas por área).
+
+Configure todos os relacionamentos de dados via Supabase e ative criação automática de tabelas.
+
+This project was built with [Lovable](https://lovable.dev).
+
+**Live app**: https://alcansys.lovable.app
+
+## Build with Lovable
+
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/81650d91-a5e6-44f9-9237-1c461af89e18).
+
+- **Ship faster**: describe what you want to build and Lovable handles the code.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+
+## Development
+
+Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
+git clone <this-repository-url>
+cd <repository-name>
 npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/81650d91-a5e6-44f9-9237-1c461af89e18) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
