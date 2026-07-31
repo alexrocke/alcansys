@@ -39,7 +39,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userStatus, setUserStatus] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // Tracks which user id already had role/status loaded, so returning to the
+  // tab (TOKEN_REFRESHED / SIGNED_IN) never re-triggers a blocking reload.
+  const loadedUserIdRef = useRef<string | null>(null);
+
   const clearAuthState = useCallback(() => {
+    loadedUserIdRef.current = null;
     setSession(null);
     setUser(null);
     setUserRole(null);
@@ -47,20 +52,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setRoleLoading(false);
   }, []);
 
-  const fetchUserData = useCallback(async (userId: string) => {
-    setRoleLoading(true);
+  const fetchUserData = useCallback(async (userId: string, silent = false) => {
+    if (!silent) setRoleLoading(true);
     try {
       const [profileResult, roleResult] = await Promise.all([
         supabase.from('profiles').select('status').eq('id', userId).maybeSingle(),
         supabase.from('user_roles').select('role').eq('user_id', userId).maybeSingle()
       ]);
 
-      setUserStatus(profileResult.data?.status ?? null);
-      setUserRole(roleResult.data?.role ?? null);
+      const nextStatus = profileResult.data?.status ?? null;
+      const nextRole = roleResult.data?.role ?? null;
+      setUserStatus((prev) => (prev === nextStatus ? prev : nextStatus));
+      setUserRole((prev) => (prev === nextRole ? prev : nextRole));
+      loadedUserIdRef.current = userId;
     } catch (error) {
       console.error('Error fetching user data:', error);
     } finally {
-      setRoleLoading(false);
+      if (!silent) setRoleLoading(false);
     }
   }, []);
 
