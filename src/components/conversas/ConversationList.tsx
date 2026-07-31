@@ -112,9 +112,9 @@ export function ConversationList({
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-foreground truncate">{conv.contato_nome}</p>
                       {conv.atendente_tipo === 'ia' ? (
-                        <Bot className="h-3.5 w-3.5 text-purple-500 shrink-0" />
+                        <Bot className="h-3.5 w-3.5 text-primary shrink-0" />
                       ) : (
-                        <User className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                        <User className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                       )}
                       {locked && <Lock className="h-3 w-3 text-destructive shrink-0" />}
                     </div>
