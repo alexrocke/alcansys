@@ -11,7 +11,7 @@ export type LegalSection = { heading: string; body: string };
 
 export const landingDefaults: Record<string, any> = {
   hero: {
-    badge: "Scalefy Sistemas",
+    badge: "",
     title: "Sistemas sob medida para organizar, automatizar e fazer sua empresa",
     title_highlight: "crescer",
     subtitle:
