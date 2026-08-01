@@ -23,6 +23,17 @@ export default function Landing() {
     if (session) navigate("/dashboard", { replace: true });
   }, [session, navigate]);
 
+  // Rola até a seção quando a URL chega com hash (ex: /#projetos)
+  useEffect(() => {
+    const id = window.location.hash.replace("#", "");
+    if (!id) return;
+    const t = setTimeout(
+      () => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }),
+      120,
+    );
+    return () => clearTimeout(t);
+  }, []);
+
   if (session) return null;
 
   const hero = content.get("hero");
