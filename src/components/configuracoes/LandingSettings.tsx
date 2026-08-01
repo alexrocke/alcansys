@@ -56,7 +56,15 @@ export function LandingSettings() {
   if (isLoading) return <p className="text-muted-foreground">Carregando...</p>;
 
   return (
-    <Accordion type="multiple" className="space-y-4">
+    <>
+      <Card className="p-4 mb-4 border-primary/30 bg-primary/5">
+        <p className="text-sm text-muted-foreground">
+          A landing page atual usa um conteúdo fixo definido no design da marca. As
+          edições abaixo ficam salvas, mas ainda não substituem o texto publicado —
+          avise se quiser religar a página a estas configurações.
+        </p>
+      </Card>
+      <Accordion type="multiple" className="space-y-4">
       {sections?.map((section) => (
         <SectionEditor
           key={section.id}
@@ -67,7 +75,8 @@ export function LandingSettings() {
           saving={updateMutation.isPending}
         />
       ))}
-    </Accordion>
+      </Accordion>
+    </>
   );
 }
 
@@ -155,10 +164,6 @@ function HeroEditor({ config, onChange }: { config: Record<string, any>; onChang
       <div>
         <Label>Subtítulo</Label>
         <Textarea value={config.subtitle || ""} onChange={(e) => set("subtitle", e.target.value)} />
-      </div>
-      <div>
-        <Label>URL da cena Spline</Label>
-        <Input value={config.spline_url || ""} onChange={(e) => set("spline_url", e.target.value)} />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
