@@ -200,7 +200,7 @@ export default function Landing() {
               <div className="absolute top-6 left-6 flex items-center gap-3">
                 <img src={logo} alt="Scalefy" className="h-8 w-auto object-contain" />
               </div>
-              <div className="absolute bottom-6 left-6 text-xs uppercase tracking-[0.25em] text-muted-foreground">
+              <div className="hidden md:block absolute bottom-6 left-6 text-xs uppercase tracking-[0.25em] text-muted-foreground">
                 Software · Automação · IA
               </div>
             </div>
