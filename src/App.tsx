@@ -223,6 +223,23 @@ const App = () => (
                 <Route path="/" element={<Landing />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route
+                  path="/politica-de-privacidade"
+                  element={
+                    <Suspense fallback={<RouteFallback />}>
+                      <PoliticaPrivacidade />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/termos-de-uso"
+                  element={
+                    <Suspense fallback={<RouteFallback />}>
+                      <TermosDeUso />
+                    </Suspense>
+                  }
+                />
+
+                <Route
                   path="/*"
                   element={
                     <ProtectedRoute>
