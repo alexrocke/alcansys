@@ -54,10 +54,14 @@ export default function Landing() {
           <div className="pointer-events-none absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-primary/15 blur-[140px]" />
           <div className="max-w-7xl mx-auto grid md:grid-cols-12 gap-12 md:gap-10 items-center relative">
             <div className="md:col-span-6 space-y-7">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-surface text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                {hero.badge}
-              </div>
+              {hero.badge ? (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-surface text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  {hero.badge}
+                </div>
+              ) : null}
+
+
 
               <h1 className="font-display text-4xl md:text-6xl lg:text-[4.2rem] leading-[1.02] tracking-tight">
                 {hero.title}{" "}
