@@ -160,14 +160,93 @@ export const landingDefaults: Record<string, any> = {
     updated: "01 de agosto de 2026",
     intro:
       "Esta Política descreve como a Scalefy Sistemas coleta, utiliza e protege os dados pessoais tratados em seus sites, sistemas e canais de atendimento.",
-    sections: [] as LegalSection[],
+    sections: [
+      {
+        heading: "1. Quem somos",
+        body: "A Scalefy Sistemas desenvolve softwares, automações e plataformas digitais sob medida. Esta página é mantida pela Scalefy para explicar como tratamos dados pessoais em nossos canais. Para qualquer dúvida, fale com contato@scalefy.com.br.",
+      },
+      {
+        heading: "2. Dados que coletamos",
+        body: "Coletamos os dados que você nos envia diretamente, como nome, e-mail, telefone, empresa e mensagens enviadas pelos formulários ou pelo WhatsApp. Em nossos sistemas, coletamos também os dados necessários para criar e manter sua conta e registrar o uso das funcionalidades contratadas.",
+      },
+      {
+        heading: "3. Como usamos os dados",
+        body: "Utilizamos os dados para responder solicitações, elaborar propostas, prestar os serviços contratados, emitir cobranças, dar suporte e melhorar nossos produtos. Não vendemos dados pessoais.",
+      },
+      {
+        heading: "4. Compartilhamento e fornecedores",
+        body: "Podemos compartilhar dados com fornecedores de tecnologia necessários à operação, como hospedagem, banco de dados, envio de e-mails, mensageria e meios de pagamento. Esses fornecedores tratam os dados apenas conforme nossas instruções.",
+      },
+      {
+        heading: "5. Armazenamento e segurança",
+        body: "Adotamos controles de acesso, autenticação e criptografia de credenciais sensíveis. Nenhum sistema é totalmente imune a incidentes, por isso mantemos práticas de monitoramento e resposta e comunicamos o cliente quando um incidente relevante ocorre.",
+      },
+      {
+        heading: "6. Retenção e exclusão",
+        body: "Mantemos os dados pelo tempo necessário à finalidade que motivou a coleta e às obrigações legais e contratuais. Depois disso, os dados são excluídos ou anonimizados.",
+      },
+      {
+        heading: "7. Seus direitos",
+        body: "Você pode solicitar confirmação de tratamento, acesso, correção, portabilidade, anonimização ou exclusão dos seus dados, além de revogar consentimentos. Basta enviar o pedido para contato@scalefy.com.br.",
+      },
+      {
+        heading: "8. Cookies",
+        body: "Nosso site pode utilizar cookies e tecnologias equivalentes para funcionamento básico, medição de audiência e melhoria da navegação. Você pode gerenciar cookies nas configurações do seu navegador.",
+      },
+      {
+        heading: "9. Alterações desta Política",
+        body: "Esta Política pode ser atualizada para refletir mudanças em nossos serviços ou na legislação. A data da última atualização é sempre indicada no topo desta página.",
+      },
+    ] as LegalSection[],
   },
   terms: {
     title: "Termos de Uso",
     updated: "01 de agosto de 2026",
     intro:
       "Estes Termos regulam o uso do site, dos sistemas e dos serviços fornecidos pela Scalefy Sistemas.",
-    sections: [] as LegalSection[],
+    sections: [
+      {
+        heading: "1. Aceite",
+        body: "Ao acessar o site ou utilizar qualquer sistema da Scalefy Sistemas, você concorda com estes Termos. Se não concordar, não utilize os serviços.",
+      },
+      {
+        heading: "2. Serviços",
+        body: "A Scalefy desenvolve e disponibiliza sistemas, automações e plataformas digitais. O escopo, prazos, valores e responsabilidades específicas de cada projeto são definidos em proposta ou contrato próprio, que prevalece sobre estes Termos em caso de divergência.",
+      },
+      {
+        heading: "3. Conta e acesso",
+        body: "Os acessos são pessoais e intransferíveis. Você é responsável por manter suas credenciais em sigilo e por todas as atividades realizadas na sua conta. Comunique imediatamente qualquer uso não autorizado.",
+      },
+      {
+        heading: "4. Uso permitido",
+        body: "É proibido utilizar os serviços para atividades ilícitas, tentar burlar mecanismos de segurança, realizar engenharia reversa, sobrecarregar a infraestrutura ou reproduzir os sistemas sem autorização.",
+      },
+      {
+        heading: "5. Propriedade intelectual",
+        body: "A marca, o código-fonte, o design e os materiais da Scalefy são protegidos por direitos de propriedade intelectual. A contratação de um serviço não transfere titularidade, salvo previsão expressa em contrato.",
+      },
+      {
+        heading: "6. Pagamentos",
+        body: "Valores, formas de pagamento, reajustes e prazos são definidos na proposta ou contrato. O atraso no pagamento pode gerar suspensão do acesso, após comunicação prévia.",
+      },
+      {
+        heading: "7. Disponibilidade e suporte",
+        body: "Trabalhamos para manter os sistemas disponíveis, mas podem ocorrer interrupções por manutenção, atualização ou falhas de terceiros. Condições de suporte e garantia seguem o que estiver acordado em contrato.",
+      },
+      {
+        heading: "8. Limitação de responsabilidade",
+        body: "A Scalefy não se responsabiliza por danos decorrentes de uso indevido dos sistemas, de dados incorretos fornecidos pelo cliente ou de falhas em serviços de terceiros fora do nosso controle.",
+      },
+      {
+        heading: "9. Vigência e encerramento",
+        body: "Estes Termos vigoram enquanto durar o uso dos serviços. O encerramento não afeta obrigações já assumidas, especialmente as financeiras e de confidencialidade.",
+      },
+      {
+        heading: "10. Foro e contato",
+        body: "Estes Termos são regidos pela legislação brasileira. Dúvidas podem ser enviadas para contato@scalefy.com.br.",
+      },
+    ] as LegalSection[],
+
   },
 };
 
