@@ -150,7 +150,7 @@ export const landingDefaults: Record<string, any> = {
   },
   footer: {
     email: "contato@scalefy.com.br",
-    whatsapp_url: "https://wa.me/5500000000000",
+    whatsapp_url: "https://wa.me/5548988660826",
     whatsapp_label: "WhatsApp",
     company_name: "Scalefy Sistemas",
     description: "Software, automação e IA para operações reais.",
