@@ -7,9 +7,9 @@ const WHATSAPP_URL = "https://wa.me/5500000000000";
 export function LandingHeader() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/70 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 px-6 md:px-10 h-20">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 px-6 md:px-10 h-24">
         <Link to="/" className="flex items-center gap-3">
-          <img src={logo} alt="Scalefy" className="h-10 md:h-12 w-auto object-contain" />
+          <img src={logo} alt="Scalefy" className="h-12 md:h-16 w-auto object-contain" />
         </Link>
         <nav className="hidden md:flex items-center gap-10 text-sm text-muted-foreground font-medium">
           <a href="#servicos" className="hover:text-foreground transition-colors">Serviços</a>
