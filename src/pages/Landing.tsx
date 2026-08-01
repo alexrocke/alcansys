@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { ArrowRight, ArrowUpRight, Check, X } from "lucide-react";
-import heroAlex from "@/assets/hero-alex.png.asset.json";
+import heroAlex from "@/assets/hero-alex.webp";
 import logo from "@/assets/logo-scalefy.png";
 
 const WHATSAPP_URL = "https://wa.me/5500000000000";
@@ -191,7 +191,7 @@ export default function Landing() {
               </div>
 
               <img
-                src={heroAlex.url}
+                src={heroAlex}
                 alt="Alex Fraga, fundador da Scalefy"
                 loading="eager"
                 className="absolute bottom-0 right-0 h-[105%] w-auto object-cover object-top [mask-image:linear-gradient(to_left,black_60%,transparent)]"
