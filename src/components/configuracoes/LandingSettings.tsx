@@ -156,10 +156,6 @@ function HeroEditor({ config, onChange }: { config: Record<string, any>; onChang
         <Label>Subtítulo</Label>
         <Textarea value={config.subtitle || ""} onChange={(e) => set("subtitle", e.target.value)} />
       </div>
-      <div>
-        <Label>URL da cena Spline</Label>
-        <Input value={config.spline_url || ""} onChange={(e) => set("spline_url", e.target.value)} />
-      </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label>Botão primário</Label>
