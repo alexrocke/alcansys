@@ -51,6 +51,9 @@ const VendedorDashboard = lazy(() => import("./pages/vendedor-portal/VendedorDas
 const VendedorLeads = lazy(() => import("./pages/vendedor-portal/VendedorLeads"));
 const VendedorComissoes = lazy(() => import("./pages/vendedor-portal/VendedorComissoes"));
 const VendedorClientes = lazy(() => import("./pages/vendedor-portal/VendedorClientes"));
+const PoliticaPrivacidade = lazy(() => import("./pages/legal/PoliticaPrivacidade"));
+const TermosDeUso = lazy(() => import("./pages/legal/TermosDeUso"));
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -219,6 +222,23 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route
+                  path="/politica-de-privacidade"
+                  element={
+                    <Suspense fallback={<RouteFallback />}>
+                      <PoliticaPrivacidade />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/termos-de-uso"
+                  element={
+                    <Suspense fallback={<RouteFallback />}>
+                      <TermosDeUso />
+                    </Suspense>
+                  }
+                />
+
                 <Route
                   path="/*"
                   element={
