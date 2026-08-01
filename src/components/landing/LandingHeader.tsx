@@ -1,10 +1,15 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useLandingContent } from "@/hooks/useLandingContent";
 import logo from "@/assets/logo-scalefy.png";
 
-const WHATSAPP_URL = "https://wa.me/5500000000000";
-
 export function LandingHeader() {
+  const { get } = useLandingContent();
+  const footer = get("footer");
+  const raw = (footer.whatsapp_url || "").trim();
+  const isPlaceholder = !raw || /0{6,}/.test(raw);
+  const whatsapp = isPlaceholder ? "#contato" : raw;
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/70 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 px-6 md:px-10 h-24">
@@ -24,7 +29,10 @@ export function LandingHeader() {
           >
             Entrar
           </Link>
-          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+          <a
+            href={whatsapp}
+            {...(isPlaceholder ? {} : { target: "_blank", rel: "noopener noreferrer" })}
+          >
             <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium tracking-wide">
               Falar com a Scalefy
             </Button>
