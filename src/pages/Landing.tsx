@@ -23,6 +23,17 @@ export default function Landing() {
     if (session) navigate("/dashboard", { replace: true });
   }, [session, navigate]);
 
+  // Rola até a seção quando a URL chega com hash (ex: /#projetos)
+  useEffect(() => {
+    const id = window.location.hash.replace("#", "");
+    if (!id) return;
+    const t = setTimeout(
+      () => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }),
+      120,
+    );
+    return () => clearTimeout(t);
+  }, []);
+
   if (session) return null;
 
   const hero = content.get("hero");
@@ -36,7 +47,10 @@ export default function Landing() {
   const cta = content.get("cta");
   const footer = content.get("footer");
 
-  const whatsapp = footer.whatsapp_url || "https://wa.me/5500000000000";
+  const rawWhatsapp = (footer.whatsapp_url || "").trim();
+  const isPlaceholder = !rawWhatsapp || /0{6,}/.test(rawWhatsapp);
+  // Sem número configurado, o botão leva para o contato em vez de um link morto
+  const whatsapp = isPlaceholder ? "#contato" : rawWhatsapp;
 
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });

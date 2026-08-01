@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useLandingContent } from "@/hooks/useLandingContent";
 import logo from "@/assets/logo-scalefy.png";
 
@@ -6,7 +6,19 @@ export function LandingFooter() {
   const content = useLandingContent();
   const footer = content.get("footer");
   const products = content.get("products");
-  const whatsapp = footer.whatsapp_url || "https://wa.me/5500000000000";
+  const navigate = useNavigate();
+  const location = useLocation();
+  const rawWhatsapp = (footer.whatsapp_url || "").trim();
+  const isPlaceholder = !rawWhatsapp || /0{6,}/.test(rawWhatsapp);
+
+  const goToSection = (id: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (location.pathname !== "/") {
+      navigate("/#" + id);
+      return;
+    }
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <footer id="contato" className="border-t border-border py-14 px-6 md:px-10 bg-background">
@@ -19,10 +31,10 @@ export function LandingFooter() {
         <div className="space-y-3">
           <div className="text-xs uppercase tracking-[0.25em] text-primary">Navegação</div>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/#servicos" className="hover:text-primary transition-colors">Serviços</Link></li>
-            <li><Link to="/#projetos" className="hover:text-primary transition-colors">Projetos</Link></li>
-            <li><Link to="/#processo" className="hover:text-primary transition-colors">Processo</Link></li>
-            <li><Link to="/#contato" className="hover:text-primary transition-colors">Contato</Link></li>
+            <li><a href="/#servicos" onClick={goToSection("servicos")} className="hover:text-primary transition-colors cursor-pointer">Serviços</a></li>
+            <li><a href="/#projetos" onClick={goToSection("projetos")} className="hover:text-primary transition-colors cursor-pointer">Projetos</a></li>
+            <li><a href="/#processo" onClick={goToSection("processo")} className="hover:text-primary transition-colors cursor-pointer">Processo</a></li>
+            <li><a href="/#contato" onClick={goToSection("contato")} className="hover:text-primary transition-colors cursor-pointer">Contato</a></li>
           </ul>
         </div>
 
@@ -31,7 +43,7 @@ export function LandingFooter() {
           <ul className="space-y-2 text-sm text-muted-foreground">
             {(products.items || []).slice(0, 5).map((p: any) => (
               <li key={p.name}>
-                <Link to="/#projetos" className="hover:text-primary transition-colors">{p.name}</Link>
+                <a href="/#projetos" onClick={goToSection("projetos")} className="hover:text-primary transition-colors cursor-pointer">{p.name}</a>
               </li>
             ))}
           </ul>
@@ -45,11 +57,13 @@ export function LandingFooter() {
                 {footer.email}
               </a>
             </li>
-            <li>
-              <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                {footer.whatsapp_label || "WhatsApp"}
-              </a>
-            </li>
+            {!isPlaceholder ? (
+              <li>
+                <a href={rawWhatsapp} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                  {footer.whatsapp_label || "WhatsApp"}
+                </a>
+              </li>
+            ) : null}
             <li>
               <Link to="/politica-de-privacidade" className="hover:text-primary transition-colors">
                 Política de Privacidade
