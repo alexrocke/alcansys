@@ -75,7 +75,8 @@ export function LandingSettings() {
           saving={updateMutation.isPending}
         />
       ))}
-    </Accordion>
+      </Accordion>
+    </>
   );
 }
 
