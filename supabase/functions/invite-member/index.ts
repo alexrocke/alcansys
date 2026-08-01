@@ -135,10 +135,10 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           to: email,
-          subject: "Bem-vindo à Alcansys - Defina sua senha",
+          subject: "Bem-vindo à Scalefy - Defina sua senha",
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-              <h2 style="color: #333;">Bem-vindo à Alcansys!</h2>
+              <h2 style="color: #333;">Bem-vindo à Scalefy!</h2>
               <p>Olá <strong>${nome}</strong>,</p>
               <p>Sua conta foi criada com sucesso. Para acessar o sistema, clique no botão abaixo para definir sua senha:</p>
               <div style="text-align: center; margin: 30px 0;">

@@ -1,6 +1,6 @@
 # ScalefySistemas
 
-Crie um sistema corporativo completo chamado Alcansys em português, com o objetivo de gerenciar projetos, finanças, marketing, automações, clientes e equipe interna.
+Crie um sistema corporativo completo chamado Scalefy em português, com o objetivo de gerenciar projetos, finanças, marketing, automações, clientes e equipe interna.
 
 Tema visual: azul escuro (#1E3A8A) com azul secundário (#3B82F6), cantos arredondados 2xl e fonte Inter.
 
@@ -52,7 +52,7 @@ Configure todos os relacionamentos de dados via Supabase e ative criação autom
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://alcansys.lovable.app
+**Live app**: https://scalefy.lovable.app
 
 ## Build with Lovable
 
