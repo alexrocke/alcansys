@@ -36,7 +36,10 @@ export default function Landing() {
   const cta = content.get("cta");
   const footer = content.get("footer");
 
-  const whatsapp = footer.whatsapp_url || "https://wa.me/5500000000000";
+  const rawWhatsapp = (footer.whatsapp_url || "").trim();
+  const isPlaceholder = !rawWhatsapp || /0{6,}/.test(rawWhatsapp);
+  // Sem número configurado, o botão leva para o contato em vez de um link morto
+  const whatsapp = isPlaceholder ? "#contato" : rawWhatsapp;
 
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
