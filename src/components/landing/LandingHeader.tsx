@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo-scalefy.png";
 
+const WHATSAPP_URL = "https://wa.me/5500000000000";
+
 export function LandingHeader() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/70 backdrop-blur-xl">
@@ -11,15 +13,23 @@ export function LandingHeader() {
         </Link>
         <nav className="hidden md:flex items-center gap-10 text-sm text-muted-foreground font-medium">
           <a href="#servicos" className="hover:text-foreground transition-colors">Serviços</a>
+          <a href="#projetos" className="hover:text-foreground transition-colors">Projetos</a>
           <a href="#processo" className="hover:text-foreground transition-colors">Processo</a>
-          <a href="#numeros" className="hover:text-foreground transition-colors">Resultados</a>
           <a href="#contato" className="hover:text-foreground transition-colors">Contato</a>
         </nav>
-        <Link to="/auth">
-          <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium tracking-wide">
+        <div className="flex items-center gap-4">
+          <Link
+            to="/auth"
+            className="hidden sm:inline text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
             Entrar
-          </Button>
-        </Link>
+          </Link>
+          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+            <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium tracking-wide">
+              Falar com a Scalefy
+            </Button>
+          </a>
+        </div>
       </div>
     </header>
   );
