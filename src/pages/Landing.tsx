@@ -406,7 +406,7 @@ export default function Landing() {
               <a href={whatsapp} {...waProps} className="inline-block">
                 <Button
                   size="lg"
-                  className="h-13 md:h-14 px-8 md:px-10 bg-primary text-primary-foreground hover:bg-primary/90 gap-2 font-medium tracking-wide shadow-ember text-base"
+                  className="h-12 md:h-14 px-8 md:px-10 bg-primary text-primary-foreground hover:bg-primary/90 gap-2 font-medium tracking-wide shadow-ember text-base"
                 >
                   {cta.button_text} <ArrowRight className="w-4 h-4" />
                 </Button>
